@@ -12,25 +12,25 @@ Button::Button (const char *released_texture_file, const char *covered_texture_f
 
     if (!released_texture_.loadFromFile(released_texture_file))   
     {
-        PROCESS_ERROR(LOAD_TEXTURE_TO_STAT, "failed load teture from %s\n", released_texture_file);
+        PROCESS_ERROR(LOAD_TEXTURE_ERR, "failed load teture from %s\n", released_texture_file);
         return;
     }
 
     if (!covered_texture_.loadFromFile(covered_texture_file))   
     {
-        PROCESS_ERROR(LOAD_TEXTURE_TO_PRESS, "failed load teture from %s\n", covered_texture_file);
+        PROCESS_ERROR(LOAD_TEXTURE_ERR, "failed load teture from %s\n", covered_texture_file);
         return;
     }
 
     if (!pressed_texture_.loadFromFile(pressed_texture_file))   
     {
-        PROCESS_ERROR(LOAD_TEXTURE_TO_PRESS, "failed load teture from %s\n", pressed_texture_file);
+        PROCESS_ERROR(LOAD_TEXTURE_ERR, "failed load teture from %s\n", pressed_texture_file);
         return;
     }
 
     if (!disabled_texture_.loadFromFile(disabled_texture_file))   
     {
-        PROCESS_ERROR(LOAD_TEXTURE_TO_PRESS, "failed load teture from %s\n", disabled_texture_file);
+        PROCESS_ERROR(LOAD_TEXTURE_ERR, "failed load teture from %s\n", disabled_texture_file);
         return;
     }
 

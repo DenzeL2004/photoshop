@@ -10,11 +10,11 @@ template<typename ItemType>
 class Container 
 {
     public:
-        Container():data_(nullptr),  size_(0), capacity_(0)
+        Container(const size_t capacity):data_(nullptr),  size_(0), capacity_(0)
         {
-            capacity_ = Init_container_capacity;
+            capacity_ = capacity;
 
-            data_ = (ItemType*) calloc(Init_container_capacity, sizeof(ItemType));
+            data_ = (ItemType*) calloc(capacity_, sizeof(ItemType));
             if (data_ == nullptr)
             {
                 PROCESS_ERROR(ERR_MEMORY_ALLOC, "allocate memmory to class container failed\n");
@@ -23,6 +23,8 @@ class Container
 
             return;
         }
+        
+        Container():Container(Init_container_capacity){}
 
 
         ~Container()
@@ -45,7 +47,7 @@ class Container
             if (size_ >= capacity_) 
                 this->AddMemory();
             
-            memcpy( data_ + size_, &value, sizeof(ItemType));
+            memcpy(data_ + size_, &value, sizeof(ItemType));
 
             size_++;
 
@@ -60,6 +62,37 @@ class Container
 
             return;
         }
+
+        void Ascent (size_t pos)
+        {
+            if (pos >= size_)
+                return;
+
+            while (pos != 0)
+            {
+                std::swap(data_[pos], data_[pos - 1]);
+                pos--;
+            }    
+
+            return;
+
+        }
+
+        void Drown (size_t pos)
+        {
+            if (pos >= size_)
+                return;
+
+            while (pos != size_ - 1)
+            {
+                std::swap(data_[pos], data_[pos + 1]);
+                pos++;
+            }    
+
+            return;
+
+        }
+        
 
         ItemType& operator[](const size_t index) const
         {

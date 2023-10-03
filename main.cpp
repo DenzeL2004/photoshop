@@ -10,7 +10,10 @@ int main()
     #endif
 
     sf::RenderWindow window(sf::VideoMode(Default_window_width, Default_window_height), "");
-    Window photoshop_window("src/img/square.png", Dot(100, 100));
+    Window photoshop_window("src/img/square.png", Dot(20.0, 20.0), 1.0, 1.0);
+
+    StackTransform stack;
+    stack.AddTransform(Transform(Dot(30.0, 30.0), 10.0, 10.0));
 
     while (window.isOpen())
     {   
@@ -23,7 +26,7 @@ int main()
                 window.close();
         }
 
-        photoshop_window.Draw(window);
+        photoshop_window.Draw(window, stack);
 
         window.display();
     }

@@ -1,9 +1,9 @@
 #ifndef _BUTTON_H_
 #define _BUTTON_H_
 
-#include "../graphic.h"
-#include "../../container/container.h"
 
+#include "../../container/container.h"
+#include "../widget.h"
 //================================================================================
 
 class Action
@@ -19,14 +19,8 @@ class Action
 
 //================================================================================
 
-enum Buttons_err
-{
-    LOAD_TEXTURE_TO_STAT,
-    LOAD_TEXTURE_TO_POINT,
-    LOAD_TEXTURE_TO_PRESS,  
-};
 
-class Button
+class Button : public Widget
 {
 
     public:
@@ -34,35 +28,26 @@ class Button
                  const char *pressed_texture_file,  const char *disabled_texture_file,
                  const Dot &pos, const Action *action);
 
-        Button(const Button &other) = default;
+        Button(const Button &other) = delete;
 
-        virtual Button& operator= (const Button &other)
-        {
-            released_texture_  = other.released_texture_;
-            covered_texture_   = other.covered_texture_;
-            pressed_texture_   = other.pressed_texture_;
-            disabled_texture_  = other.disabled_texture_;
-
-            delete action_;
-            action_ = other.action_;
-
-            return *this;
-        }
+        virtual Button& operator= (const Button &other) = delete;
 
         virtual ~Button()
         {
-            released_texture_.~Texture();
-            covered_texture_.~Texture();
-            pressed_texture_.~Texture();
-            disabled_texture_.~Texture();
-
             delete action_;
         }
 
 
-        virtual void Draw(sf::RenderWindow &window) const;
+        
+        virtual bool OnMousePressed     (const MouseKey key);
+        virtual bool OnMouseMoved       (const int x, const int y);
+        virtual bool OnMouseReleased    (const MouseKey key);
 
-        virtual bool CheckCursorOnButton () const;
+        virtual bool OnKeyboardPressed  (const KeyboardKey);
+        virtual bool OnKeyboardReleased (const KeyboardKey);
+
+        virtual void Draw(sf::RenderTarget &target) const;  
+
 
         bool CheckPressed()  const {return flag_pressed_;}
         bool CheckDisabled() const {return flag_disabled_;}
@@ -77,13 +62,12 @@ class Button
 
         const Action *action_;
 
-        
-
     protected:
         const sf::Texture* DefineTexture() const;
 
         sf::Texture released_texture_, covered_texture_, 
                     pressed_texture_, disabled_texture_;
+                    
         Dot left_up_;
 
         bool flag_pressed_, flag_disabled_;
