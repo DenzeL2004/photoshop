@@ -1,8 +1,8 @@
 #include "window.h"
 
-Window::Window(const char *path_texture, const Dot left_up,
-               const double scale_x, const double scale_y):
-               left_up_(left_up), scale_x_(scale_x), scale_y_(scale_y),
+Window::Window (const char *path_texture, const Dot offset, 
+                const double scale_x, const double scale_y):
+               transform_(),
                width_(0), hieght_(0), background_() 
 {
 
@@ -15,31 +15,34 @@ Window::Window(const char *path_texture, const Dot left_up,
     width_  = background_.getSize().x;
     hieght_ = background_.getSize().y;
 
+    transform_.offset_ = offset;
+
+    transform_.scale_ = Vector(scale_x / width_,
+                               scale_y / hieght_);
+
     return;
 }
 
-void Window::SetPos(const Dot &new_left_up)
+void Window::SetOffset(const Dot &offset)
 {
-    left_up_ = new_left_up;
+    transform_.offset_ = offset;
     return;
 }
 
-void Window::Draw(sf::RenderTarget &target, StackTransform &stack_transform) const
+void Window::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
 {
-    stack_transform.AddTransform(Transform(left_up_, scale_x_, scale_y_));
-
-    Transform tmp = stack_transform.GetTransformation();
-
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform res_transform = stack_transform.GetBack();
+    
     sf::Sprite sprite;
     sprite.setTexture(background_);
 
-
-    sprite.setPosition((float)tmp.pos_.GetX(), (float)tmp.pos_.GetY());
-    sprite.setScale((float)(tmp.scale_x_), (float)(tmp.scale_y_));
+    sprite.setPosition((float)res_transform.offset_.GetX(), (float)res_transform.offset_.GetY());
+    sprite.setScale   ((float)res_transform.scale_.GetX(),  (float)res_transform.scale_.GetY());
 
     target.draw(sprite);
 
-    stack_transform.EraseTransform();
+    stack_transform.PopBack();
 
     return;
 }
@@ -47,27 +50,36 @@ void Window::Draw(sf::RenderTarget &target, StackTransform &stack_transform) con
 
 bool Window::CheckIn(const Dot &mouse_pos)
 {
-    bool horizontal = (left_up_.GetX() < mouse_pos.GetX() && left_up_.GetX() + width_ > mouse_pos.GetX());
-    bool vertical   = (left_up_.GetY() < mouse_pos.GetY() && left_up_.GetY() + hieght_ > mouse_pos.GetY());
+    bool horizontal = (0 <= mouse_pos.GetX() && width_  >= mouse_pos.GetX());
+    bool vertical   = (0 <= mouse_pos.GetY() && hieght_ >= mouse_pos.GetY());
    
     return horizontal & vertical;
 }
 
-bool Window::OnMouseMoved(const int x, const int y, StackTransform &stack_transform)
+bool Window::OnMouseMoved(const int x, const int y, Container<Transform> &stack_transform)
 {
-    Vector mouse_pos((double)x, (double)y);
+    Dot mouse_coord((double)x, double(y));
+   
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform res_transform = stack_transform.GetBack();
+    
+    Dot new_coord = res_transform.ApplyTransform(mouse_coord);
 
-    return CheckIn(mouse_pos);
+    bool flag = CheckIn(new_coord);
+
+    stack_transform.PopBack();
+
+    return flag;
 }
 
-bool Window::OnMousePressed(const MouseKey key, StackTransform &stack_transform)
+bool Window::OnMousePressed(const MouseKey key, Container<Transform> &stack_transform)
 {
     printf("Window: mouse pressed\n");
     return false;
 }
 
 
-bool Window::OnMouseReleased(const MouseKey key, StackTransform &stack_transform)
+bool Window::OnMouseReleased(const MouseKey key, Container<Transform> &stack_transform)
 {
     printf("Window: mouse released\n");
     return false;

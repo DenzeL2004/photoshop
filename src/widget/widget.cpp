@@ -1,44 +1,23 @@
 #include "widget.h"
 
 //=======================================================================================
-Transform StackTransform::GetTransformation () const
+
+Transform Transform::ApplyPrev(const Transform &prev) const
 {
-    return data_[data_.GetSize() - 1];
+    Dot new_pos = prev.offset_ + Vector(prev.scale_.GetX() * offset_.GetX(), prev.scale_.GetY() * offset_.GetY());
+    Transform tmp(new_pos, Vector(scale_.GetX() * prev.scale_.GetX(), scale_.GetY() * prev.scale_.GetY()));
+
+    return tmp;
 }
 
-size_t StackTransform::GetSize () const
+Vector Transform::ApplyTransform(const Dot &pos) const
 {
-    return data_.GetSize();
+    Dot tmp = pos - offset_;
+    Dot res(tmp.GetX() / scale_.GetX(), tmp.GetY() / scale_.GetY());
+
+    return res;
 }
 
-//=======================================================================================
-
-void StackTransform::AddTransform (const Transform &transform)
-{
-    if (data_.GetSize() == 0)
-    {
-        data_.PushBack(transform);
-        return;
-    }
-
-    Transform tmp = this->GetTransformation();
-    
-    tmp.pos_= Dot(transform.pos_.GetX() * tmp.scale_x_, 
-                  transform.pos_.GetY() * tmp.scale_y_);
-
-    tmp.scale_x_ *= transform.scale_x_;
-    tmp.scale_y_ *= transform.scale_y_;
-
-    data_.PushBack(tmp);
-
-    return;
-}
-
-void StackTransform::EraseTransform ()
-{
-    data_.PopBack();
-    return;
-}
 
 //=======================================================================================
 

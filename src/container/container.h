@@ -92,6 +92,12 @@ class Container
             return;
 
         }
+
+        ItemType& GetBack() const
+        {
+            return data_[size_ - 1];
+        }
+
         
 
         ItemType& operator[](const size_t index) const

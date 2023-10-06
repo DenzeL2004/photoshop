@@ -14,36 +14,23 @@ struct Transform
 {
     public:
         Transform():
-        pos_(), scale_x_(1.0), scale_y_(1.0){}
+        offset_(), scale_(){}
 
-        Transform (const Dot pos, 
-                   const double scale_x, const double scale_y):
-        pos_(pos), scale_x_(scale_x), scale_y_(scale_y){}
+        Transform (const Vector offset, const Vector scale):
+        offset_(offset), scale_(scale){}
 
         ~Transform(){}
 
-        Dot pos_;
-        double scale_x_, scale_y_;
+        Transform (const Transform &other) = default;
+        Transform& operator= (const Transform &other) = default;
+
+        Transform   ApplyPrev       (const Transform &prev) const;
+        Vector      ApplyTransform  (const Dot &pos)        const;
+
+        Vector offset_;
+        Vector scale_;
 
 };
-
-class StackTransform
-{
-    public:
-        StackTransform(): data_(){}
-        ~StackTransform(){};
-
-        void AddTransform   (const Transform &transform);
-        void EraseTransform ();
-
-        Transform GetTransformation () const;
-
-        size_t GetSize() const;
-    private:
-        Container<Transform> data_;
-};
-
-
 
 class Widget
 {
@@ -52,14 +39,14 @@ class Widget
         Widget(){};
         ~Widget(){};
 
-        virtual bool OnMousePressed     (const MouseKey key, StackTransform &stack_transform) = 0;
-        virtual bool OnMouseMoved       (const int x, const int y, StackTransform &stack_transform) = 0;
-        virtual bool OnMouseReleased    (const MouseKey key, StackTransform &stack_transform) = 0;
+        virtual bool OnMousePressed     (const MouseKey key, Container<Transform> &stack_transform) = 0;
+        virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform) = 0;
+        virtual bool OnMouseReleased    (const MouseKey key, Container<Transform> &stack_transform) = 0;
 
         virtual bool OnKeyboardPressed  (const KeyboardKey) = 0;
         virtual bool OnKeyboardReleased (const KeyboardKey) = 0;
 
-        virtual void Draw(sf::RenderTarget &target, StackTransform &stack_transform) const = 0;  
+        virtual void Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const = 0;  
 };
 
 

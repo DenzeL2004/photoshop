@@ -9,11 +9,11 @@ int main()
             return OPEN_FILE_LOG_ERR;
     #endif
 
-    sf::RenderWindow window(sf::VideoMode(Default_window_width, Default_window_height), "");
-    Window photoshop_window("src/img/square.png", Dot(20.0, 20.0), 1.0, 1.0);
+    sf::RenderWindow window(sf::VideoMode(800, 600), "");
+    Window photoshop_window("src/img/square.png", Dot(0.0, 0.0), 0.5, 0.5);
 
-    StackTransform stack;
-    stack.AddTransform(Transform(Dot(30.0, 30.0), 10.0, 10.0));
+    Container<Transform> stack;
+    stack.PushBack(Transform({0.0, 0.0}, {800.0, 600.0}));
 
     while (window.isOpen())
     {   
@@ -27,6 +27,7 @@ int main()
         }
 
         photoshop_window.Draw(window, stack);
+
 
         window.display();
     }

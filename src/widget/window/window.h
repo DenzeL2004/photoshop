@@ -11,20 +11,20 @@ class Window : public Widget
 
     public:
 
-        Window(const char *path_texture, const Dot left_up, 
-               const double scale_x, const double scale_y);
+        Window  (const char *path_texture, const Dot offset, 
+                 const double scale_x, const double scale_y);
         ~Window(){};
 
-        virtual bool OnMousePressed     (const MouseKey key, StackTransform &stack_transform);
-        virtual bool OnMouseMoved       (const int x, const int y, StackTransform &stack_transform);
-        virtual bool OnMouseReleased    (const MouseKey key, StackTransform &stack_transform);
+        virtual bool OnMousePressed     (const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform);
+        virtual bool OnMouseReleased    (const MouseKey key, Container<Transform> &stack_transform);
 
         virtual bool OnKeyboardPressed  (const KeyboardKey);
         virtual bool OnKeyboardReleased (const KeyboardKey);
 
-        virtual void Draw(sf::RenderTarget &targert, StackTransform &stack_transform) const override;    
+        virtual void Draw(sf::RenderTarget &targert, Container<Transform> &stack_transform) const override;    
 
-        void SetPos (const Dot &new_left_up);
+        void SetOffset (const Dot &offset);
 
         bool CheckIn(const Dot &mouse_pos);
 
@@ -32,10 +32,8 @@ class Window : public Widget
         double GetHieght() const {return hieght_;}
 
     private:
-        
-        Dot left_up_;
-
-        double scale_x_, scale_y_;
+       
+        Transform transform_;
 
         double width_, hieght_;
         
