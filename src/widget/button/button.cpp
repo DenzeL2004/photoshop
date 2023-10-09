@@ -3,15 +3,16 @@
 
 Button::Button (const char *released_texture_file, const char *covered_texture_file, 
                 const char *pressed_texture_file,  const char *disabled_texture_file,
-                const Action *action, const Dot offset, 
-                const double scale_x, const double scale_y):
+                const Action *action, 
+                const double width, const double hieght, 
+                const Dot offset, const Vector scale):
                 action_(nullptr), status_(RELEASED), prev_status_(RELEASED),
                 released_texture_(), covered_texture_(), 
                 pressed_texture_(), disabled_texture_(), 
-                transform_(), width_(0), hieght_(0),
+                transform_(), width_(width), hieght_(hieght),
                 covering_time_(0)
 {
-    //assert(action != nullptr && "action is nullptr");
+    assert(action != nullptr && "action is nullptr");
 
     if (!released_texture_.loadFromFile(released_texture_file))   
     {
@@ -37,13 +38,10 @@ Button::Button (const char *released_texture_file, const char *covered_texture_f
         return;
     }
 
-    width_  = released_texture_.getSize().x;
-    hieght_ = released_texture_.getSize().y;
-
     transform_.offset_ = offset;
 
-    transform_.scale_ = Vector(scale_x / width_,
-                               scale_y / hieght_);
+    transform_.scale_ = Vector(scale.GetX() / width_,
+                               scale.GetY() / hieght_);
 
     return;
 
@@ -60,7 +58,9 @@ void Button::Draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
     DefineSprite(sprite);
 
     sprite.setPosition((float)res_transform.offset_.GetX(), (float)res_transform.offset_.GetY());
-    sprite.setScale   ((float)res_transform.scale_.GetX(),  (float)res_transform.scale_.GetY());
+    
+    Dot size = GetScale(res_transform);
+    sprite.setScale((float)size.GetX(),  (float)size.GetY());
 
     target.draw(sprite);
 
@@ -69,17 +69,15 @@ void Button::Draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
     return;
 }
 
+Dot Button::GetScale(const Transform &transform) const
+{
+    return Dot(transform.scale_.GetX() / released_texture_.getSize().x, 
+               transform.scale_.GetX() / released_texture_.getSize().y);
+}
+
+
 void Button::DefineSprite(sf::Sprite &sprite) const
 {
-    // if (covering_time_ > 0 && status_ != COVERED)
-    // {
-    //     sprite.setTexture(covered_texture_);
-
-    //     uint8_t alpha = (uint8_t)std::min(254l, covering_time_ / 1500);
-    //     sprite.setColor(sf::Color(255, 255, 255, alpha));
-    //     return;
-    // }
-
     switch (status_)
     {
         case RELEASED:
@@ -133,7 +131,7 @@ bool Button::OnMouseMoved(const int x, const int y, Container<Transform> &stack_
     }
     else
     {
-        if (covering_time_ / 1000 >= 255 && status_ != COVERED)
+        if (covering_time_ > 0 && status_ != COVERED)
         {
             prev_status_ = status_;
             status_ = COVERED;
@@ -157,10 +155,14 @@ void Button::PassTime(const time_t delta_time)
 
 //================================================================================
 
-
 bool Button::OnMousePressed(const MouseKey key, Container<Transform> &stack_transform)
 {
-    printf("Button: mouse pressed\n");
+    if (status_ == COVERED && key == Left)
+    {
+        *action_;
+        return true;
+    }
+
     return false;
 }
 
@@ -183,3 +185,5 @@ bool Button::OnKeyboardReleased(const KeyboardKey key)
     printf("Button: mouse keyboard kye released\n");
     return false;
 }
+
+

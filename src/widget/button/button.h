@@ -3,6 +3,8 @@
 
 
 #include "../widget.h"
+
+
 //================================================================================
 
 class Action
@@ -10,7 +12,7 @@ class Action
     public:
         Action(){};
         
-        virtual ~Action() = default;
+        virtual ~Action(){};
 
         virtual bool operator() () const = 0;
     
@@ -26,14 +28,16 @@ enum Button_Status
     DISABLED,
 };
 
+//================================================================================
 
 class Button : public Widget
 {
     public:
         Button (const char *released_texture_file, const char *covered_texture_file, 
                 const char *pressed_texture_file,  const char *disabled_texture_file,
-                const Action *action, const Dot offset, 
-                const double scale_x, const double scale_y);
+                const Action *action, 
+                const double width, const double hieght, 
+                const Dot offset, const Vector scale);
 
         virtual ~Button()
         {
@@ -70,6 +74,7 @@ class Button : public Widget
 
     protected:
         void DefineSprite(sf::Sprite &sprite) const;
+        Dot  GetScale(const Transform &transform) const;
 
         sf::Texture released_texture_, covered_texture_, 
                     pressed_texture_, disabled_texture_;
@@ -79,5 +84,21 @@ class Button : public Widget
 
         time_t covering_time_;
 };
+
+
+
+class Click : public Action
+{
+    public:
+        Click(){};
+        ~Click(){};
+
+        bool operator() () const
+        {
+            return true;
+        } 
+};
+
+//================================================================================
 
 #endif

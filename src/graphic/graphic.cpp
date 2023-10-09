@@ -3,7 +3,7 @@
 
 //================================================================================
 
-void DrawLine(sf::RenderWindow &window, 
+void DrawLine(sf::RenderTarget &window, 
               const Dot &dot_begin, const Dot &dot_end, const sf::Color color_line)
 {
     sf::Vertex line[] =
@@ -21,7 +21,7 @@ void DrawLine(sf::RenderWindow &window,
 //================================================================================
 
 
-void DrawCircle(sf::RenderWindow &window, const Dot &pos, 
+void DrawCircle(sf::RenderTarget &window, const Dot &pos, 
                 const float radius, const sf::Color color)
 {
 
@@ -39,7 +39,7 @@ void DrawCircle(sf::RenderWindow &window, const Dot &pos,
 //================================================================================
 
 
-void DrawRectangle(sf::RenderWindow &window, 
+void DrawRectangle(sf::RenderTarget &window, 
                    const Dot &left_up, const Dot &right_down, const sf::Color color)
 {
 
@@ -61,7 +61,7 @@ void DrawRectangle(sf::RenderWindow &window,
 //================================================================================
 
 
-void DrawPixel(sf::RenderWindow &window, const Dot &pos, const sf::Color color)
+void DrawPixel(sf::RenderTarget &window, const Dot &pos, const sf::Color color)
 {
 
     sf::RectangleShape pixel;
@@ -79,7 +79,7 @@ void DrawPixel(sf::RenderWindow &window, const Dot &pos, const sf::Color color)
 
 //================================================================================
 
-void WriteText (sf::RenderWindow &window, const Dot &pos, 
+void WriteText (sf::RenderTarget &window, const Dot &pos, 
                 const char *msg, const char *font_path, const uint32_t text_size, 
                 const sf::Color color)
 {

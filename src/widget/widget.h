@@ -14,7 +14,7 @@ struct Transform
 {
     public:
         Transform():
-        offset_(), scale_(){}
+        offset_(0, 0), scale_(0, 0){}
 
         Transform (const Vector offset, const Vector scale):
         offset_(offset), scale_(scale){}
@@ -30,6 +30,11 @@ struct Transform
         Vector offset_;
         Vector scale_;
 
+};
+
+enum Widget_Err
+{
+    LOAD_TEXTURE_ERR,
 };
 
 class Widget
@@ -72,10 +77,7 @@ class Widget
 //         Container<Widget*> widgets_;
 // };
 
-enum Widget_err
-{
-    LOAD_TEXTURE_ERR,
-};
+
 
 
 #endif

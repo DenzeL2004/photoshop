@@ -11,9 +11,9 @@ class Window : public Widget
 
     public:
 
-        Window  (const char *path_texture, const Dot offset, 
-                 const double scale_x, const double scale_y);
-        ~Window(){}
+        Window  (const char *path_texture, const double width, const double hieght,  
+                 const Dot offset, const Vector scale);
+        virtual ~Window(){}
 
         virtual bool OnMousePressed     (const MouseKey key, Container<Transform> &stack_transform);
         virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform);
@@ -26,14 +26,15 @@ class Window : public Widget
 
         virtual void PassTime           (const time_t delta_time);
 
-        void SetOffset(const Dot &offset);
+        void SetOffset  (const Dot &offset);
 
-        bool CheckIn(const Dot &mouse_pos);
+        bool CheckIn    (const Dot &mouse_pos);
 
         double GetWidth()  const {return width_;}
         double GetHieght() const {return hieght_;}
 
     private:
+        Dot GetScale(const Transform &transform) const;
        
         Transform transform_;
 

@@ -1,9 +1,9 @@
 #include "window.h"
 
-Window::Window (const char *path_texture, const Dot offset, 
-                const double scale_x, const double scale_y):
+Window::Window (const char *path_texture, const double width, const double hieght,
+                const Dot offset, const Vector scale):
                transform_(),
-               width_(0), hieght_(0), background_() 
+               width_(width), hieght_(hieght), background_() 
 {
 
     if (!background_.loadFromFile(path_texture))   
@@ -12,22 +12,23 @@ Window::Window (const char *path_texture, const Dot offset,
         return;
     }
 
-    width_  = background_.getSize().x;
-    hieght_ = background_.getSize().y;
-
     transform_.offset_ = offset;
 
-    transform_.scale_ = Vector(scale_x / width_,
-                               scale_y / hieght_);
+    transform_.scale_ = Vector(scale.GetX() / width_,
+                               scale.GetY() / hieght_);
 
     return;
 }
+
+//================================================================================
 
 void Window::SetOffset(const Dot &offset)
 {
     transform_.offset_ = offset;
     return;
 }
+
+//================================================================================
 
 void Window::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
 {
@@ -38,7 +39,9 @@ void Window::Draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
     sprite.setTexture(background_);
 
     sprite.setPosition((float)res_transform.offset_.GetX(), (float)res_transform.offset_.GetY());
-    sprite.setScale   ((float)res_transform.scale_.GetX(),  (float)res_transform.scale_.GetY());
+
+    Dot size = GetScale(res_transform);
+    sprite.setScale((float)size.GetX(), (float)size.GetY());
 
     target.draw(sprite);
 
@@ -47,6 +50,14 @@ void Window::Draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
     return;
 }
 
+Dot Window::GetScale(const Transform &transform) const
+{
+    return Dot(transform.scale_.GetX() / background_.getSize().x, 
+               transform.scale_.GetX() / background_.getSize().y);
+}
+
+
+//================================================================================
 
 bool Window::CheckIn(const Dot &mouse_pos)
 {
@@ -55,6 +66,8 @@ bool Window::CheckIn(const Dot &mouse_pos)
    
     return horizontal & vertical;
 }
+
+//================================================================================
 
 bool Window::OnMouseMoved(const int x, const int y, Container<Transform> &stack_transform)
 {
@@ -72,12 +85,15 @@ bool Window::OnMouseMoved(const int x, const int y, Container<Transform> &stack_
     return flag;
 }
 
+//================================================================================
+
 bool Window::OnMousePressed(const MouseKey key, Container<Transform> &stack_transform)
 {
     printf("Window: mouse pressed\n");
     return false;
 }
 
+//================================================================================
 
 bool Window::OnMouseReleased(const MouseKey key, Container<Transform> &stack_transform)
 {
@@ -85,18 +101,23 @@ bool Window::OnMouseReleased(const MouseKey key, Container<Transform> &stack_tra
     return false;
 }
 
+//================================================================================
+
 bool Window::OnKeyboardPressed(const KeyboardKey key)
 {
     printf("Window: mouse keyboard kye pressed\n");
     return false;
 }
 
+//================================================================================
 
 bool Window::OnKeyboardReleased(const KeyboardKey key)
 {
     printf("Window: mouse keyboard kye released\n");
     return false;
 }
+
+//================================================================================
 
 void Window::PassTime(const time_t delta_time)
 {
