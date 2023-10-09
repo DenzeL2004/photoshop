@@ -4,8 +4,8 @@
 #include "src/widget/button/button.h"
 #include "src/widget/decorator/decorator.h"
 
-const double WEIDTH = 1600.0; 
-const double HIEGHT = 1200.0;
+const double WEIDTH = 800.0; 
+const double HIEGHT = 600.0;
 
 int main()
 {
@@ -22,9 +22,9 @@ int main()
                         "src/img/CloseResCrossReleased.png", "src/img/CloseResCrossCovered.png", new Click(),
                         Dot(0.98, 0.0), Vector(0.02, 0.025));
 
-    Window canvas("src/img/canvas.png", {0.005, 0.03}, Vector(0.99, 0.91));
+    Window canvas("src/img/canvas.png", {0.005, 0.03}, Vector(0.7, 0.91)); //0.99 0.91
 
-    Border border("src/img/border.png", &close_button, Title("window manager", sf::Color::Black), &canvas, Dot(0.0, 0.0), Vector(0.85, 0.9));
+    Border border("src/img/border.png", &close_button, Title("window manager", sf::Color::Black), &canvas, Dot(0.0, 0.0), Vector(0.8, 0.6));
 
     Container<Transform> stack;
     stack.PushBack(Transform({0.0, 0.0}, {WEIDTH, HIEGHT}));
@@ -39,19 +39,23 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+
+
+                sf::Mouse mouse;
+                if (event.type == sf::Event::MouseMoved)
+                    border.OnMouseMoved(mouse.getPosition(window).x, mouse.getPosition(window).y, stack);
+                else if (event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased)
+                {
+                    if (event.type == sf::Event::MouseButtonPressed)
+                        border.OnMousePressed(mouse.getPosition(window).x, mouse.getPosition(window).y, Left, stack);
+                    else
+                        border.OnMouseReleased(mouse.getPosition(window).x, mouse.getPosition(window).y, Left, stack);
+                }
         }
 
-
-        border.OnMouseMoved(event.mouseMove.x, event.mouseMove.y, stack);
+        sf::Mouse mouse;
         border.Draw(window, stack);
-
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
-        {
-            
-            if (close_button.OnMousePressed(Left, stack))
-                printf("true\n");
-        }
-
+    
         window.display();
         timer.restart();
     }

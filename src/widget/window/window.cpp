@@ -63,7 +63,7 @@ void Window::GetNewSize(sf::VertexArray &vertex_array, const Transform &transfor
 
 bool Window::CheckIn(const Dot &mouse_pos)
 {
-    bool horizontal = (Eps < mouse_pos.x && 1 - Eps  >= mouse_pos.x);
+    bool horizontal = (Eps < mouse_pos.x && 1 - Eps >= mouse_pos.x);
     bool vertical   = (Eps < mouse_pos.y && 1 - Eps >= mouse_pos.y);
    
     return horizontal & vertical;
@@ -87,15 +87,23 @@ bool Window::OnMouseMoved(const int x, const int y, Container<Transform> &stack_
 
 //================================================================================
 
-bool Window::OnMousePressed(const MouseKey key, Container<Transform> &stack_transform)
+bool Window::OnMousePressed(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
 {
-    printf("Window: mouse pressed\n");
-    return false;
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform last_trf = stack_transform.GetBack();
+    
+    Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
+
+    bool flag = CheckIn(new_coord);
+
+    stack_transform.PopBack();
+
+    return flag;
 }
 
 //================================================================================
 
-bool Window::OnMouseReleased(const MouseKey key, Container<Transform> &stack_transform)
+bool Window::OnMouseReleased(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
 {
     printf("Window: mouse released\n");
     return false;

@@ -15,9 +15,9 @@ class Window : public Widget
                  const Dot offset, const Vector scale);
         virtual ~Window(){}
 
-        virtual bool OnMousePressed     (const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMousePressed     (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
         virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform);
-        virtual bool OnMouseReleased    (const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMouseReleased    (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
 
         virtual bool OnKeyboardPressed  (const KeyboardKey);
         virtual bool OnKeyboardReleased (const KeyboardKey);
@@ -32,6 +32,8 @@ class Window : public Widget
 
         double GetWidth()  const {return width_;}
         double GetHieght() const {return hieght_;}
+
+        Transform GetTransform() const {return transform_;}
 
     protected:
         void GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const;

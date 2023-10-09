@@ -44,9 +44,9 @@ class Widget
 {
 
     public:
-        virtual bool OnMousePressed     (const MouseKey key, Container<Transform> &stack_transform) = 0;
+        virtual bool OnMousePressed     (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform) = 0;
         virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform) = 0;
-        virtual bool OnMouseReleased    (const MouseKey key, Container<Transform> &stack_transform) = 0;
+        virtual bool OnMouseReleased    (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform) = 0;
 
         virtual bool OnKeyboardPressed  (const KeyboardKey) = 0;
         virtual bool OnKeyboardReleased (const KeyboardKey) = 0;

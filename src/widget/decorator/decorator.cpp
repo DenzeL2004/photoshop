@@ -44,7 +44,8 @@ Border::Border( const char *path_texture, Button* close_button,
                 const Dot offset, const Vector scale):
                 transform_({offset, scale}),
                 width_(0), hieght_(0), background_(), 
-                title_(title), close_button_(close_button), decarable_(decarable)
+                title_(title), close_button_(close_button), decarable_(decarable), 
+                status_(DEFAULT), hold_pos_({0.0, 0.0})
 {
     assert(close_button != nullptr && "close button is nullptr");
     assert(decarable    != nullptr && "decarable is nullptr");
@@ -96,15 +97,30 @@ void Border::DrawTitle(sf::RenderTarget &target, const Transform &border_trf) co
 
 bool Border::OnMouseMoved(const int x, const int y, Container<Transform> &stack_transform)
 {
-   stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
-
 
     bool flag  = close_button_->OnMouseMoved(x, y, stack_transform);
          flag |= decarable_->OnMouseMoved(x, y, stack_transform);
 
-    Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
-         flag |= CheckIn(new_coord);   
+    if (!flag)
+    {
+        Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
+       
+        if(status_ == HOLD)
+        {
+            Vector delta = new_coord - hold_pos_;
+            
+            delta.x *= transform_.scale.x;
+            delta.y *= transform_.scale.y;
+            printf("%lg %lg\n", delta.x, delta.y);
+
+            transform_.offset += delta;
+            
+           
+            flag = true;
+        }  
+    }
 
     stack_transform.PopBack();
 
@@ -113,17 +129,42 @@ bool Border::OnMouseMoved(const int x, const int y, Container<Transform> &stack_
 
 //================================================================================
 
-bool Border::OnMousePressed(const MouseKey key, Container<Transform> &stack_transform)
+bool Border::OnMousePressed(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
 {
-    printf("Border: mouse pressed\n");
-    return false;
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform last_trf = stack_transform.GetBack();
+
+    bool flag  = close_button_->OnMousePressed(x, y, key, stack_transform);
+         flag |= decarable_->OnMousePressed(x, y, key, stack_transform);
+
+    if (!flag)
+    {
+        Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
+        
+        if (CheckIn(new_coord) && key == Left)
+        {
+            status_ = HOLD;
+            hold_pos_ = new_coord;
+            flag = true;
+        }
+    }    
+
+    stack_transform.PopBack();
+
+    return flag;
 }
 
 //================================================================================
 
-bool Border::OnMouseReleased(const MouseKey key, Container<Transform> &stack_transform)
+bool Border::OnMouseReleased(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
 {
-    printf("Border: mouse released\n");
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform last_trf = stack_transform.GetBack();
+
+    status_ = DEFAULT;
+
+    stack_transform.PopBack();
+
     return false;
 }
 

@@ -150,7 +150,7 @@ void Button::PassTime(const time_t delta_time)
 
 //================================================================================
 
-bool Button::OnMousePressed(const MouseKey key, Container<Transform> &stack_transform)
+bool Button::OnMousePressed(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
 {
     if (status_ == COVERED && key == Left)
     {
@@ -162,7 +162,7 @@ bool Button::OnMousePressed(const MouseKey key, Container<Transform> &stack_tran
 }
 
 
-bool Button::OnMouseReleased(const MouseKey key, Container<Transform> &stack_transform)
+bool Button::OnMouseReleased(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
 {
     printf("Button: mouse released\n");
     return false;

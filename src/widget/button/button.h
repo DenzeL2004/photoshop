@@ -48,9 +48,9 @@ class Button : public Widget
 
         virtual Button& operator= (const Button &other) = delete;
 
-        virtual bool OnMousePressed     (const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMousePressed     (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
         virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform);
-        virtual bool OnMouseReleased    (const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMouseReleased    (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
 
         virtual bool OnKeyboardPressed  (const KeyboardKey);
         virtual bool OnKeyboardReleased (const KeyboardKey);
@@ -61,14 +61,9 @@ class Button : public Widget
 
         bool CheckIn (const Dot &mouse_pos) const;
 
-        void SetState(const Button_Status new_status) 
-        {
-            status_ = new_status;
-            return;
-        }
+        Transform GetTransform() const {return transform_;}
 
         const Action *action_;
-        Button_Status status_;
         Button_Status prev_status_;
 
     protected:
@@ -81,7 +76,10 @@ class Button : public Widget
         Transform transform_;
         double width_, hieght_;
 
+        Button_Status status_;
         time_t covering_time_;
+
+
 };
 
 

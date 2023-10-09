@@ -4,6 +4,12 @@
 #include "../widget.h"
 #include "../button/button.h"
 
+enum Decorator_Status
+{
+    DEFAULT, 
+    HOLD,
+};
+
 class Decorator: public Widget
 {
     public:
@@ -11,9 +17,9 @@ class Decorator: public Widget
         Decorator(){}
         ~Decorator(){}
 
-        virtual bool OnMousePressed     (const MouseKey key, Container<Transform> &stack_transform) = 0;
+        virtual bool OnMousePressed     (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform) = 0;
         virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform) = 0;
-        virtual bool OnMouseReleased    (const MouseKey key, Container<Transform> &stack_transform) = 0;
+        virtual bool OnMouseReleased    (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform) = 0;
 
         virtual bool OnKeyboardPressed  (const KeyboardKey) = 0;
         virtual bool OnKeyboardReleased (const KeyboardKey) = 0;
@@ -34,12 +40,12 @@ class Decorator: public Widget
         void GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const;
 
         Transform transform_;
-
         double width_, hieght_;
         
         sf::Texture background_;
-
         const Widget *decarable_;
+
+        Decorator_Status status_;
 };
 
 //=================================================================================================
@@ -74,9 +80,9 @@ class Border: public Decorator
 
         virtual ~Border(){}
 
-        virtual bool OnMousePressed     (const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMousePressed     (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
         virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform);
-        virtual bool OnMouseReleased    (const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMouseReleased    (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
 
         virtual bool OnKeyboardPressed  (const KeyboardKey);
         virtual bool OnKeyboardReleased (const KeyboardKey);
@@ -84,6 +90,8 @@ class Border: public Decorator
         virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) const override;  
 
         virtual void PassTime           (const time_t delta_time);
+        
+        Transform GetTransform() const {return transform_;}
 
     private:
         void DrawTitle(sf::RenderTarget &target, const Transform &border_trf) const;
@@ -97,6 +105,9 @@ class Border: public Decorator
         const Title title_;
 
         Widget *decarable_;
+
+        Decorator_Status status_;
+        Dot hold_pos_;
 };
 
 #endif
