@@ -98,6 +98,12 @@ bool Window::OnKeyboardReleased(const KeyboardKey key)
     return false;
 }
 
+void Window::PassTime(const time_t delta_time)
+{
+    printf("Window: mouse keyboard kye released\n");
+    return;
+}
+
 //=======================================================================================
 // //CONTAINER WINDOW
 

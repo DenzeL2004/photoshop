@@ -10,7 +10,7 @@ Transform Transform::ApplyPrev(const Transform &prev) const
     return tmp;
 }
 
-Vector Transform::ApplyTransform(const Dot &pos) const
+Dot Transform::ApplyTransform(const Dot &pos) const
 {
     Dot tmp = pos - offset_;
     Dot res(tmp.GetX() / scale_.GetX(), tmp.GetY() / scale_.GetY());

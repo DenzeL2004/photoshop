@@ -3,3 +3,4 @@ obj
 tmp
 run
 src/container/list.h
+.vscode/settings.json

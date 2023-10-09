@@ -46,8 +46,11 @@ class Widget
         virtual bool OnKeyboardPressed  (const KeyboardKey) = 0;
         virtual bool OnKeyboardReleased (const KeyboardKey) = 0;
 
-        virtual void Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const = 0;  
+        virtual void Draw               (sf::RenderTarget &target, Container<Transform> &stack_transform) const = 0;  
+
+        virtual void PassTime           (const time_t delta_time) = 0;
 };
+
 
 
 // class WidgetManager: public Widget
