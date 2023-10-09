@@ -1,6 +1,8 @@
 #ifndef _WIDGET_H_
 #define _WIDGET_H_
 
+#include <SFML/System/Vector2.hpp>
+
 #include "../generals_func/generals.h"
 #include "../log_info/log_errors.h"
 
@@ -14,21 +16,22 @@ struct Transform
 {
     public:
         Transform():
-        offset_(0, 0), scale_(0, 0){}
+        offset(0, 0), scale(0, 0){}
 
         Transform (const Vector offset, const Vector scale):
-        offset_(offset), scale_(scale){}
+        offset(offset), scale(scale){}
 
         ~Transform(){}
 
         Transform (const Transform &other) = default;
         Transform& operator= (const Transform &other) = default;
 
-        Transform   ApplyPrev       (const Transform &prev) const;
-        Vector      ApplyTransform  (const Dot &pos)        const;
+        Transform   ApplyPrev         (const Transform &prev) const;
+        Vector      ApplyTransform    (const Dot &pos)        const;
+        sf::Vector2f    RollbackTransform (const Vector &vec)     const;
 
-        Vector offset_;
-        Vector scale_;
+        Vector offset;
+        Vector scale;
 
 };
 
@@ -41,9 +44,6 @@ class Widget
 {
 
     public:
-        Widget(){};
-        ~Widget(){};
-
         virtual bool OnMousePressed     (const MouseKey key, Container<Transform> &stack_transform) = 0;
         virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform) = 0;
         virtual bool OnMouseReleased    (const MouseKey key, Container<Transform> &stack_transform) = 0;
@@ -57,25 +57,6 @@ class Widget
 };
 
 
-
-// class WidgetManager: public Widget
-// {
-//     public:
-//         WidgetManager(): widgets_(){}
-//         virtual ~WidgetManager(){};
-
-//         virtual bool OnMousePressed     (const MouseKey key);
-//         virtual bool OnMouseMoved       (const int x, const int y);
-//         virtual bool OnMouseReleased    (const MouseKey key);
-
-//         virtual bool OnKeyboardPressed  (const KeyboardKey);
-//         virtual bool OnKeyboardReleased (const KeyboardKey);
-
-//         virtual void Draw(sf::RenderTarget &target) const;  
-
-        
-//         Container<Widget*> widgets_;
-// };
 
 
 

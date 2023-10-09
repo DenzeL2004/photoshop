@@ -3,6 +3,7 @@
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/System/Vector2.hpp>
 
 
 #include <unistd.h>

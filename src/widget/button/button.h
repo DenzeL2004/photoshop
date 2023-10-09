@@ -36,7 +36,6 @@ class Button : public Widget
         Button (const char *released_texture_file, const char *covered_texture_file, 
                 const char *pressed_texture_file,  const char *disabled_texture_file,
                 const Action *action, 
-                const double width, const double hieght, 
                 const Dot offset, const Vector scale);
 
         virtual ~Button()
@@ -73,8 +72,8 @@ class Button : public Widget
         Button_Status prev_status_;
 
     protected:
-        void DefineSprite(sf::Sprite &sprite) const;
-        Dot  GetScale(const Transform &transform) const;
+        const sf::Texture* DefineTexture() const;
+        void GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const;
 
         sf::Texture released_texture_, covered_texture_, 
                     pressed_texture_, disabled_texture_;

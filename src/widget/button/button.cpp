@@ -4,12 +4,11 @@
 Button::Button (const char *released_texture_file, const char *covered_texture_file, 
                 const char *pressed_texture_file,  const char *disabled_texture_file,
                 const Action *action, 
-                const double width, const double hieght, 
                 const Dot offset, const Vector scale):
                 action_(nullptr), status_(RELEASED), prev_status_(RELEASED),
                 released_texture_(), covered_texture_(), 
                 pressed_texture_(), disabled_texture_(), 
-                transform_(), width_(width), hieght_(hieght),
+                transform_({offset, scale}), width_(0), hieght_(0),
                 covering_time_(0)
 {
     assert(action != nullptr && "action is nullptr");
@@ -38,10 +37,8 @@ Button::Button (const char *released_texture_file, const char *covered_texture_f
         return;
     }
 
-    transform_.offset_ = offset;
-
-    transform_.scale_ = Vector(scale.GetX() / width_,
-                               scale.GetY() / hieght_);
+    width_  = released_texture_.getSize().x;
+    hieght_ = released_texture_.getSize().y;
 
     return;
 
@@ -52,75 +49,73 @@ Button::Button (const char *released_texture_file, const char *covered_texture_f
 void Button::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
-    Transform res_transform = stack_transform.GetBack();
+    Transform last_trf = stack_transform.GetBack();
 
-    sf::Sprite sprite = {};
-    DefineSprite(sprite);
+    sf::VertexArray vertex_array(sf::Quads, 4);
 
-    sprite.setPosition((float)res_transform.offset_.GetX(), (float)res_transform.offset_.GetY());
+    GetNewSize(vertex_array, last_trf);
     
-    Dot size = GetScale(res_transform);
-    sprite.setScale((float)size.GetX(),  (float)size.GetY());
-
-    target.draw(sprite);
+    target.draw(vertex_array, DefineTexture());
 
     stack_transform.PopBack();
 
     return;
 }
 
-Dot Button::GetScale(const Transform &transform) const
+void Button::GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const
 {
-    return Dot(transform.scale_.GetX() / released_texture_.getSize().x, 
-               transform.scale_.GetX() / released_texture_.getSize().y);
+    vertex_array[0].texCoords = sf::Vector2f(0, 0);
+    vertex_array[1].texCoords = sf::Vector2f((float)width_ - 1, 0);
+    vertex_array[2].texCoords = sf::Vector2f((float)width_ - 1, (float)hieght_ - 1);
+    vertex_array[3].texCoords = sf::Vector2f(0, (float)hieght_ - 1);
+    
+    vertex_array[0].position = transform.RollbackTransform({0, 0});
+    vertex_array[1].position = transform.RollbackTransform({1, 0});
+    vertex_array[2].position = transform.RollbackTransform({1, 1});
+    vertex_array[3].position = transform.RollbackTransform({0, 1});
+
+    return;
 }
 
-
-void Button::DefineSprite(sf::Sprite &sprite) const
+const sf::Texture* Button::DefineTexture() const
 {
     switch (status_)
     {
         case RELEASED:
-            sprite.setTexture(released_texture_);
-            break;
+            return &released_texture_;
 
         case PRESSED:
-            sprite.setTexture(pressed_texture_);
-            break;
+            return &pressed_texture_;
     
         case DISABLED:
-            sprite.setTexture(disabled_texture_);
-            break;
+            return &disabled_texture_;
 
         case COVERED:
-            sprite.setTexture(covered_texture_);
-            break;
+            return &covered_texture_;
 
         default:
             break;
     }
 
-    return;
+    return nullptr;
 }
 
 //================================================================================
 
 bool Button::CheckIn(const Dot &mouse_pos) const
 {
-    bool horizontal = (0 <= mouse_pos.GetX() && width_  >= mouse_pos.GetX());
-    bool vertical   = (0 <= mouse_pos.GetY() && hieght_ >= mouse_pos.GetY());
+    bool horizontal = (Eps < mouse_pos.x && 1 - Eps > mouse_pos.x);
+    bool vertical   = (Eps < mouse_pos.y && 1 - Eps > mouse_pos.y);
    
     return horizontal & vertical;
 }
 
 bool Button::OnMouseMoved(const int x, const int y, Container<Transform> &stack_transform)
 {
-    Dot mouse_coord((double)x, double(y));
-   
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
-    Transform res_transform = stack_transform.GetBack();
+    Transform last_trf = stack_transform.GetBack();
     
-    Dot new_coord = res_transform.ApplyTransform(mouse_coord);
+    Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
 
     bool flag = CheckIn(new_coord);
 
@@ -131,7 +126,7 @@ bool Button::OnMouseMoved(const int x, const int y, Container<Transform> &stack_
     }
     else
     {
-        if (covering_time_ > 0 && status_ != COVERED)
+        if (status_ != COVERED)
         {
             prev_status_ = status_;
             status_ = COVERED;

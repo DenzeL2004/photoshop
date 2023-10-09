@@ -12,25 +12,17 @@ class Vector
 {
     public:
     
-        Vector (const double x, const double y, const double z = 0.0): x_(x), y_(y), z_(z) {}
-        Vector (): x_(0.0), y_(0.0), z_(0.0) {}
+        Vector (const double x, const double y, const double z = 0.0): x(x), y(y), z(z) {}
+        Vector (): x(0.0), y(0.0), z(0.0) {}
 
-        Vector (const Vector &src): x_(src.x_), y_(src.y_), z_(src.z_) {} 
+        Vector (const Vector &src): x(src.x), y(src.y), z(src.z) {} 
 
         ~Vector ()
         {
-            x_ = NAN;
-            y_ = NAN;
-            z_ = NAN;
+            x = NAN;
+            y = NAN;
+            z = NAN;
         }
-
-        double GetX() const { return x_; }
-        double GetY() const { return y_; }
-        double GetZ() const { return z_; }
-
-        void SetX(const double x) { x_ = x; return;}
-        void SetY(const double y) { y_ = y; return;}
-        void SetZ(const double z) { z_ = z; return;}
 
         bool operator == (const Vector &other);
 
@@ -50,10 +42,10 @@ class Vector
         double  Len      () const;
 
 
-    private:     
-        double x_;
-        double y_;
-        double z_;
+        double x;
+        double y;
+        double z; 
+        
 };
 
 Vector operator + (const Vector &vec1, const Vector &vec2);

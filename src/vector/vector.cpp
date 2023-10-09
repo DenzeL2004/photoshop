@@ -4,9 +4,9 @@
 
 Vector& Vector::operator = (const Vector &other)
 {
-    this->x_ = other.x_;
-    this->y_ = other.y_;
-    this->z_ = other.z_;
+    this->x = other.x;
+    this->y = other.y;
+    this->z = other.z;
 
     return *this;
 }
@@ -15,9 +15,9 @@ Vector& Vector::operator = (const Vector &other)
 
 Vector& Vector::operator += (const Vector &other)
 {
-    this->x_ += other.x_;
-    this->y_ += other.y_;
-    this->z_ += other.z_;
+    this->x += other.x;
+    this->y += other.y;
+    this->z += other.z;
 
     return *this;
 }
@@ -26,9 +26,9 @@ Vector& Vector::operator += (const Vector &other)
 
 Vector& Vector::operator -= (const Vector &other)
 {
-    this->x_ -= other.x_;
-    this->y_ -= other.y_;
-    this->z_ -= other.z_;
+    this->x -= other.x;
+    this->y -= other.y;
+    this->z -= other.z;
 
     return *this;
 }
@@ -37,9 +37,9 @@ Vector& Vector::operator -= (const Vector &other)
 
 Vector& Vector::operator *= (const double scale)
 {
-    this->x_ *= scale;
-    this->y_ *= scale;
-    this->z_ *= scale;
+    this->x *= scale;
+    this->y *= scale;
+    this->z *= scale;
 
     return *this;
 }
@@ -48,9 +48,9 @@ Vector& Vector::operator *= (const double scale)
 
 Vector& Vector::operator /= (const double scale)
 {
-    this->x_ /= scale;
-    this->y_ /= scale;
-    this->z_ /= scale;
+    this->x /= scale;
+    this->y /= scale;
+    this->z /= scale;
 
     return *this;
 }
@@ -59,9 +59,9 @@ Vector& Vector::operator /= (const double scale)
 
 Vector& Vector::operator *= (const Vector &other)
 {
-    x_ *= other.x_;
-    y_ *= other.y_;
-    z_ *= other.z_;
+    x *= other.x;
+    y *= other.y;
+    z *= other.z;
 
     return *this;
 }
@@ -100,9 +100,9 @@ Vector Vector::Normal () const
 
 double Vector::Dot (const Vector &vec) const
 {
-    return  vec.x_ * this->x_ + 
-            vec.y_ * this->y_ +
-            vec.z_ * this->z_;
+    return  vec.x * this->x + 
+            vec.y * this->y +
+            vec.z * this->z;
 }
 
 //=======================================================================
@@ -157,7 +157,7 @@ Vector operator / (const Vector &vec, const double scale)
 
 Vector Vector::Orthogonal () const
 {
-    Vector res(-this->GetY(), this->GetX());
+    Vector res(-this->y, this->x);
     return res;
 }
 
@@ -177,7 +177,7 @@ Vector Vector::Reflection (const Vector &other) const
 
 bool  Vector::operator == (const Vector &other)
 {
-    return  EqualityDouble(this->GetX(), other.GetX()) &&
-            EqualityDouble(this->GetY(), other.GetY()) &&
-            EqualityDouble(this->GetZ(), other.GetZ());
+    return  EqualityDouble(this->x, other.x) &&
+            EqualityDouble(this->y, other.y) &&
+            EqualityDouble(this->z, other.z);
 }

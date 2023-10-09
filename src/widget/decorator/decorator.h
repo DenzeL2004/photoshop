@@ -22,15 +22,17 @@ class Decorator: public Widget
 
         virtual void PassTime           (const time_t delta_time) = 0;
 
-        void SetOffset  (const Dot &offset);
+        void Move       (const Dot &offset);
 
         bool CheckIn    (const Dot &mouse_pos) const;
 
         double GetWidth()  const {return width_;}
         double GetHieght() const {return hieght_;}
 
-    private:
-       
+    protected:
+
+        void GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const;
+
         Transform transform_;
 
         double width_, hieght_;
@@ -38,18 +40,17 @@ class Decorator: public Widget
         sf::Texture background_;
 
         const Widget *decarable_;
-
 };
 
-
 //=================================================================================================
+
 struct Title
 {
     Title():
-    msg_(nullptr),  color_(sf::Color::Black){}
+    msg_(""),  len_msg_(0), color_(sf::Color::Black){}
 
     Title(const char *msg, const sf::Color &color):
-    msg_(msg),  color_(color){}
+    msg_(msg), len_msg_(strlen(msg)), color_(color){}
 
     ~Title(){} 
 
@@ -57,8 +58,9 @@ struct Title
 
     virtual Title& operator= (const Title &other) = default;
 
-    const char* msg_ = nullptr;
-    const sf::Color color_ = sf::Color::Black;
+    const char* msg_;
+    size_t len_msg_;
+    const sf::Color color_;
 
 };
 
@@ -66,8 +68,8 @@ class Border: public Decorator
 {
 
     public:
-        Border  (const char *path_texture, const Button* close_button,
-                 const Title &title, const Widget *decarable,
+        Border  (const char *path_texture, Button* close_button,
+                 const Title &title, Widget *decarable,
                  const Dot offset, const Vector scale);
 
         virtual ~Border(){}
@@ -84,17 +86,17 @@ class Border: public Decorator
         virtual void PassTime           (const time_t delta_time);
 
     private:
-        Dot GetScale(const Transform &transform) const;
-
+        void DrawTitle(sf::RenderTarget &target, const Transform &border_trf) const;
+       
         Transform transform_;
         double width_, hieght_;
         
         sf::Texture background_;
 
-        const Button* close_button_;
+        Button* close_button_;
         const Title title_;
 
-        const Widget *decarable_;
+        Widget *decarable_;
 };
 
 #endif

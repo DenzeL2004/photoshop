@@ -19,12 +19,12 @@ int main()
     
 
     Button close_button("src/img/CloseResCrossReleased.png", "src/img/CloseResCrossCovered.png",
-                        "src/img/CloseResCrossCovered.png", "src/img/CloseResCrossCovered.png", new Click(),
-                        30.0, 30.0, Dot(1.0, 1.0), Vector(0.5, 0.5));
+                        "src/img/CloseResCrossReleased.png", "src/img/CloseResCrossCovered.png", new Click(),
+                        Dot(0.98, 0.0), Vector(0.02, 0.025));
 
-    Window canvas("src/img/border.png", 40.0, 40.0, Dot(0.5, 0.5), Vector(0.8, 0.8));
+    Window canvas("src/img/canvas.png", {0.005, 0.03}, Vector(0.99, 0.91));
 
-    Border border("src/img/border.png", &close_button, Title("border wwwwwwwwwwww", sf::Color::Cyan), &canvas, Dot(0.0, 0.0), Vector(0.5, 0.2));
+    Border border("src/img/border.png", &close_button, Title("window manager", sf::Color::Black), &canvas, Dot(0.0, 0.0), Vector(0.85, 0.9));
 
     Container<Transform> stack;
     stack.PushBack(Transform({0.0, 0.0}, {WEIDTH, HIEGHT}));
@@ -41,14 +41,13 @@ int main()
                 window.close();
         }
 
-        // close_button.PassTime(timer.getElapsedTime().asMicroseconds());
-        // close_button.OnMouseMoved(event.mouseMove.x, event.mouseMove.y, stack);
-        // close_button.Draw(window, stack);        
 
+        border.OnMouseMoved(event.mouseMove.x, event.mouseMove.y, stack);
         border.Draw(window, stack);
 
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
         {
+            
             if (close_button.OnMousePressed(Left, stack))
                 printf("true\n");
         }

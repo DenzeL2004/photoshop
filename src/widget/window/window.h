@@ -11,7 +11,7 @@ class Window : public Widget
 
     public:
 
-        Window  (const char *path_texture, const double width, const double hieght,  
+        Window  (const char *path_texture,
                  const Dot offset, const Vector scale);
         virtual ~Window(){}
 
@@ -26,15 +26,15 @@ class Window : public Widget
 
         virtual void PassTime           (const time_t delta_time);
 
-        void SetOffset  (const Dot &offset);
+        void Move       (const Dot &offset);
 
         bool CheckIn    (const Dot &mouse_pos);
 
         double GetWidth()  const {return width_;}
         double GetHieght() const {return hieght_;}
 
-    private:
-        Dot GetScale(const Transform &transform) const;
+    protected:
+        void GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const;
        
         Transform transform_;
 

@@ -1,30 +1,49 @@
 #include "decorator.h"
 
+const Dot Offset_Title = Dot(0.45, 0.0);
+const double Scale_Title  = 0.02;
+
 //=================================================================================================
 
-
-
-void Decorator::SetOffset(const Dot &offset)
+void Decorator::Move(const Dot &offset)
 {
-    transform_.offset_ = offset;
+    transform_.offset += offset;
     return;
 }
 
 
 bool Decorator::CheckIn(const Dot &mouse_pos) const
 {
-    bool horizontal = (0 <= mouse_pos.GetX() && 1  >= mouse_pos.GetX());
-    bool vertical   = (0 <= mouse_pos.GetY() && 1 >= mouse_pos.GetY());
+    bool horizontal = (Eps < mouse_pos.x && 1 - Eps > mouse_pos.x);
+    bool vertical   = (Eps < mouse_pos.y && 1 - Eps > mouse_pos.y);
    
     return horizontal & vertical;
 }
 
+
+void Decorator::GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const
+{
+    
+    vertex_array[0].texCoords = sf::Vector2f(0, 0);
+    vertex_array[1].texCoords = sf::Vector2f((float)width_ - 1, 0);
+    vertex_array[2].texCoords = sf::Vector2f((float)width_ - 1, (float)hieght_ - 1);
+    vertex_array[3].texCoords = sf::Vector2f(0, (float)hieght_ - 1);
+    
+    vertex_array[0].position = transform.RollbackTransform({0, 0});
+    vertex_array[1].position = transform.RollbackTransform({1, 0});
+    vertex_array[2].position = transform.RollbackTransform({1, 1});
+    vertex_array[3].position = transform.RollbackTransform({0, 1});
+
+    return;
+}
+
 //=================================================================================================
 
-Border::Border( const char *path_texture, const Button* close_button,
-                const Title &title, const Widget *decarable,
+Border::Border( const char *path_texture, Button* close_button,
+                const Title &title, Widget *decarable,
                 const Dot offset, const Vector scale):
-                transform_(), background_(), 
+                transform_({offset, scale}),
+                width_(0), hieght_(0), background_(), 
                 title_(title), close_button_(close_button), decarable_(decarable)
 {
     assert(close_button != nullptr && "close button is nullptr");
@@ -36,10 +55,8 @@ Border::Border( const char *path_texture, const Button* close_button,
         return;
     }
 
-    transform_.offset_ = offset;
-
-    transform_.scale_ = Vector(scale.GetX(),
-                               scale.GetY());
+    width_  = background_.getSize().x;
+    hieght_ = background_.getSize().y;
 
     return;
 }
@@ -47,19 +64,15 @@ Border::Border( const char *path_texture, const Button* close_button,
 void Border::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
-    Transform res_transform = stack_transform.GetBack();
+    Transform last_trf = stack_transform.GetBack();
     
-    sf::Sprite sprite;
-    sprite.setTexture(background_);
+    sf::VertexArray vertex_array(sf::Quads, 4);
 
-    sprite.setPosition((float)res_transform.offset_.GetX(), (float)res_transform.offset_.GetY());
+    GetNewSize(vertex_array, last_trf);
+    
+    target.draw(vertex_array, &background_);
 
-    Dot size = GetScale(res_transform);
-    sprite.setScale((float)size.GetX(),  (float)size.GetY());
-
-    target.draw(sprite);
-
-    WriteText(target, res_transform.offset_, title_.msg_, Oldtimer_font_path, 15u, title_.color_);
+    DrawTitle(target, last_trf);
     close_button_->Draw(target, stack_transform);
 
     decarable_->Draw(target, stack_transform);
@@ -68,24 +81,30 @@ void Border::Draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
     return;
 }
 
-Dot Border::GetScale(const Transform &transform) const
+//================================================================================
+
+void Border::DrawTitle(sf::RenderTarget &target, const Transform &border_trf) const
 {
-    return Dot(transform.scale_.GetX() / background_.getSize().x, 
-               transform.scale_.GetY() / background_.getSize().y);
+    sf::Vector2f new_coord =  border_trf.RollbackTransform(Offset_Title);
+    WriteText(target, Dot(new_coord.x - title_.len_msg_, new_coord.y), title_.msg_, 
+              Oldtimer_font_path, (uint32_t)(border_trf.scale.y * Scale_Title), title_.color_);
+
+    return;
 }
 
 //================================================================================
 
 bool Border::OnMouseMoved(const int x, const int y, Container<Transform> &stack_transform)
 {
-    Dot mouse_coord((double)x, double(y));
-   
-    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
-    Transform res_transform = stack_transform.GetBack();
-    
-    Dot new_coord = res_transform.ApplyTransform(mouse_coord);
+   stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform last_trf = stack_transform.GetBack();
 
-    bool flag = CheckIn(new_coord);
+
+    bool flag  = close_button_->OnMouseMoved(x, y, stack_transform);
+         flag |= decarable_->OnMouseMoved(x, y, stack_transform);
+
+    Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
+         flag |= CheckIn(new_coord);   
 
     stack_transform.PopBack();
 

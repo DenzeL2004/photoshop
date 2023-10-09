@@ -4,18 +4,25 @@
 
 Transform Transform::ApplyPrev(const Transform &prev) const
 {
-    Dot new_pos = prev.offset_ + Vector(prev.scale_.GetX() * offset_.GetX(), prev.scale_.GetY() * offset_.GetY());
-    Transform tmp(new_pos, Vector(scale_.GetX() * prev.scale_.GetX(), scale_.GetY() * prev.scale_.GetY()));
+    Dot new_pos = prev.offset + Vector(prev.scale.x * offset.x, prev.scale.y * offset.y);
+    Transform res(new_pos, {scale.x * prev.scale.x, scale.y * prev.scale.y});
 
-    return tmp;
+    return res;
 }
 
 Dot Transform::ApplyTransform(const Dot &pos) const
 {
-    Dot tmp = pos - offset_;
-    Dot res(tmp.GetX() / scale_.GetX(), tmp.GetY() / scale_.GetY());
+    Dot res = pos - offset;
+    
+    res.x /= scale.x;
+    res.y /= scale.y;
 
     return res;
+}
+
+sf::Vector2f Transform::RollbackTransform (const Vector &vec) const
+{
+    return sf::Vector2f(vec.x * scale.x + offset.x, vec.y * scale.y + offset.y);
 }
 
 

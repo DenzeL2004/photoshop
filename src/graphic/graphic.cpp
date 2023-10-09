@@ -8,8 +8,8 @@ void DrawLine(sf::RenderTarget &window,
 {
     sf::Vertex line[] =
     {
-        sf::Vertex(sf::Vector2f((float)dot_begin.GetX(), (float)dot_begin.GetY()), color_line),
-        sf::Vertex(sf::Vector2f((float)dot_end.GetX(), (float)dot_end.GetY()), color_line)
+        sf::Vertex(sf::Vector2f((float)dot_begin.x, (float)dot_begin.y), color_line),
+        sf::Vertex(sf::Vector2f((float)dot_end.x, (float)dot_end.y), color_line)
     };
 
     window.draw(line, 2, sf::Lines);
@@ -28,7 +28,7 @@ void DrawCircle(sf::RenderTarget &window, const Dot &pos,
     sf::CircleShape circle(radius);
     circle.setFillColor(color);
 
-    circle.setPosition((float)pos.GetX(), (float)pos.GetY());
+    circle.setPosition((float)pos.x, (float)pos.y);
 
     window.draw(circle);
 
@@ -43,14 +43,14 @@ void DrawRectangle(sf::RenderTarget &window,
                    const Dot &left_up, const Dot &right_down, const sf::Color color)
 {
 
-    float hieght = (float)(right_down.GetY() - left_up.GetY());
-    float width  = (float)(right_down.GetX() - left_up.GetX());
+    float hieght = (float)(right_down.y - left_up.y);
+    float width  = (float)(right_down.x - left_up.x);
 
     sf::RectangleShape rectangle;
     rectangle.setSize({ width, hieght});
     rectangle.setFillColor(color);
 
-    rectangle.setPosition((float)left_up.GetX(), (float)left_up.GetY());
+    rectangle.setPosition((float)left_up.x, (float)left_up.y);
 
     window.draw(rectangle);
 
@@ -69,7 +69,7 @@ void DrawPixel(sf::RenderTarget &window, const Dot &pos, const sf::Color color)
     pixel.setFillColor(color);
 
 
-    pixel.setPosition((float)pos.GetX(), (float)pos.GetY());
+    pixel.setPosition((float)pos.x, (float)pos.y);
 
     window.draw(pixel);
     
@@ -97,7 +97,7 @@ void WriteText (sf::RenderTarget &window, const Dot &pos,
     sf::Text text(msg, font, text_size);
     text.setFillColor(color);
 
-    text.setPosition((float)pos.GetX(), (float)pos.GetY());
+    text.setPosition((float)pos.x, (float)pos.y);
     
     window.draw(text);
     
