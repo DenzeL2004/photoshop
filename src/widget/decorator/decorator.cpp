@@ -116,10 +116,6 @@ uint8_t Frame::ClickOnBorder(double x, double y, const Transform &Last_transform
     tmp = right_border_.ApplyPrev(Last_transform);
     new_coord = tmp.ApplyTransform({x, y});
     if (CheckIn(new_coord)) mask |= Frame::Borders::Right;
-    
-    // tmp = top_border_.ApplyPrev(Last_transform);
-    // new_coord = tmp.ApplyTransform({x, y});
-    // if (CheckIn(new_coord)) mask |= Frame::Borders::Top;
 
     tmp = bottom_border_.ApplyPrev(Last_transform);
     new_coord = tmp.ApplyTransform({x, y});
@@ -220,6 +216,9 @@ bool Frame::OnMouseReleased(const double x, const double y, const MouseKey key, 
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
+
+    close_button_->OnMouseReleased(x, y, key, stack_transform);
+    decarable_->OnMouseReleased(x, y, key, stack_transform);
 
     state_ = Default;
 

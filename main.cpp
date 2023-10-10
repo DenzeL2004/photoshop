@@ -23,7 +23,9 @@ int main()
                         "src/img/CloseResCrossReleased.png", "src/img/CloseResCrossCovered.png", new Click(&close_window),
                         Dot(0.98, 0.0), Vector(0.02, 0.025));
 
-    Canvase canvas(2000, 2000, {0.025, 0.03}, Vector(0.95, 0.91)); 
+    Tool tool(Tool::Pen, sf::Color::Black, 10);
+
+    Canvase canvas(2000, 2000, &tool, {0.025, 0.03}, Vector(0.95, 0.91)); 
 
     Frame border("src/img/border.png", &close_button, Title("window manager", sf::Color::Black), &canvas, Dot(0.0, 0.0), Vector(0.5, 0.5));
 

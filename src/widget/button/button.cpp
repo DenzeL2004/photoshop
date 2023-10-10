@@ -172,8 +172,7 @@ bool Button::OnMouseReleased(const double x, const double y, const MouseKey key,
     if (state_ == DISABLED)
         return false;
 
-    printf("Button: mouse released\n");
-    return false;
+    return true;
 }
 
 bool Button::OnKeyboardPressed(const KeyboardKey key)

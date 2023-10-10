@@ -55,18 +55,22 @@ class Tool
             Hold, 
         };
 
-        Tool(const Tool::Type type, const sf::Color color):
-            type_(type), state_(Default), color_(color){}
+        Tool(const Tool::Type type, const sf::Color color, const float thickness):
+            type_(type), state_(Default), color_(color), thickness_(thickness), 
+            hold_pos_(0.0, 0.0){}
 
         ~Tool(){}
+
+        void Draw(sf::RenderTarget &target, const Dot &pos);
 
         Tool::Type type_;
         Tool::State state_;
 
         sf::Color color_;
 
-    private:
+        float thickness_;
 
+        Dot hold_pos_;
         
 };
 
@@ -93,6 +97,7 @@ class Canvase : public Widget
 
     private:
         void GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const;
+        Dot GetCanvaseCoord(double x, double y, const Transform &transform) const;
         
         Transform transform_;
         double width_, hieght_;

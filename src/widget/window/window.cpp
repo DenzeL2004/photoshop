@@ -116,6 +116,27 @@ void Window::PassTime(const time_t delta_time)
 }
 
 //=======================================================================================
+
+void Tool::Draw(sf::RenderTarget &target, const Dot &pos)
+{
+    switch (type_)
+    {
+        case Tool::Type::Pen:
+            DrawPixel(target, pos, color_);
+            break;
+
+        case Tool::Type::Brash:
+            DrawCircle(target, pos, thickness_, color_);
+            break;
+        
+        default:
+            break;
+    }
+
+    return;
+}
+
+//=======================================================================================
 //CANVASE
 Canvase::Canvase(const double width, const double hieght, Tool *tool, 
                  const Dot &offset, const Vector &scale):
@@ -181,6 +202,13 @@ bool Canvase::OnMouseMoved(const double x, const double y, Container<Transform> 
     Dot new_coord = last_trf.ApplyTransform({x, y});
 
     bool flag = CheckIn(new_coord);
+    if (flag)
+    {
+        if (tool_->state_ == Tool::State::Hold)
+        {
+            tool_->Draw(background_, GetCanvaseCoord(x, y, last_trf));
+        }
+    }
 
     stack_transform.PopBack();
 
@@ -199,7 +227,8 @@ bool Canvase::OnMousePressed(const double x, const double y, const MouseKey key,
     bool flag = CheckIn(new_coord);
     if (flag)
     {
-        DrawCircle(background_, {real_pos_.x + x - last_trf.offset.x, hieght_ - (real_pos_.y + y - last_trf.offset.y)}, 50, sf::Color::Cyan);
+        tool_->state_ = Tool::State::Hold;
+        tool_->hold_pos_ = GetCanvaseCoord(x, y, stack_transform.GetBack());
     }
 
     stack_transform.PopBack();
@@ -207,11 +236,27 @@ bool Canvase::OnMousePressed(const double x, const double y, const MouseKey key,
     return flag;
 }
 
+//================================================================================
 
 bool Canvase::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
-    
-    return false;
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+
+    if (tool_->state_ == Tool::State::Hold && tool_->type_ == Tool::Type::Pen)
+    {
+        tool_->Draw(background_, GetCanvaseCoord(x, y, stack_transform.GetBack()));
+    }
+
+    tool_->state_ = Tool::State::Default;
+
+    stack_transform.PopBack();
+
+    return true;
+}
+
+Dot Canvase::GetCanvaseCoord(double x, double y, const Transform &transform) const
+{
+    return Dot(real_pos_.x + x - transform.offset.x, hieght_ - (real_pos_.y + y - transform.offset.y));
 }
 
 //================================================================================
