@@ -5,7 +5,7 @@
 #include "src/widget/decorator/decorator.h"
 
 const double WEIDTH = 1600.0; 
-const double HIEGHT = 1200.0;
+const double HIEGHT = 900.0;
 
 int main()
 {
@@ -14,7 +14,7 @@ int main()
             return OPEN_FILE_LOG_ERR;
     #endif
 
-    sf::RenderWindow window(sf::VideoMode(WEIDTH, HIEGHT), "window manager");
+    sf::RenderWindow window(sf::VideoMode((uint32_t)WEIDTH, (uint32_t)HIEGHT), "window manager");
 
     
 
@@ -23,9 +23,9 @@ int main()
                         "src/img/CloseResCrossReleased.png", "src/img/CloseResCrossCovered.png", new Click(&close_window),
                         Dot(0.98, 0.0), Vector(0.02, 0.025));
 
-    Window canvas("src/img/canvas.png", {0.005, 0.03}, Vector(0.99, 0.91)); 
+    Canvase canvas(2000, 2000, {0.025, 0.03}, Vector(0.95, 0.91)); 
 
-    Border border("src/img/border.png", &close_button, Title("window manager", sf::Color::Black), &canvas, Dot(0.0, 0.0), Vector(1.15, 1));
+    Frame border("src/img/border.png", &close_button, Title("window manager", sf::Color::Black), &canvas, Dot(0.0, 0.0), Vector(0.5, 0.5));
 
     Container<Transform> stack;
     stack.PushBack(Transform({0.0, 0.0}, {WEIDTH, HIEGHT}));

@@ -36,7 +36,7 @@ class Button : public Widget
         Button (const char *released_texture_file, const char *covered_texture_file, 
                 const char *pressed_texture_file,  const char *disabled_texture_file,
                 const Action *action, 
-                const Dot offset, const Vector scale);
+                const Dot &offset, const Vector &scale);
 
         virtual ~Button()
         {
@@ -48,9 +48,9 @@ class Button : public Widget
 
         virtual Button& operator= (const Button &other) = delete;
 
-        virtual bool OnMousePressed     (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform);
-        virtual bool OnMouseReleased    (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);
+        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
 
         virtual bool OnKeyboardPressed  (const KeyboardKey);
         virtual bool OnKeyboardReleased (const KeyboardKey);
@@ -59,13 +59,14 @@ class Button : public Widget
         
         virtual void PassTime           (const time_t delta_time);
 
-        bool CheckIn (const Dot &mouse_pos) const;
+        void Move       (const Dot &offset) {transform_.offset += offset;};
 
         Transform GetTransform() const {return transform_;}
 
         const Action *action_;
 
     protected:
+
         const sf::Texture* DefineTexture() const;
         void GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const;
 

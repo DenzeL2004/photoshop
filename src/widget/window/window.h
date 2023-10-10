@@ -10,14 +10,13 @@ class Window : public Widget
 {
 
     public:
-
         Window  (const char *path_texture,
-                 const Dot offset, const Vector scale);
+                 const Dot &offset, const Vector &scale);
         virtual ~Window(){}
 
-        virtual bool OnMousePressed     (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform);
-        virtual bool OnMouseReleased    (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);
+        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
 
         virtual bool OnKeyboardPressed  (const KeyboardKey);
         virtual bool OnKeyboardReleased (const KeyboardKey);
@@ -26,12 +25,7 @@ class Window : public Widget
 
         virtual void PassTime           (const time_t delta_time);
 
-        void Move       (const Dot &offset);
-
-        bool CheckIn    (const Dot &mouse_pos);
-
-        double GetWidth()  const {return width_;}
-        double GetHieght() const {return hieght_;}
+        void Move       (const Dot &offset) {transform_.offset += offset;};
 
         Transform GetTransform() const {return transform_;}
 
@@ -46,27 +40,94 @@ class Window : public Widget
 
 };
 
+class Tool
+{
+    public:
+        enum Type
+        {
+            Pen, 
+            Brash,
+        };
+
+        enum State
+        {
+            Default,
+            Hold, 
+        };
+
+        Tool(const Tool::Type type, const sf::Color color):
+            type_(type), state_(Default), color_(color){}
+
+        ~Tool(){}
+
+        Tool::Type type_;
+        Tool::State state_;
+
+        sf::Color color_;
+
+    private:
+
+        
+};
+
+class Canvase : public Widget
+{
+
+    public:
+        
+        Canvase (const double width, const double hieght, Tool *tool,  
+                 const Dot &offset, const Vector &scale);
+        
+        virtual ~Canvase(){}
+
+        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);
+        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
+
+        virtual bool OnKeyboardPressed  (const KeyboardKey);
+        virtual bool OnKeyboardReleased (const KeyboardKey);
+
+        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) const override;  
+
+        virtual void PassTime           (const time_t delta_time);
+
+    private:
+        void GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const;
+        
+        Transform transform_;
+        double width_, hieght_;
+        sf::RenderTexture background_;
+
+        Tool *tool_;
+
+        Dot real_pos_;
+
+};
+
 class CanvaseManager : public Window
 {
 
     public:
 
-        CanvaseManager(const char *path_texture,
+        CanvaseManager (const char *path_texture,
                         const Dot offset, const Vector scale):Window(path_texture, offset, scale), 
                         canvases_(), delte_canvase_(false){}
-        ~CanvaseManager(){};
+        ~CanvaseManager()
+        {
+            size_t size = canvases_.GetSize();
+            for (size_t it = 0; it < size; it++)
+                delete canvases_[it];
+        };
 
-        virtual bool OnMousePressed     (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform);
-        virtual bool OnMouseReleased    (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);
+        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
 
         virtual bool OnKeyboardPressed  (const KeyboardKey);
         virtual bool OnKeyboardReleased (const KeyboardKey);
 
 
         virtual void Draw               (sf::RenderTarget &target, Container<Transform> &stack_transform) const;
-
-        //virtual void PassTime           (const time_t delta_time);
 
     private:
         Container<Widget*> canvases_;

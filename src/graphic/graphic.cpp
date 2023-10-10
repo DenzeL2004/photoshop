@@ -28,7 +28,7 @@ void DrawCircle(sf::RenderTarget &window, const Dot &pos,
     sf::CircleShape circle(radius);
     circle.setFillColor(color);
 
-    circle.setPosition((float)pos.x, (float)pos.y);
+    circle.setPosition((float)pos.x - radius, (float)pos.y - radius);
 
     window.draw(circle);
 

@@ -44,9 +44,9 @@ class Widget
 {
 
     public:
-        virtual bool OnMousePressed     (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform) = 0;
-        virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform) = 0;
-        virtual bool OnMouseReleased    (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform) = 0;
+        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform) = 0;
+        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform) = 0;
+        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform) = 0;
 
         virtual bool OnKeyboardPressed  (const KeyboardKey) = 0;
         virtual bool OnKeyboardReleased (const KeyboardKey) = 0;
@@ -60,5 +60,6 @@ class Widget
 void EventAdapter (Widget &widget, int mouse_x, int mouse_y, sf::Event &event, Container<Transform> &stack_transform);
 
 
+bool CheckIn(const Dot &mouse_pos);
 
 #endif

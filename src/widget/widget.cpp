@@ -33,7 +33,7 @@ void EventAdapter(Widget &widget, int mouse_x, int mouse_y, sf::Event &event, Co
 {
     if (event.type == sf::Event::MouseMoved)
     {
-        widget.OnMouseMoved(mouse_x, mouse_y, stack_transform);
+        widget.OnMouseMoved((double)mouse_x, (double)mouse_y, stack_transform);
     }
     else
     {
@@ -42,10 +42,10 @@ void EventAdapter(Widget &widget, int mouse_x, int mouse_y, sf::Event &event, Co
             
             MouseKey mouse_key = GetMouseKey(event);
             if (event.type == sf::Event::MouseButtonPressed)
-                widget.OnMousePressed(mouse_x, mouse_y, mouse_key, stack_transform);
+                widget.OnMousePressed((double)mouse_x, (double)mouse_y, mouse_key, stack_transform);
             
             if (event.type == sf::Event::MouseButtonReleased)
-                widget.OnMouseReleased(mouse_x, mouse_y, mouse_key, stack_transform);
+                widget.OnMouseReleased((double)mouse_x, (double)mouse_y, mouse_key, stack_transform);
         }
     }
 
@@ -67,4 +67,13 @@ static MouseKey GetMouseKey(sf::Event &event)
     }
 
     return MouseKey::Nothing;
+}
+
+
+bool CheckIn(const Dot &mouse_pos)
+{
+    bool horizontal = (Eps < mouse_pos.x && 1 - Eps > mouse_pos.x);
+    bool vertical   = (Eps < mouse_pos.y && 1 - Eps > mouse_pos.y);
+   
+    return horizontal & vertical;
 }

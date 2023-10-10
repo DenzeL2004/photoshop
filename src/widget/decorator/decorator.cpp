@@ -3,27 +3,9 @@
 const Dot Offset_Title = Dot(0.45, 0.0);
 const double Scale_Title  = 0.02;
 
-//=================================================================================================
 
-void Decorator::Move(const Dot &offset)
+void Frame::GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const
 {
-    transform_.offset += offset;
-    return;
-}
-
-
-bool Decorator::CheckIn(const Dot &mouse_pos) const
-{
-    bool horizontal = (Eps < mouse_pos.x && 1 - Eps > mouse_pos.x);
-    bool vertical   = (Eps < mouse_pos.y && 1 - Eps > mouse_pos.y);
-   
-    return horizontal & vertical;
-}
-
-
-void Decorator::GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const
-{
-    
     vertex_array[0].texCoords = sf::Vector2f(0, 0);
     vertex_array[1].texCoords = sf::Vector2f((float)width_ - 1, 0);
     vertex_array[2].texCoords = sf::Vector2f((float)width_ - 1, (float)hieght_ - 1);
@@ -39,13 +21,15 @@ void Decorator::GetNewSize(sf::VertexArray &vertex_array, const Transform &trans
 
 //=================================================================================================
 
-Border::Border( const char *path_texture, Button* close_button,
+Frame::Frame( const char *path_texture, Button* close_button,
                 const Title &title, Widget *decarable,
-                const Dot offset, const Vector scale):
+                const Dot &offset, const Vector &scale):
                 transform_({offset, scale}),
                 width_(0), hieght_(0), background_(), 
                 title_(title), close_button_(close_button), decarable_(decarable), 
-                state_(DEFAULT), hold_pos_({0.0, 0.0})
+                state_(Default), hold_pos_({0.0, 0.0}),
+                left_border_(Left_Border),   top_border_(Top_Border),
+                right_border_(Right_Border), bottom_border_(Bottom_Border)
 {
     assert(close_button != nullptr && "close button is nullptr");
     assert(decarable    != nullptr && "decarable is nullptr");
@@ -62,7 +46,7 @@ Border::Border( const char *path_texture, Button* close_button,
     return;
 }
 
-void Border::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
+void Frame::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
@@ -84,7 +68,7 @@ void Border::Draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
 
 //================================================================================
 
-void Border::DrawTitle(sf::RenderTarget &target, const Transform &border_trf) const
+void Frame::DrawTitle(sf::RenderTarget &target, const Transform &border_trf) const
 {
     sf::Vector2f new_coord =  border_trf.RollbackTransform(Offset_Title);
     WriteText(target, Dot(new_coord.x - title_.len_msg_, new_coord.y), title_.msg_, 
@@ -95,7 +79,7 @@ void Border::DrawTitle(sf::RenderTarget &target, const Transform &border_trf) co
 
 //================================================================================
 
-bool Border::OnMouseMoved(const int x, const int y, Container<Transform> &stack_transform)
+bool Frame::OnMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
@@ -103,35 +87,109 @@ bool Border::OnMouseMoved(const int x, const int y, Container<Transform> &stack_
     close_button_->OnMouseMoved(x, y, stack_transform);
     decarable_->OnMouseMoved(x, y, stack_transform);
 
-    Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
+    Dot new_coord = last_trf.ApplyTransform({x, y});
     
-    if(state_ == HOLD)
+    if(state_ == Hold)
     {
-        Vector delta = new_coord - hold_pos_;
-        
-        delta.x *= transform_.scale.x;
-        delta.y *= transform_.scale.y;
 
-        transform_.offset += delta;
-        if (transform_.offset.x < Eps                           || transform_.offset.y < Eps ||
-            transform_.offset.x + transform_.scale.x > 1 - Eps  || transform_.offset.y + transform_.scale.y > 1 - Eps)
-            transform_.offset -= delta;
+        uint8_t mask = ClickOnBorder(x, y, last_trf);
+        if (mask)
+            Scale(new_coord, mask);
+        else
+            Move(new_coord);        
     }  
     
-
     stack_transform.PopBack();
 
     return true;
 }
 
 //================================================================================
+uint8_t Frame::ClickOnBorder(double x, double y, const Transform &Last_transform) const
+{
+    uint8_t mask = 0;
 
-bool Border::OnMousePressed(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
+    Transform tmp = left_border_.ApplyPrev(Last_transform);
+    Dot new_coord = tmp.ApplyTransform({x, y});
+    if (CheckIn(new_coord)) mask |= Frame::Borders::Left;
+
+    tmp = right_border_.ApplyPrev(Last_transform);
+    new_coord = tmp.ApplyTransform({x, y});
+    if (CheckIn(new_coord)) mask |= Frame::Borders::Right;
+    
+    // tmp = top_border_.ApplyPrev(Last_transform);
+    // new_coord = tmp.ApplyTransform({x, y});
+    // if (CheckIn(new_coord)) mask |= Frame::Borders::Top;
+
+    tmp = bottom_border_.ApplyPrev(Last_transform);
+    new_coord = tmp.ApplyTransform({x, y});
+    if (CheckIn(new_coord)) mask |= Frame::Borders::Bottom;
+    
+    return mask;
+}
+
+
+void Frame::Scale(const Dot &new_coord, uint8_t mask)
+{
+
+    if (transform_.scale.x <= Scale_Limit.x + Eps || transform_.scale.y <= Scale_Limit.y + Eps)
+        return;
+    Vector delta = new_coord - hold_pos_;
+    
+    delta.x *= transform_.scale.x;
+    delta.y *= transform_.scale.y;
+    
+    Dot cur = transform_.offset;
+    
+    if (mask & Frame::Borders::Left || mask & Frame::Borders::Right)
+    {
+        if (mask & Frame::Borders::Left) 
+        {
+            Move({new_coord.x, hold_pos_.y});
+            if (transform_.offset == cur) return;   
+            delta.x *= -1.0;
+        }
+
+        if (transform_.offset.x + transform_.scale.x + delta.x < 1 - Eps && 
+            transform_.scale.x + delta.x > Scale_Limit.x + Eps)
+            transform_.scale.x += delta.x;
+    }
+
+    if (mask & Frame::Borders::Bottom)
+    {
+        if (transform_.offset.y + transform_.scale.y + delta.y < 1 - Eps && 
+            transform_.scale.y + delta.y > Scale_Limit.y + Eps)
+            transform_.scale.y += delta.y;
+    }
+
+    return;
+}
+
+
+void Frame::Move(const Dot &new_coord)
+{
+    Vector delta = new_coord - hold_pos_;
+        
+    delta.x *= transform_.scale.x;
+    delta.y *= transform_.scale.y;
+
+    transform_.offset += delta;
+    if (transform_.offset.x < Eps                           || transform_.offset.y < Eps ||
+        transform_.offset.x + transform_.scale.x > 1 - Eps  || transform_.offset.y + transform_.scale.y > 1 - Eps)
+        transform_.offset -= delta;
+
+    return;
+}
+
+
+//================================================================================
+
+bool Frame::OnMousePressed(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
 
-    Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
+    Dot new_coord = last_trf.ApplyTransform({x, y});
 
     bool flag = CheckIn(new_coord);
     if (flag)
@@ -141,13 +199,14 @@ bool Border::OnMousePressed(const int x, const int y, const MouseKey key, Contai
 
         if (!flag)
         {
-            if (key == Left)
+            if (key == MouseKey::Left)
             {
-                state_ = HOLD;
+                state_ = Hold;
                 hold_pos_ = new_coord;
-            }
-        }    
 
+                flag = true;
+            }
+        }
     }
 
     stack_transform.PopBack();
@@ -157,12 +216,12 @@ bool Border::OnMousePressed(const int x, const int y, const MouseKey key, Contai
 
 //================================================================================
 
-bool Border::OnMouseReleased(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
+bool Frame::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
 
-    state_ = DEFAULT;
+    state_ = Default;
 
     stack_transform.PopBack();
 
@@ -171,25 +230,25 @@ bool Border::OnMouseReleased(const int x, const int y, const MouseKey key, Conta
 
 //================================================================================
 
-bool Border::OnKeyboardPressed(const KeyboardKey key)
+bool Frame::OnKeyboardPressed(const KeyboardKey key)
 {
-    printf("Border: mouse keyboard kye pressed\n");
+    printf("Frame: mouse keyboard kye pressed\n");
     return false;
 }
 
 //================================================================================
 
-bool Border::OnKeyboardReleased(const KeyboardKey key)
+bool Frame::OnKeyboardReleased(const KeyboardKey key)
 {
-    printf("Border: mouse keyboard kye released\n");
+    printf("Frame: mouse keyboard kye released\n");
     return false;
 }
 
 //================================================================================
 
-void Border::PassTime(const time_t delta_time)
+void Frame::PassTime(const time_t delta_time)
 {
-    printf("Border: mouse keyboard kye released\n");
+    printf("Frame: mouse keyboard kye released\n");
     return;
 }
 

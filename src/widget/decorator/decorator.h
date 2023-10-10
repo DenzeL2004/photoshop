@@ -6,47 +6,18 @@
 
 enum Decorator_State
 {
-    DEFAULT, 
-    HOLD,
+    Default, 
+    Hold,
 };
 
-class Decorator: public Widget
-{
-    public:
+static const Transform Left_Border    = Transform({0, 0.05}, {0.02, 1});
+static const Transform Top_Border     = Transform({0, 0}, {1, 0.015});
 
-        Decorator(){}
-        ~Decorator(){}
+static const Transform Right_Border   = Transform({0.99, 0.05}, {0.02, 1});
+static const Transform Bottom_Border  = Transform({0, 0.98}, {1, 0.1});
 
-        virtual bool OnMousePressed     (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform) = 0;
-        virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform) = 0;
-        virtual bool OnMouseReleased    (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform) = 0;
+static const Vector Scale_Limit = Vector(0.4, 0.4);
 
-        virtual bool OnKeyboardPressed  (const KeyboardKey) = 0;
-        virtual bool OnKeyboardReleased (const KeyboardKey) = 0;
-
-        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) const = 0;  
-
-        virtual void PassTime           (const time_t delta_time) = 0;
-
-        void Move       (const Dot &offset);
-
-        bool CheckIn    (const Dot &mouse_pos) const;
-
-        double GetWidth()  const {return width_;}
-        double GetHieght() const {return hieght_;}
-
-    protected:
-
-        void GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const;
-
-        Transform transform_;
-        double width_, hieght_;
-        
-        sf::Texture background_;
-        const Widget *decarable_;
-
-        Decorator_State state_;
-};
 
 //=================================================================================================
 
@@ -62,7 +33,7 @@ struct Title
 
     Title(const Title &other) = default;
 
-    virtual Title& operator= (const Title &other) = default;
+    Title& operator= (const Title &other) = default;
 
     const char* msg_;
     size_t len_msg_;
@@ -70,19 +41,19 @@ struct Title
 
 };
 
-class Border: public Decorator
+class Frame: public Widget
 {
 
     public:
-        Border  (const char *path_texture, Button* close_button,
+        Frame  (const char *path_texture, Button* close_button,
                  const Title &title, Widget *decarable,
-                 const Dot offset, const Vector scale);
+                 const Dot &offset, const Vector &scale);
 
-        virtual ~Border(){}
+        virtual ~Frame(){}
 
-        virtual bool OnMousePressed     (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform);
-        virtual bool OnMouseReleased    (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);
+        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
 
         virtual bool OnKeyboardPressed  (const KeyboardKey);
         virtual bool OnKeyboardReleased (const KeyboardKey);
@@ -94,8 +65,15 @@ class Border: public Decorator
         Transform GetTransform() const {return transform_;}
 
     private:
-        void DrawTitle(sf::RenderTarget &target, const Transform &border_trf) const;
-       
+        void GetNewSize (sf::VertexArray &vertex_array, const Transform &transform) const;
+
+        void DrawTitle  (sf::RenderTarget &target, const Transform &border_trf) const;
+
+        void Move       (const Dot &new_coord);
+        
+        uint8_t ClickOnBorder   (double x, double y, const Transform &Last_transform) const;
+        void Scale              (const Dot &new_coord, uint8_t mask);
+
         Transform transform_;
         double width_, hieght_;
         
@@ -108,6 +86,16 @@ class Border: public Decorator
 
         Decorator_State state_;
         Dot hold_pos_;
+
+        enum Borders
+        {
+            Left    = 1 << 1,
+            Right   = 1 << 2,
+            Top     = 1 << 3,
+            Bottom  = 1 << 4,
+        };
+
+        Transform left_border_, top_border_, right_border_, bottom_border_;
 };
 
 #endif

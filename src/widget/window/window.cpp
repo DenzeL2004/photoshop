@@ -1,7 +1,7 @@
 #include "window.h"
 
 Window::Window (const char *path_texture,
-                const Dot offset, const Vector scale):
+                const Dot &offset, const Vector &scale):
                transform_({offset, scale}),
                width_(0), hieght_(0), background_() 
 {
@@ -15,14 +15,6 @@ Window::Window (const char *path_texture,
     width_  = background_.getSize().x;
     hieght_ = background_.getSize().y;
 
-    return;
-}
-
-//================================================================================
-
-void Window::Move(const Dot &offset)
-{
-    transform_.offset += offset;
     return;
 }
 
@@ -61,22 +53,12 @@ void Window::GetNewSize(sf::VertexArray &vertex_array, const Transform &transfor
 
 //================================================================================
 
-bool Window::CheckIn(const Dot &mouse_pos)
-{
-    bool horizontal = (Eps < mouse_pos.x && 1 - Eps >= mouse_pos.x);
-    bool vertical   = (Eps < mouse_pos.y && 1 - Eps >= mouse_pos.y);
-   
-    return horizontal & vertical;
-}
-
-//================================================================================
-
-bool Window::OnMouseMoved(const int x, const int y, Container<Transform> &stack_transform)
+bool Window::OnMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
     
-    Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
+    Dot new_coord = last_trf.ApplyTransform({x, y});
 
     bool flag = CheckIn(new_coord);
 
@@ -87,12 +69,12 @@ bool Window::OnMouseMoved(const int x, const int y, Container<Transform> &stack_
 
 //================================================================================
 
-bool Window::OnMousePressed(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
+bool Window::OnMousePressed(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
     
-    Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
+    Dot new_coord = last_trf.ApplyTransform({x, y});
 
     bool flag = CheckIn(new_coord);
 
@@ -103,7 +85,7 @@ bool Window::OnMousePressed(const int x, const int y, const MouseKey key, Contai
 
 //================================================================================
 
-bool Window::OnMouseReleased(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
+bool Window::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
     printf("Window: mouse released\n");
     return false;
@@ -134,9 +116,131 @@ void Window::PassTime(const time_t delta_time)
 }
 
 //=======================================================================================
-// //CONTAINER WINDOW
+//CANVASE
+Canvase::Canvase(const double width, const double hieght, Tool *tool, 
+                 const Dot &offset, const Vector &scale):
+                  transform_({offset, scale}),
+                  width_(width), hieght_(hieght), tool_(tool),
+                  background_(), real_pos_(20, 20) 
+{
+    assert(tool != nullptr && "tool is nullptr");
+
+    background_.create((int)width, (int)hieght);
+
+    sf::RectangleShape rec(sf::Vector2f((float)width, (float)hieght));
+    rec.setPosition(0, 0);
+    rec.setFillColor(sf::Color::White);
+
+    background_.draw(rec);
+
+    return;
+}
 
 //=======================================================================================
+
+void Canvase::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
+{
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform last_trf = stack_transform.GetBack();
+
+    sf::VertexArray vertex_array(sf::Quads, 4);
+
+    GetNewSize(vertex_array, last_trf);
+
+    target.draw(vertex_array, &(background_.getTexture()));
+
+    stack_transform.PopBack();
+
+    return;
+}
+
+void Canvase::GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const
+{
+    vertex_array[0].position = transform.RollbackTransform({0, 0});
+    vertex_array[1].position = transform.RollbackTransform({1, 0});
+    vertex_array[2].position = transform.RollbackTransform({1, 1});
+    vertex_array[3].position = transform.RollbackTransform({0, 1});
+
+    float new_width  = vertex_array[1].position.x - vertex_array[0].position.x;
+    float new_hieght = vertex_array[2].position.y - vertex_array[1].position.y;
+    vertex_array[0].texCoords = sf::Vector2f((float)real_pos_.x, (float)real_pos_.y);
+    vertex_array[1].texCoords = sf::Vector2f((float)real_pos_.x + (float)new_width - 1, (float)real_pos_.y);
+    vertex_array[2].texCoords = sf::Vector2f((float)real_pos_.x + (float)new_width - 1, (float)real_pos_.y + (float)new_hieght - 1);
+    vertex_array[3].texCoords = sf::Vector2f((float)real_pos_.x, (float)real_pos_.y + (float)new_hieght - 1);
+
+    return;
+}
+
+//================================================================================
+
+bool Canvase::OnMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
+{
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform last_trf = stack_transform.GetBack();
+    
+    Dot new_coord = last_trf.ApplyTransform({x, y});
+
+    bool flag = CheckIn(new_coord);
+
+    stack_transform.PopBack();
+
+    return flag;
+}
+
+//================================================================================
+
+bool Canvase::OnMousePressed(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
+{
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform last_trf = stack_transform.GetBack();
+    
+    Dot new_coord = last_trf.ApplyTransform({x, y});
+
+    bool flag = CheckIn(new_coord);
+    if (flag)
+    {
+        DrawCircle(background_, {real_pos_.x + x - last_trf.offset.x, hieght_ - (real_pos_.y + y - last_trf.offset.y)}, 50, sf::Color::Cyan);
+    }
+
+    stack_transform.PopBack();
+
+    return flag;
+}
+
+
+bool Canvase::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
+{
+    
+    return false;
+}
+
+//================================================================================
+
+bool Canvase::OnKeyboardPressed(const KeyboardKey key)
+{
+    printf("Canvase: mouse keyboard kye pressed\n");
+    return false;
+}
+
+//================================================================================
+
+bool Canvase::OnKeyboardReleased(const KeyboardKey key)
+{
+    printf("Canvase: mouse keyboard kye released\n");
+    return false;
+}
+
+//================================================================================
+
+void Canvase::PassTime(const time_t delta_time)
+{
+    printf("Canvase: mouse keyboard kye released\n");
+    return;
+}
+
+
+//=======================================================================================
+// //CONTAINER WINDOW
 
 void CanvaseManager::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
 {
@@ -155,12 +259,12 @@ void CanvaseManager::Draw(sf::RenderTarget &target, Container<Transform> &stack_
 
 //=======================================================================================
 
-bool CanvaseManager::OnMouseMoved(const int x, const int y, Container<Transform> &stack_transform)
+bool CanvaseManager::OnMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
     
-    Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
+    Dot new_coord = last_trf.ApplyTransform({x, y});
 
     size_t size = canvases_.GetSize();
     for (size_t it = 0; it < size; it++)
@@ -174,12 +278,12 @@ bool CanvaseManager::OnMouseMoved(const int x, const int y, Container<Transform>
 
 //================================================================================
 
-bool CanvaseManager::OnMousePressed(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
+bool CanvaseManager::OnMousePressed(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
     
-    Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
+    Dot new_coord = last_trf.ApplyTransform({x, y});
 
     bool flag = CheckIn(new_coord);
 
@@ -207,7 +311,7 @@ bool CanvaseManager::OnMousePressed(const int x, const int y, const MouseKey key
 
 //================================================================================
 
-bool CanvaseManager::OnMouseReleased(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
+bool CanvaseManager::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
     printf("CanvaseManager: mouse released\n");
     return false;

@@ -3,9 +3,9 @@
 
 enum MouseKey
 {
+    Nothing,
     Left,
-    Right,
-    Nothing,   
+    Right,   
 };
 
 
