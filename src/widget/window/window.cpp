@@ -136,47 +136,95 @@ void Window::PassTime(const time_t delta_time)
 //=======================================================================================
 // //CONTAINER WINDOW
 
-// void ContainerWindow::Draw(sf::RenderTarget &target) const
-// {
-//     this->Draw(target);
-//     window_manager_.Draw(target);
+//=======================================================================================
 
-//     return;
-// }
+void CanvaseManager::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
+{
+    Window::Draw(target, stack_transform);
 
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    
+    size_t size = canvases_.GetSize();
+    for (size_t it = 0; it < size; it++)
+        canvases_[it]->Draw(target, stack_transform);
 
-// bool ContainerWindow::OnMouseMoved(const int x, const int y)
-// {
-//     if (this->OnMouseMoved(x, y))
-//     {
-//         return window_manager_.OnMouseMoved(x, y);
-//     }
+    stack_transform.PopBack();
 
-//     return false;
-// }
+    return;
+}
 
-// bool ContainerWindow::OnMousePressed(const MouseKey key)
-// {
-//     printf("ContainerWindow: mouse pressed\n");
-//     return false;
-// }
+//=======================================================================================
 
+bool CanvaseManager::OnMouseMoved(const int x, const int y, Container<Transform> &stack_transform)
+{
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform last_trf = stack_transform.GetBack();
+    
+    Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
 
-// bool ContainerWindow::OnMouseReleased(const MouseKey key)
-// {
-//     printf("ContainerWindow: mouse released\n");
-//     return false;
-// }
-
-// bool ContainerWindow::OnKeyboardPressed(const KeyboardKey key)
-// {
-//     printf("ContainerWindow: mouse keyboard kye pressed\n");
-//     return false;
-// }
+    size_t size = canvases_.GetSize();
+    for (size_t it = 0; it < size; it++)
+        canvases_[it]->OnMouseMoved(x, y, stack_transform);
 
 
-// bool ContainerWindow::OnKeyboardReleased(const KeyboardKey key)
-// {
-//     printf("ContainerWindow: mouse keyboard kye released\n");
-//     return false;
-// }
+    stack_transform.PopBack();
+
+    return true;
+}
+
+//================================================================================
+
+bool CanvaseManager::OnMousePressed(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
+{
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform last_trf = stack_transform.GetBack();
+    
+    Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
+
+    bool flag = CheckIn(new_coord);
+
+    if (flag)
+    {
+        int size = (int)canvases_.GetSize();
+        for (int it = size - 1; it >= 0; it--)
+        {
+            delte_canvase_ = false;
+            if (canvases_[it]->OnMousePressed(x, y, key, stack_transform))
+            {
+                canvases_.Drown(it);
+                if (delte_canvase_)
+                    canvases_.PopBack();
+
+                break;
+            }
+        }
+    }
+
+    stack_transform.PopBack();
+
+    return flag;
+}
+
+//================================================================================
+
+bool CanvaseManager::OnMouseReleased(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
+{
+    printf("CanvaseManager: mouse released\n");
+    return false;
+}
+
+//================================================================================
+
+bool CanvaseManager::OnKeyboardPressed(const KeyboardKey key)
+{
+    printf("Window: mouse keyboard kye pressed\n");
+    return false;
+}
+
+//================================================================================
+
+bool CanvaseManager::OnKeyboardReleased(const KeyboardKey key)
+{
+    printf("Window: mouse keyboard kye released\n");
+    return false;
+}

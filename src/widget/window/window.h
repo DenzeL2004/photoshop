@@ -46,28 +46,33 @@ class Window : public Widget
 
 };
 
-// class ContainerWindow : public Window
-// {
+class CanvaseManager : public Window
+{
 
-//     public:
+    public:
 
-//         ContainerWindow(const char *path_texture, const Dot left_up):
-//                                  Window(path_texture, left_up), window_manager_(){}
-//         ~ContainerWindow(){};
+        CanvaseManager(const char *path_texture,
+                        const Dot offset, const Vector scale):Window(path_texture, offset, scale), 
+                        canvases_(), delte_canvase_(false){}
+        ~CanvaseManager(){};
 
-//         virtual bool OnMousePressed     (const MouseKey key);
-//         virtual bool OnMouseMoved       (const int x, const int y);
-//         virtual bool OnMouseReleased    (const MouseKey key);
+        virtual bool OnMousePressed     (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMouseMoved       (const int x, const int y, Container<Transform> &stack_transform);
+        virtual bool OnMouseReleased    (const int x, const int y, const MouseKey key, Container<Transform> &stack_transform);
 
-//         virtual bool OnKeyboardPressed  (const KeyboardKey);
-//         virtual bool OnKeyboardReleased (const KeyboardKey);
+        virtual bool OnKeyboardPressed  (const KeyboardKey);
+        virtual bool OnKeyboardReleased (const KeyboardKey);
 
-//         virtual void Draw(sf::RenderTarget &targert) const override;    
 
-//     private:
-//         WidgetManager window_manager_;
+        virtual void Draw               (sf::RenderTarget &target, Container<Transform> &stack_transform) const;
+
+        //virtual void PassTime           (const time_t delta_time);
+
+    private:
+        Container<Widget*> canvases_;
+        bool delte_canvase_;
                
 
-// }; 
+}; 
 
 #endif

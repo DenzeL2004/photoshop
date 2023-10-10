@@ -45,7 +45,7 @@ Border::Border( const char *path_texture, Button* close_button,
                 transform_({offset, scale}),
                 width_(0), hieght_(0), background_(), 
                 title_(title), close_button_(close_button), decarable_(decarable), 
-                status_(DEFAULT), hold_pos_({0.0, 0.0})
+                state_(DEFAULT), hold_pos_({0.0, 0.0})
 {
     assert(close_button != nullptr && "close button is nullptr");
     assert(decarable    != nullptr && "decarable is nullptr");
@@ -100,31 +100,28 @@ bool Border::OnMouseMoved(const int x, const int y, Container<Transform> &stack_
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
 
-    bool flag  = close_button_->OnMouseMoved(x, y, stack_transform);
-         flag |= decarable_->OnMouseMoved(x, y, stack_transform);
+    close_button_->OnMouseMoved(x, y, stack_transform);
+    decarable_->OnMouseMoved(x, y, stack_transform);
 
-    if (!flag)
+    Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
+    
+    if(state_ == HOLD)
     {
-        Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
-       
-        if(status_ == HOLD)
-        {
-            Vector delta = new_coord - hold_pos_;
-            
-            delta.x *= transform_.scale.x;
-            delta.y *= transform_.scale.y;
-            printf("%lg %lg\n", delta.x, delta.y);
+        Vector delta = new_coord - hold_pos_;
+        
+        delta.x *= transform_.scale.x;
+        delta.y *= transform_.scale.y;
 
-            transform_.offset += delta;
-            
-           
-            flag = true;
-        }  
-    }
+        transform_.offset += delta;
+        if (transform_.offset.x < Eps                           || transform_.offset.y < Eps ||
+            transform_.offset.x + transform_.scale.x > 1 - Eps  || transform_.offset.y + transform_.scale.y > 1 - Eps)
+            transform_.offset -= delta;
+    }  
+    
 
     stack_transform.PopBack();
 
-    return flag;
+    return true;
 }
 
 //================================================================================
@@ -134,20 +131,24 @@ bool Border::OnMousePressed(const int x, const int y, const MouseKey key, Contai
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
 
-    bool flag  = close_button_->OnMousePressed(x, y, key, stack_transform);
-         flag |= decarable_->OnMousePressed(x, y, key, stack_transform);
+    Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
 
-    if (!flag)
+    bool flag = CheckIn(new_coord);
+    if (flag)
     {
-        Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
-        
-        if (CheckIn(new_coord) && key == Left)
+        bool flag  = close_button_->OnMousePressed(x, y, key, stack_transform);
+             flag |= decarable_->OnMousePressed(x, y, key, stack_transform);
+
+        if (!flag)
         {
-            status_ = HOLD;
-            hold_pos_ = new_coord;
-            flag = true;
-        }
-    }    
+            if (key == Left)
+            {
+                state_ = HOLD;
+                hold_pos_ = new_coord;
+            }
+        }    
+
+    }
 
     stack_transform.PopBack();
 
@@ -161,7 +162,7 @@ bool Border::OnMouseReleased(const int x, const int y, const MouseKey key, Conta
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
 
-    status_ = DEFAULT;
+    state_ = DEFAULT;
 
     stack_transform.PopBack();
 

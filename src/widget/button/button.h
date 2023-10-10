@@ -14,13 +14,13 @@ class Action
         
         virtual ~Action(){};
 
-        virtual bool operator() () const = 0;
+        virtual void operator() () const = 0;
     
 };
 
 //================================================================================
 
-enum Button_Status
+enum Button_State
 {
     RELEASED, 
     COVERED,
@@ -64,7 +64,6 @@ class Button : public Widget
         Transform GetTransform() const {return transform_;}
 
         const Action *action_;
-        Button_Status prev_status_;
 
     protected:
         const sf::Texture* DefineTexture() const;
@@ -76,7 +75,9 @@ class Button : public Widget
         Transform transform_;
         double width_, hieght_;
 
-        Button_Status status_;
+        Button_State state_;
+        Button_State prev_state_;
+        
         time_t covering_time_;
 
 
@@ -87,13 +88,16 @@ class Button : public Widget
 class Click : public Action
 {
     public:
-        Click(){};
+        Click(bool *ptr): flag_(ptr){};
         ~Click(){};
 
-        bool operator() () const
+        void operator() () const
         {
-            return true;
-        } 
+            *flag_ = true;
+        }
+
+    private:
+        bool *flag_; 
 };
 
 //================================================================================

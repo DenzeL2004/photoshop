@@ -1,5 +1,7 @@
 #include "widget.h"
 
+static MouseKey     GetMouseKey     (sf::Event &event);
+
 //=======================================================================================
 
 Transform Transform::ApplyPrev(const Transform &prev) const
@@ -25,87 +27,44 @@ sf::Vector2f Transform::RollbackTransform (const Vector &vec) const
     return sf::Vector2f(vec.x * scale.x + offset.x, vec.y * scale.y + offset.y);
 }
 
+//================================================================================
 
-//=======================================================================================
+void EventAdapter(Widget &widget, int mouse_x, int mouse_y, sf::Event &event, Container<Transform> &stack_transform)
+{
+    if (event.type == sf::Event::MouseMoved)
+    {
+        widget.OnMouseMoved(mouse_x, mouse_y, stack_transform);
+    }
+    else
+    {
+        if (event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased)
+        {
+            
+            MouseKey mouse_key = GetMouseKey(event);
+            if (event.type == sf::Event::MouseButtonPressed)
+                widget.OnMousePressed(mouse_x, mouse_y, mouse_key, stack_transform);
+            
+            if (event.type == sf::Event::MouseButtonReleased)
+                widget.OnMouseReleased(mouse_x, mouse_y, mouse_key, stack_transform);
+        }
+    }
 
-// void WidgetManager::Draw(sf::RenderTarget &target) const
-// {
+    return;
+}
 
-//     int size = (int)widgets_.GetSize();
+static MouseKey GetMouseKey(sf::Event &event)
+{
+    switch (event.mouseButton.button)
+    {
+        case sf::Mouse::Left:
+            return MouseKey::Left;
+        
+        case sf::Mouse::Right:
+            return MouseKey::Right;
 
-//     for (int it = size - 1; it >= 0; --it)
-//         widgets_[it]->Draw(target);
+        default:
+            break;
+    }
 
-//     return;
-// }
-
-// //=======================================================================================
-
-// bool WidgetManager::OnMouseMoved(const int x, const int y)
-// {
-//     bool flag = false;
-
-//     size_t size = widgets_.GetSize();
-//     for (size_t it = 0; it < size; it++)
-//         flag |= widgets_[it]->OnMouseMoved(x, y);
-
-    
-//     return flag;
-// }
-
-// //=======================================================================================
-
-// bool WidgetManager::OnMousePressed(const MouseKey key)
-// {
-//     bool flag = false;
-
-//     size_t size = widgets_.GetSize();
-//     for (size_t it = 0; it < size; it++)
-//         flag |= widgets_[it]->OnMousePressed(key);
-
-    
-//     return flag;
-// }
-
-// //=======================================================================================
-
-// bool WidgetManager::OnMouseReleased(const MouseKey key)
-// {
-//     bool flag = false;
-
-//     size_t size = widgets_.GetSize();
-//     for (size_t it = 0; it < size; it++)
-//         flag |= widgets_[it]->OnMouseReleased(key);
-
-    
-//     return flag;
-// }
-
-// //=======================================================================================
-
-// bool WidgetManager::OnKeyboardPressed(const KeyboardKey key)
-// {
-//     bool flag = false;
-
-//     size_t size = widgets_.GetSize();
-//     for (size_t it = 0; it < size; it++)
-//         flag |= widgets_[it]->OnKeyboardPressed(key);
-
-    
-//     return flag;
-// }
-
-// //=======================================================================================
-
-
-// bool WidgetManager::OnKeyboardReleased(const KeyboardKey key)
-// {
-//     bool flag = false;
-
-//     size_t size = widgets_.GetSize();
-//     for (size_t it = 0; it < size; it++)
-//         flag |= widgets_[it]->OnKeyboardReleased(key);
-
-    
-//     return flag;
-// }
+    return MouseKey::Nothing;
+}

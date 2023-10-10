@@ -5,7 +5,7 @@ Button::Button (const char *released_texture_file, const char *covered_texture_f
                 const char *pressed_texture_file,  const char *disabled_texture_file,
                 const Action *action, 
                 const Dot offset, const Vector scale):
-                action_(nullptr), status_(RELEASED), prev_status_(RELEASED),
+                action_(nullptr), state_(RELEASED), prev_state_(RELEASED),
                 released_texture_(), covered_texture_(), 
                 pressed_texture_(), disabled_texture_(), 
                 transform_({offset, scale}), width_(0), hieght_(0),
@@ -79,7 +79,7 @@ void Button::GetNewSize(sf::VertexArray &vertex_array, const Transform &transfor
 
 const sf::Texture* Button::DefineTexture() const
 {
-    switch (status_)
+    switch (state_)
     {
         case RELEASED:
             return &released_texture_;
@@ -112,6 +112,9 @@ bool Button::CheckIn(const Dot &mouse_pos) const
 
 bool Button::OnMouseMoved(const int x, const int y, Container<Transform> &stack_transform)
 {
+    if (state_ == DISABLED)
+        return false;
+
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
     
@@ -122,14 +125,14 @@ bool Button::OnMouseMoved(const int x, const int y, Container<Transform> &stack_
     if (!flag)
     { 
         covering_time_ = 0;
-        status_ = prev_status_;
+        state_ = prev_state_;
     }
     else
     {
-        if (status_ != COVERED)
+        if (state_ != COVERED)
         {
-            prev_status_ = status_;
-            status_ = COVERED;
+            prev_state_ = state_;
+            state_ = COVERED;
         }
     }
 
@@ -152,11 +155,22 @@ void Button::PassTime(const time_t delta_time)
 
 bool Button::OnMousePressed(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
 {
-    if (status_ == COVERED && key == Left)
+    if (state_ == DISABLED)
+        return false;
+
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform last_trf = stack_transform.GetBack();
+    
+    Dot new_coord = last_trf.ApplyTransform({(double)x, (double)y});
+
+    bool flag = CheckIn(new_coord);
+
+    if (flag && key == Left)
     {
-        *action_;
-        return true;
+        (*action_)();
     }
+
+    stack_transform.PopBack();
 
     return false;
 }
@@ -164,6 +178,9 @@ bool Button::OnMousePressed(const int x, const int y, const MouseKey key, Contai
 
 bool Button::OnMouseReleased(const int x, const int y, const MouseKey key, Container<Transform> &stack_transform)
 {
+    if (state_ == DISABLED)
+        return false;
+
     printf("Button: mouse released\n");
     return false;
 }

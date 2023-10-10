@@ -4,7 +4,7 @@
 #include "../widget.h"
 #include "../button/button.h"
 
-enum Decorator_Status
+enum Decorator_State
 {
     DEFAULT, 
     HOLD,
@@ -45,7 +45,7 @@ class Decorator: public Widget
         sf::Texture background_;
         const Widget *decarable_;
 
-        Decorator_Status status_;
+        Decorator_State state_;
 };
 
 //=================================================================================================
@@ -106,7 +106,7 @@ class Border: public Decorator
 
         Widget *decarable_;
 
-        Decorator_Status status_;
+        Decorator_State state_;
         Dot hold_pos_;
 };
 
