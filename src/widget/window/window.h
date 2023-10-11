@@ -99,6 +99,7 @@ class Canvase : public Widget
         Transform transform_;
         double width_, hieght_;
         sf::RenderTexture background_;
+        sf::RenderTexture tools_viewer_;
 
         Tool *tool_;
 
@@ -131,15 +132,12 @@ class CanvaseManager : public Window
 
         virtual void Draw               (sf::RenderTarget &target, Container<Transform> &stack_transform) const;
 
-
-        void CreateCanvase(Tool *tool);
+        void CreateCanvase  (Tool *tool);
     private:
         Container<Widget*> canvases_;
         bool delte_canvase_;
 
         size_t cnt_;
-               
-
 }; 
 
 #endif

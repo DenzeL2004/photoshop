@@ -152,8 +152,10 @@ Canvase::Canvase(const double width, const double hieght, Tool *tool,
     sf::RectangleShape rec(sf::Vector2f((float)width, (float)hieght));
     rec.setPosition(0, 0);
     rec.setFillColor(sf::Color::White);
-
     background_.draw(rec);
+
+    rec.setFillColor(sf::Color(0, 0, 0, 255));
+    tools_viewer_.draw(rec);
 
     return;
 }
@@ -170,6 +172,7 @@ void Canvase::Draw(sf::RenderTarget &target, Container<Transform> &stack_transfo
     GetNewSize(vertex_array, last_trf);
 
     target.draw(vertex_array, &(background_.getTexture()));
+    target.draw(vertex_array, &(tools_viewer_.getTexture()));
 
     stack_transform.PopBack();
 
@@ -205,10 +208,8 @@ bool Canvase::OnMouseMoved(const double x, const double y, Container<Transform> 
     bool flag = CheckIn(new_coord);
     if (flag)
     {
-        if (tool_->state_ == Tool::State::Hold)
-        {
-            tool_->Draw(background_, GetCanvaseCoord(x, y, last_trf));
-        }
+        Dot pos = GetCanvaseCoord(x, y, last_trf);
+        ApplyContinue(tools_viewer_, pos, *tool_);
     }
 
     stack_transform.PopBack();
@@ -228,8 +229,8 @@ bool Canvase::OnMousePressed(const double x, const double y, const MouseKey key,
     bool flag = CheckIn(new_coord);
     if (flag)
     {
-        tool_->state_ = Tool::State::Hold;
-        tool_->hold_pos_ = GetCanvaseCoord(x, y, stack_transform.GetBack());
+        Dot pos =  GetCanvaseCoord(x, y, stack_transform.GetBack());
+        ApplyBegin(tools_viewer_, pos, *tool_);
     }
 
     stack_transform.PopBack();
@@ -279,7 +280,6 @@ void Canvase::PassTime(const time_t delta_time)
     return;
 }
 
-
 //=======================================================================================
 // //CONTAINER WINDOW
 
@@ -309,10 +309,8 @@ bool CanvaseManager::OnMouseMoved(const double x, const double y, Container<Tran
     Transform last_trf = stack_transform.GetBack();
     
     Dot new_coord = last_trf.ApplyTransform({x, y});
-
    
     canvases_[size - 1]->OnMouseMoved(x, y, stack_transform);
-
 
     stack_transform.PopBack();
 
@@ -414,4 +412,18 @@ void CanvaseManager::CreateCanvase(Tool *tool)
                                   new_canvase, Canvase_Frame_Offset, Canvase_Frame_Scale);
 
     canvases_.PushBack(new_frame);
+}
+
+void ApplyBegin(sf::RenderTarget &target, Dot &pos, Tool &tool)
+{
+    tool.state_ = Tool::State::Hold;
+    tool.hold_pos_ = pos;
+    return;
+}
+
+
+void ApplyContinue(sf::RenderTarget &target ,Dot &pos, Tool &tool)
+{
+    
+    sf::RectangleShape()
 }
