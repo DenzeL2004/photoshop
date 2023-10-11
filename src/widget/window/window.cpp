@@ -424,6 +424,5 @@ void ApplyBegin(sf::RenderTarget &target, Dot &pos, Tool &tool)
 
 void ApplyContinue(sf::RenderTarget &target ,Dot &pos, Tool &tool)
 {
-    
-    sf::RectangleShape()
+    sf::RectangleShape
 }
