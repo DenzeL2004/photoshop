@@ -25,10 +25,6 @@ class Window : public Widget
 
         virtual void PassTime           (const time_t delta_time);
 
-        void Move       (const Dot &offset) {transform_.offset += offset;};
-
-        Transform GetTransform() const {return transform_;}
-
     protected:
         void GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const;
        
@@ -47,6 +43,7 @@ class Tool
         {
             Pen, 
             Brash,
+            Nothing,
         };
 
         enum State
@@ -116,7 +113,7 @@ class CanvaseManager : public Window
 
         CanvaseManager (const char *path_texture,
                         const Dot offset, const Vector scale):Window(path_texture, offset, scale), 
-                        canvases_(), delte_canvase_(false){}
+                        canvases_(), delte_canvase_(false), cnt_(0){}
         ~CanvaseManager()
         {
             size_t size = canvases_.GetSize();
@@ -134,9 +131,13 @@ class CanvaseManager : public Window
 
         virtual void Draw               (sf::RenderTarget &target, Container<Transform> &stack_transform) const;
 
+
+        void CreateCanvase(Tool *tool);
     private:
         Container<Widget*> canvases_;
         bool delte_canvase_;
+
+        size_t cnt_;
                
 
 }; 

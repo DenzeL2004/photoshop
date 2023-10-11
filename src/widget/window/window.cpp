@@ -1,4 +1,5 @@
 #include "window.h"
+#include "../decorator/decorator.h"
 
 Window::Window (const char *path_texture,
                 const Dot &offset, const Vector &scale):
@@ -242,11 +243,6 @@ bool Canvase::OnMouseReleased(const double x, const double y, const MouseKey key
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
 
-    if (tool_->state_ == Tool::State::Hold && tool_->type_ == Tool::Type::Pen)
-    {
-        tool_->Draw(background_, GetCanvaseCoord(x, y, stack_transform.GetBack()));
-    }
-
     tool_->state_ = Tool::State::Default;
 
     stack_transform.PopBack();
@@ -306,14 +302,16 @@ void CanvaseManager::Draw(sf::RenderTarget &target, Container<Transform> &stack_
 
 bool CanvaseManager::OnMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
 {
+    size_t size = canvases_.GetSize();
+    if (size == 0) return false;
+    
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
     
     Dot new_coord = last_trf.ApplyTransform({x, y});
 
-    size_t size = canvases_.GetSize();
-    for (size_t it = 0; it < size; it++)
-        canvases_[it]->OnMouseMoved(x, y, stack_transform);
+   
+    canvases_[size - 1]->OnMouseMoved(x, y, stack_transform);
 
 
     stack_transform.PopBack();
@@ -358,15 +356,28 @@ bool CanvaseManager::OnMousePressed(const double x, const double y, const MouseK
 
 bool CanvaseManager::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
-    printf("CanvaseManager: mouse released\n");
-    return false;
+    
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform last_trf = stack_transform.GetBack();
+    Dot new_coord = last_trf.ApplyTransform({x, y});
+
+    bool flag = false;
+    int size = (int)canvases_.GetSize();
+    for (int it = size - 1; it >= 0; it--)
+    {
+        flag |= canvases_[it]->OnMouseReleased(x, y, key, stack_transform);
+    }
+
+    stack_transform.PopBack();
+
+    return flag;
 }
 
 //================================================================================
 
 bool CanvaseManager::OnKeyboardPressed(const KeyboardKey key)
 {
-    printf("Window: mouse keyboard kye pressed\n");
+    
     return false;
 }
 
@@ -376,4 +387,31 @@ bool CanvaseManager::OnKeyboardReleased(const KeyboardKey key)
 {
     printf("Window: mouse keyboard kye released\n");
     return false;
+}
+//================================================================================
+
+void CanvaseManager::CreateCanvase(Tool *tool)
+{
+    assert(tool != nullptr && "tool is nullptr");
+
+    char *buf = (char*)calloc(BUFSIZ, sizeof(char));
+    if (!buf)
+    {
+        PROCESS_ERROR(ERR_MEMORY_ALLOC, "allocate memory to buf failed\n");
+        return;
+    }
+
+    cnt_++;
+    sprintf(buf, "canvase %lu", cnt_);
+
+    Button *close_button = new Button(Cross_Button_Release, Cross_Button_Covered, 
+                                      Cross_Button_Release, Cross_Button_Covered, 
+                                      new Click(&delte_canvase_), 
+                                      Cross_Button_Offset, Cross_Button_Scale);
+
+    Canvase *new_canvase = new Canvase(Width_Canvase, Hieght_Canvase, tool, Canvase_Offset, Canvase_Scale);
+    Widget *new_frame = new Frame(Frame_Texture, close_button, {buf, sf::Color::Black}, 
+                                  new_canvase, Canvase_Frame_Offset, Canvase_Frame_Scale);
+
+    canvases_.PushBack(new_frame);
 }

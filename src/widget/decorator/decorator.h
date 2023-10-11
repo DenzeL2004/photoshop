@@ -10,11 +10,11 @@ enum Decorator_State
     Hold,
 };
 
-static const Transform Left_Border    = Transform({0, 0.05}, {0.02, 1});
+static const Transform Left_Border    = Transform({0, 0.05}, {0.015, 1});
 static const Transform Top_Border     = Transform({0, 0}, {1, 0.015});
 
-static const Transform Right_Border   = Transform({0.99, 0.05}, {0.02, 1});
-static const Transform Bottom_Border  = Transform({0, 0.98}, {1, 0.1});
+static const Transform Right_Border   = Transform({0.985, 0.05}, {0.02, 1});
+static const Transform Bottom_Border  = Transform({0, 0.975}, {1, 0.2});
 
 static const Vector Scale_Limit = Vector(0.4, 0.4);
 
@@ -41,6 +41,8 @@ struct Title
 
 };
 
+
+
 class Frame: public Widget
 {
 
@@ -49,7 +51,11 @@ class Frame: public Widget
                  const Title &title, Widget *decarable,
                  const Dot &offset, const Vector &scale);
 
-        virtual ~Frame(){}
+        virtual ~Frame()
+        {
+            delete close_button_;
+            delete decarable_;
+        }
 
         virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
         virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);

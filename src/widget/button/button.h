@@ -20,16 +20,6 @@ class Action
 
 //================================================================================
 
-enum Button_State
-{
-    RELEASED, 
-    COVERED,
-    PRESSED,
-    DISABLED,
-};
-
-//================================================================================
-
 class Button : public Widget
 {
     public:
@@ -59,11 +49,20 @@ class Button : public Widget
         
         virtual void PassTime           (const time_t delta_time);
 
-        void Move       (const Dot &offset) {transform_.offset += offset;};
-
         Transform GetTransform() const {return transform_;}
 
         const Action *action_;
+
+        enum Button_State
+        {
+            Released, 
+            Covered,
+            Pressed,
+            Disabled,
+        };
+
+        Button_State state_;
+        Button_State prev_state_;
 
     protected:
 
@@ -75,16 +74,58 @@ class Button : public Widget
                     
         Transform transform_;
         double width_, hieght_;
-
-        Button_State state_;
-        Button_State prev_state_;
         
         time_t covering_time_;
 
 
 };
 
+class ButtonList : public Button
+{
+    public:
+        ButtonList (const char *released_texture_file, const char *covered_texture_file, 
+                    const char *pressed_texture_file,  const char *disabled_texture_file,
+                    const Action *action, 
+                    const Dot &offset, const Vector &scale):
+                    Button(released_texture_file, covered_texture_file, 
+                           pressed_texture_file, disabled_texture_file, 
+                           action, offset, scale), buttons_(){}
 
+        virtual ~ButtonList()
+        {
+            size_t size = buttons_.GetSize();
+            for (size_t it = 0; it < size; it++)
+                delete buttons_[it];
+
+            delete action_;
+        }
+
+
+        ButtonList(const ButtonList &other) = delete;
+
+        virtual ButtonList& operator= (const ButtonList &other) = delete;
+
+        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);
+        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
+
+        virtual bool OnKeyboardPressed  (const KeyboardKey);
+        virtual bool OnKeyboardReleased (const KeyboardKey);
+
+        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) const override;    
+        
+        virtual void PassTime           (const time_t delta_time);
+
+        Transform GetTransform() const {return transform_;}
+
+        const Action *action_;
+        Container<Button*> buttons_;
+
+    protected:
+        
+};
+
+//================================================================================
 
 class Click : public Action
 {
@@ -99,6 +140,25 @@ class Click : public Action
 
     private:
         bool *flag_; 
+};
+
+//================================================================================
+
+class ShowButtonList : public Action
+{
+    public:
+        ShowButtonList(Container<Button*> *buttons): buttons_(buttons){};
+        ~ShowButtonList(){};
+
+        void operator() () const
+        {
+            size_t size = buttons_->GetSize();
+            for (size_t it = 0; it < size; it++)
+                (*buttons_)[it]->state_ = (*buttons_)[it]->prev_state_;
+        }
+
+    private:
+        Container<Button*> *buttons_; 
 };
 
 //================================================================================

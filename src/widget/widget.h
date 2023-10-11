@@ -11,6 +11,8 @@
 #include "../graphic/graphic.h"
 #include "../container/container.h"
 
+#include "../app/config.h"
+
 
 struct Transform
 {
