@@ -25,7 +25,7 @@ class Window : public Widget
         virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;  
 
         virtual void PassTime           (const time_t delta_time);
-
+        
     protected:
         void GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const;
        

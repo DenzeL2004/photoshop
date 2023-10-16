@@ -85,7 +85,6 @@ bool Frame::OnMouseMoved(const double x, const double y, Container<Transform> &s
     Transform last_trf = stack_transform.GetBack();
 
     close_button_->OnMouseMoved(x, y, stack_transform);
-    decarable_->OnMouseMoved(x, y, stack_transform);
 
     Dot new_coord = last_trf.ApplyTransform({x, y});
     
@@ -97,6 +96,8 @@ bool Frame::OnMouseMoved(const double x, const double y, Container<Transform> &s
         else
             Move(new_coord);        
     }  
+
+    decarable_->OnMouseMoved(x, y, stack_transform);
     
     stack_transform.PopBack();
 

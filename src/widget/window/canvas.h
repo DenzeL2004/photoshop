@@ -60,7 +60,10 @@ class Canvas : public Widget
 
         virtual void PassTime           (const time_t delta_time);
 
-        Dot GetSize             () const;
+        Dot         GetSize             () const;
+        Dot         GetRealPos          () const;
+        Transform   GetTransform        () const;
+
         void Move               (const Dot &offset);
         void CorrectRealCoord   (const Transform &transform);
 
@@ -132,7 +135,13 @@ class Scrollbar: public Widget
 {
 
     public:
-        Scrollbar  (Canvas *canvas, const Dot &offset, const Vector &scale);
+        enum Scroll_Type
+        {
+            Horizontal,
+            Vertical,
+        };
+
+        Scrollbar  (Canvas *canvas, Scroll_Type type, const Dot &offset, const Vector &scale);
 
         virtual ~Scrollbar()
         {
@@ -156,7 +165,8 @@ class Scrollbar: public Widget
 
     private:
 
-        void MoveCenter (Dot &new_coord);
+        void MoveCenter         (Dot &new_coord);
+        void ResizeCenterButton (const Transform &canvas_trf);
 
         Button *top_button_, *bottom_button_, *center_button_;
         Canvas *canvas_;
@@ -164,6 +174,8 @@ class Scrollbar: public Widget
         Transform transform_;
 
         Vector pos_press_;
+
+        Scroll_Type type_;
 };
 
 #endif

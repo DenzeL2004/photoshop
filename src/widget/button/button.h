@@ -49,7 +49,7 @@ class Button : public Widget
         
         virtual void PassTime           (const time_t delta_time);
 
-        void Move (const Vector &offset);
+        void SetTransform (const Transform &trannsform);
 
         Transform GetTransform() const {return transform_;}
 

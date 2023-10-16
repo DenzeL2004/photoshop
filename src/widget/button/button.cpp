@@ -202,9 +202,9 @@ void Button::PassTime(const time_t delta_time)
 }
 
 
-void Button::Move (const Vector &offset)
+void Button::SetTransform (const Transform &transform)
 {
-    transform_.offset += offset;
+    transform_ = transform;
 }
 
 //================================================================================

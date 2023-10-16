@@ -23,7 +23,7 @@ Canvas::Canvas  (const double width, const double hieght, Tool *tool,
                 const Dot &offset, const Vector &scale):
                 transform_({offset, scale}),
                 width_(width), hieght_(hieght), tool_(tool),
-                background_(), real_pos_(20, 20) 
+                background_(), real_pos_(0, 0) 
 {
     assert(tool != nullptr && "tool is nullptr");
 
@@ -45,7 +45,6 @@ void Canvas::Draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
 
     sf::VertexArray vertex_array(sf::Quads, 4);
 
-    CorrectRealCoord(last_trf);
     GetNewSize(vertex_array, last_trf);
 
     target.draw(vertex_array, &(background_.getTexture()));
@@ -168,6 +167,21 @@ void Canvas::Move(const Dot &offset)
     real_pos_ += offset;
 }
 
+//================================================================================
+
+Transform Canvas::GetTransform() const
+{
+    return transform_;
+}
+
+
+//================================================================================
+
+Dot Canvas::GetRealPos () const
+{
+    return real_pos_;
+}
+
 
 void Canvas::CorrectRealCoord(const Transform &transform)
 {
@@ -214,7 +228,6 @@ bool CanvaseManager::OnMouseMoved(const double x, const double y, Container<Tran
     
     Dot new_coord = last_trf.ApplyTransform({x, y});
 
-   
     canvases_[size - 1]->OnMouseMoved(x, y, stack_transform);
     
     stack_transform.PopBack();
@@ -313,7 +326,7 @@ void CanvaseManager::CreateCanvase(Tool *tool)
     Canvas *new_canvase = new Canvas(Width_Canvase, Hieght_Canvase, tool, Canvase_Offset, Canvase_Scale);
 
 
-    Scrollbar *scroll = new Scrollbar(new_canvase, Dot(0, 0.05), Vector(0.95, 0.87));
+    Scrollbar *scroll = new Scrollbar(new_canvase, Scrollbar::Scroll_Type::Horizontal, Dot(0.02, 0.05), Vector(0.95, 0.87));
 
     Widget *new_frame = new Frame(Frame_Texture, close_button, {buf, sf::Color::Black}, 
                                   scroll, Canvase_Frame_Offset, Canvase_Frame_Scale);
@@ -324,24 +337,24 @@ void CanvaseManager::CreateCanvase(Tool *tool)
 //================================================================================
 
 
-Scrollbar::Scrollbar(Canvas *canvas, const Dot &offset, const Vector &scale):
+Scrollbar::Scrollbar(Canvas *canvas, Scroll_Type type, const Dot &offset, const Vector &scale):
                      top_button_(nullptr), bottom_button_(nullptr), center_button_(nullptr),
-                     canvas_(canvas), transform_({offset, scale}), pos_press_(offset)
+                     canvas_(canvas), transform_({offset, scale}), pos_press_(offset), type_(type)
 {
     top_button_ = new Button("src/img/left.png", "src/img/left.png", 
                             "src/img/left.png", "src/img/left.png", 
                             new ScrollCanvas(Dot(-0.05, 0), canvas), 
-                            Dot(0.025, 0), Vector(0.03, 0.03));
+                            Dot(0.0, 0), Vector(0.03, 0.03));
 
     bottom_button_ = new Button("src/img/right.png", "src/img/right.png", 
                                 "src/img/right.png", "src/img/right.png", 
                                 new ScrollCanvas(Vector(0.05, 0), canvas), 
-                                Dot(0.995, 0), Vector(0.03, 0.03));
+                                Dot(0.97, 0), Vector(0.03, 0.03));
 
     center_button_ = new Button("src/img/horizontal.png", "src/img/horizontal.png", 
                                 "src/img/horizontal.png", "src/img/horizontal.png", 
                                 new ScrollCanvas(Dot(0, 0), canvas), 
-                                Dot(0.056, 0.0), Vector(0.4, 0.03));
+                                Dot(0.032, 0.0), Vector(0.4, 0.03));
 
     return;
 
@@ -351,7 +364,11 @@ void Scrollbar::Draw(sf::RenderTarget &target, Container<Transform> &stack_trans
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
+
+
+    ResizeCenterButton(canvas_->GetTransform().ApplyPrev(last_trf));
     
+
     top_button_->Draw(target, stack_transform);
     bottom_button_->Draw(target, stack_transform);
     center_button_->Draw(target, stack_transform);
@@ -362,6 +379,30 @@ void Scrollbar::Draw(sf::RenderTarget &target, Container<Transform> &stack_trans
 
     return;
 }
+
+
+void Scrollbar::ResizeCenterButton(const Transform &canvas_trf)
+{
+   
+    Dot size = canvas_->GetSize();
+
+    Transform center_trf = center_button_->GetTransform();
+    
+    if (type_ == Scrollbar::Scroll_Type::Horizontal)
+        center_trf.scale.x = canvas_trf.scale.x / size.x; 
+    
+    if (type_ == Scrollbar::Scroll_Type::Vertical)
+        center_trf.scale.y = canvas_trf.scale.y / size.y; 
+    
+    center_button_->SetTransform(center_trf);
+    canvas_->CorrectRealCoord(canvas_trf);
+
+    Dot prev = canvas_->GetRealPos();
+    MoveCenter(prev);
+
+}
+
+
 
 //================================================================================
 
@@ -381,8 +422,16 @@ bool Scrollbar::OnMouseMoved(const double x, const double y, Container<Transform
     if (center_button_->prev_state_ == Button::Button_State::Pressed || 
         center_button_->state_ == Button::Button_State::Pressed)
     {
-        Dot delta(new_coord.x - pos_press_.x, 0);
-        MoveCenter(delta);
+        Dot prev_real_pos = canvas_->GetRealPos();
+        
+        if (type_ == Scrollbar::Scroll_Type::Horizontal)
+            canvas_->Move(Dot((new_coord.x - pos_press_.x) * canvas_->GetSize().x, 0));
+        if (type_ == Scrollbar::Scroll_Type::Vertical)
+            canvas_->Move(Dot(0.0, (new_coord.y - pos_press_.y) * canvas_->GetSize().y));
+
+        canvas_->CorrectRealCoord(canvas_->GetTransform().ApplyPrev(last_trf));
+
+        MoveCenter(prev_real_pos);
         pos_press_ = new_coord;
 
     }
@@ -392,21 +441,23 @@ bool Scrollbar::OnMouseMoved(const double x, const double y, Container<Transform
     return flag;
 }
 
-void Scrollbar::MoveCenter(Dot &offset)
+void Scrollbar::MoveCenter(Dot &prev_pos)
 {
     Transform center_trf = center_button_->GetTransform();
 
     Transform top_trf    = top_button_->GetTransform();
     Transform bottom_trf = bottom_button_->GetTransform();
 
-    offset.x = std::min(bottom_trf.offset.x - Eps - (center_trf.offset.x + offset.x + center_trf.scale.x), 
+
+    Dot offset((canvas_->GetRealPos().x - prev_pos.x) / canvas_->GetSize().x, 0.0);
+
+    offset.x = std::min(bottom_trf.offset.x - Eps - (center_trf.offset.x + center_trf.scale.x), 
                         std::max(top_trf.offset.x + top_trf.scale.x + Eps - center_trf.offset.x, offset.x));
   
-    center_button_->Move(offset);
-    canvas_->Move(offset * canvas_->GetSize().x);
-    
+    center_trf.offset += offset;
 
-   
+    center_button_->SetTransform(center_trf);
+    
     return;
 }
 
@@ -418,13 +469,15 @@ bool Scrollbar::OnMousePressed(const double x, const double y, const MouseKey ke
     Transform last_trf = stack_transform.GetBack();
 
     Dot new_coord = last_trf.ApplyTransform({x, y});
-    
     pos_press_ = new_coord;
-    
-    bool flag = top_button_->OnMousePressed(x, y, key, stack_transform);
+
+    Dot prev_real_pos = canvas_->GetRealPos();
+
+    bool flag = false;
+    flag |= top_button_->OnMousePressed(x, y, key, stack_transform);
     flag |= bottom_button_->OnMousePressed(x, y, key, stack_transform);
+
     flag |= center_button_->OnMousePressed(x, y, key, stack_transform);
-    
     flag |= canvas_->OnMousePressed(x, y, key, stack_transform);;
 
     if (!flag)
@@ -435,19 +488,23 @@ bool Scrollbar::OnMousePressed(const double x, const double y, const MouseKey ke
         {
 
             Dot offset = new_coord - center_button_->GetTransform().offset;
-            Dot canvas_sz = 
 
-            if (offset.x < Eps || offset.y < Eps)
-            {
-            
+            if (type_ == Scrollbar::Scroll_Type::Horizontal)
+                offset.y = 0.0;
+            if (type_ == Scrollbar::Scroll_Type::Vertical)
+                offset.x = 0.0;
+           
+
+            if (offset.x < -Eps || offset.y < -Eps)
                 (*top_button_->action_)();
-            }
-
+            
             if (offset.x > Eps || offset.y > Eps)
                 (*bottom_button_->action_)();
         }
     } 
-        
+
+    canvas_->CorrectRealCoord(canvas_->GetTransform().ApplyPrev(last_trf));
+    MoveCenter(prev_real_pos);
 
     stack_transform.PopBack();
 
