@@ -1,5 +1,4 @@
 #include "app.h"
-#include "../widget/decorator/decorator.h"
 
 const double WIDTH = 1600.0; 
 const double HIEGHT = 900.0;
@@ -112,8 +111,8 @@ bool AppWindow::OnMousePressed(const double x, const double y, const MouseKey ke
     {
         flag = false;
         flag |= button_create_->OnMousePressed(x, y, key, stack_transform);
-        if (!flag) flag |= tools_button_->OnMousePressed(x, y, key, stack_transform);
-        if (!flag) flag |= colors_button_->OnMousePressed(x, y, key, stack_transform);
+        flag |= tools_button_->OnMousePressed(x, y, key, stack_transform);
+        flag |= colors_button_->OnMousePressed(x, y, key, stack_transform);
         if (!flag) flag |= canvas_manager_.OnMousePressed(x, y, key, stack_transform);
     }
 

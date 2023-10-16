@@ -55,7 +55,7 @@ const char BLUE[]   =  "\033[1;36m";     ///< Blue colour
 const char GREEN[]  =  "\033[1;32m";     ///< Green colour
 const char YELLOW[] =  "\033[1;33m";     ///< Yellow colour
 
-static const long double Eps = 1e-10; ///< Global constant equal to \f$\ 10^{-9}\f$
+static const double Eps = 1e-10; ///< Global constant equal to \f$\ 10^{-9}\f$
 
 static const int Inf = 1e9+7; 
 

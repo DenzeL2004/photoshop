@@ -219,8 +219,6 @@ void ButtonList::Draw(sf::RenderTarget &target, Container<Transform> &stack_tran
         if (buttons_[it]->state_ != Button::Button_State::Disabled)
             buttons_[it]->Draw(target, stack_transform); 
     }
-
-    return;
 }
 
 //================================================================================
@@ -282,20 +280,21 @@ bool ButtonList::OnMousePressed(const double x, const double y, const MouseKey k
     if (state_ == Button::Button_State::Pressed)
     {
         size_t size = buttons_.GetSize();
+
+        int last_presed = -1;
         for (size_t it = 0; it < size; it++)
         {
-            flag = false;
-            if (buttons_[it]->state_ !=  Button::Button_State::Disabled)
-                flag = buttons_[it]->OnMousePressed(x, y, key, stack_transform);
+            if (buttons_[it]->state_ == Button::Button_State::Pressed) last_presed = it;
+            flag |= buttons_[it]->OnMousePressed(x, y, key, stack_transform);
             
-            if (flag)
-                buttons_[it]->state_ = Button::Button_State::Pressed;
-            else
-                buttons_[it]->state_ = Button::Button_State::Released;
 
             buttons_[it]->prev_state_ = buttons_[it]->state_;
             buttons_[it]->state_ = Button::Button_State::Disabled;
         }
+
+        if (!flag && last_presed != -1)
+            buttons_[last_presed]->prev_state_ = Button::Button_State::Pressed;
+
 
         state_      = Button::Button_State::Released;
         prev_state_ = Button::Button_State::Released;
@@ -367,5 +366,4 @@ bool ButtonList::OnKeyboardReleased(const KeyboardKey key)
 void ButtonList::PassTime(const time_t delta_time)
 {
     covering_time_ += delta_time;
-    return;
 }

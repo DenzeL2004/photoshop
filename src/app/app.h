@@ -2,7 +2,7 @@
 #define _APP_H_
 
 
-#include "../widget/window/window.h"
+#include "../widget/window/canvas.h"
 #include "../widget/button/button.h"
 
 #include "config.h"

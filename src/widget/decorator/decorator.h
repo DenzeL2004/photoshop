@@ -41,8 +41,6 @@ struct Title
 
 };
 
-
-
 class Frame: public Widget
 {
 
@@ -103,42 +101,5 @@ class Frame: public Widget
 
         Transform left_border_, top_border_, right_border_, bottom_border_;
 };
-
-
-class Scrollbar: public Widget
-{
-
-    public:
-        Scrollbar  (Button *top_button, Button *bottom_button, Button *center_button, 
-                    Widget *decarable, const Dot &offset, const Vector &scale);
-
-        virtual ~Scrollbar()
-        {
-            delete top_button_;
-            delete bottom_button_;
-            delete center_button_;
-        }
-
-        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);
-        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
-
-        virtual bool OnKeyboardPressed  (const KeyboardKey);
-        virtual bool OnKeyboardReleased (const KeyboardKey);
-
-        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;  
-
-        virtual void PassTime           (const time_t delta_time);
-
-    private:
-
-        void MoveCenter (const Dot &new_coord);
-
-        Button *top_button_, *bottom_button_, *center_button_;
-        Widget *decarable_;
-
-        Transform transform_;
-};
-
 
 #endif
