@@ -28,8 +28,8 @@ struct Transform
         Transform (const Transform &other) = default;
         Transform& operator= (const Transform &other) = default;
 
-        Transform   ApplyPrev         (const Transform &prev) const;
-        Vector      ApplyTransform    (const Dot &pos)        const;
+        Transform       ApplyPrev         (const Transform &prev) const;
+        Vector          ApplyTransform    (const Dot &pos)        const;
         sf::Vector2f    RollbackTransform (const Vector &vec)     const;
 
         Vector offset;
@@ -53,7 +53,7 @@ class Widget
         virtual bool OnKeyboardPressed  (const KeyboardKey) = 0;
         virtual bool OnKeyboardReleased (const KeyboardKey) = 0;
 
-        virtual void Draw               (sf::RenderTarget &target, Container<Transform> &stack_transform) const = 0;  
+        virtual void Draw               (sf::RenderTarget &target, Container<Transform> &stack_transform) = 0;  
 
         virtual void PassTime           (const time_t delta_time) = 0;
 };

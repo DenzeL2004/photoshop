@@ -45,9 +45,11 @@ class Button : public Widget
         virtual bool OnKeyboardPressed  (const KeyboardKey);
         virtual bool OnKeyboardReleased (const KeyboardKey);
 
-        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) const override;    
+        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;    
         
         virtual void PassTime           (const time_t delta_time);
+
+        void Move (const Vector &offset);
 
         Transform GetTransform() const {return transform_;}
 
@@ -112,7 +114,7 @@ class ButtonList : public Button
         virtual bool OnKeyboardPressed  (const KeyboardKey);
         virtual bool OnKeyboardReleased (const KeyboardKey);
 
-        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) const override;    
+        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;    
         
         virtual void PassTime           (const time_t delta_time);
 

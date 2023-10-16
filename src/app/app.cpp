@@ -5,12 +5,12 @@ const double WIDTH = 1600.0;
 const double HIEGHT = 900.0;
 
 AppWindow::AppWindow(const char *path_texture, const Dot &offset, const Vector &scale):
-           Window(path_texture, offset, scale), canvase_manager_(Empty_texture, Canvase_Manager_Offset, Canvase_Manager_Scale),
+           Window(path_texture, offset, scale), canvas_manager_(Empty_texture, Canvase_Manager_Offset, Canvase_Manager_Scale),
            tool_(Tool::Type::Nothing, sf::Color(0, 0, 0, 255), 15u)
 {
     button_create_ = new Button("src/img/NewCanvansReleased.png", "src/img/NewCanvansCovered.png", 
                                 "src/img/NewCanvansReleased.png", "src/img/NewCanvansCovered.png", 
-                                new AddCanvase(&canvase_manager_, &tool_), Button_Create_Offset, Button_Create_Scale);
+                                new AddCanvase(&canvas_manager_, &tool_), Button_Create_Offset, Button_Create_Scale);
     {
         tools_button_ = new ButtonList("src/img/ToolsReleased.png", "src/img/ToolsCovered.png", 
                                        "src/img/ToolsCovered.png", "src/img/ToolsCovered.png", 
@@ -63,13 +63,13 @@ AppWindow::AppWindow(const char *path_texture, const Dot &offset, const Vector &
 } 
 
 
-void AppWindow::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
+void AppWindow::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
     Window::Draw(target, stack_transform);
    
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
 
-    canvase_manager_.Draw(target, stack_transform);
+    canvas_manager_.Draw(target, stack_transform);
     button_create_->Draw(target, stack_transform);
     colors_button_->Draw(target, stack_transform);
     tools_button_->Draw(target, stack_transform);
@@ -91,7 +91,7 @@ bool AppWindow::OnMouseMoved(const double x, const double y, Container<Transform
     button_create_->OnMouseMoved(x, y, stack_transform);
     tools_button_->OnMouseMoved(x, y, stack_transform);
     colors_button_->OnMouseMoved(x, y, stack_transform);
-    canvase_manager_.OnMouseMoved(x, y, stack_transform);
+    canvas_manager_.OnMouseMoved(x, y, stack_transform);
     
     stack_transform.PopBack();
 
@@ -114,7 +114,7 @@ bool AppWindow::OnMousePressed(const double x, const double y, const MouseKey ke
         flag |= button_create_->OnMousePressed(x, y, key, stack_transform);
         if (!flag) flag |= tools_button_->OnMousePressed(x, y, key, stack_transform);
         if (!flag) flag |= colors_button_->OnMousePressed(x, y, key, stack_transform);
-        if (!flag) flag |= canvase_manager_.OnMousePressed(x, y, key, stack_transform);
+        if (!flag) flag |= canvas_manager_.OnMousePressed(x, y, key, stack_transform);
     }
 
     stack_transform.PopBack();
@@ -126,11 +126,14 @@ bool AppWindow::OnMousePressed(const double x, const double y, const MouseKey ke
 
 bool AppWindow::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
 
     button_create_->OnMouseReleased(x, y, key, stack_transform);
     tools_button_->OnMouseReleased(x, y, key, stack_transform);
     colors_button_->OnMouseReleased(x, y, key, stack_transform);
-    canvase_manager_.OnMouseReleased(x, y, key, stack_transform);
+    canvas_manager_.OnMouseReleased(x, y, key, stack_transform);
+
+    stack_transform.PopBack();
     return true;
 }
 

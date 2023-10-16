@@ -2,8 +2,9 @@
 #define _WINDOW_H_
 
 #include "../widget.h"
-#include "../../vector/vector.h"
+#include "../button/button.h"
 
+#include "../../vector/vector.h"
 #include "../../container/container.h"
 
 class Window : public Widget
@@ -21,7 +22,7 @@ class Window : public Widget
         virtual bool OnKeyboardPressed  (const KeyboardKey);
         virtual bool OnKeyboardReleased (const KeyboardKey);
 
-        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) const override;  
+        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;  
 
         virtual void PassTime           (const time_t delta_time);
 
@@ -71,15 +72,15 @@ class Tool
         
 };
 
-class Canvase : public Widget
+class Canvas : public Widget
 {
 
     public:
         
-        Canvase (const double width, const double hieght, Tool *tool,  
+        Canvas (const double width, const double hieght, Tool *tool,  
                  const Dot &offset, const Vector &scale);
         
-        virtual ~Canvase(){}
+        virtual ~Canvas(){}
 
         virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
         virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);
@@ -88,9 +89,12 @@ class Canvase : public Widget
         virtual bool OnKeyboardPressed  (const KeyboardKey);
         virtual bool OnKeyboardReleased (const KeyboardKey);
 
-        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) const override;  
+        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;  
 
         virtual void PassTime           (const time_t delta_time);
+
+        void Move (const Dot &offset);
+        void CorrectRealCoord (const Transform &transform);
 
     private:
         void GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const;
@@ -101,9 +105,25 @@ class Canvase : public Widget
         sf::RenderTexture background_;
 
         Tool *tool_;
-
         Dot real_pos_;
+};
 
+class ScrollCanvas : public Action
+{
+    public:
+        ScrollCanvas(const Vector &delta, Canvas *ptr): 
+                delta_(delta), canvas_(ptr){};
+        ~ScrollCanvas(){};
+
+        void operator() () const
+        {
+            canvas_->Move(delta_);
+            return;
+        }
+
+    private:
+        Dot delta_;
+        Canvas *canvas_;
 };
 
 class CanvaseManager : public Window
@@ -128,8 +148,7 @@ class CanvaseManager : public Window
         virtual bool OnKeyboardPressed  (const KeyboardKey);
         virtual bool OnKeyboardReleased (const KeyboardKey);
 
-
-        virtual void Draw               (sf::RenderTarget &target, Container<Transform> &stack_transform) const;
+        virtual void Draw               (sf::RenderTarget &target, Container<Transform> &stack_transform);
 
 
         void CreateCanvase(Tool *tool);
@@ -138,8 +157,6 @@ class CanvaseManager : public Window
         bool delte_canvase_;
 
         size_t cnt_;
-               
-
 }; 
 
 #endif

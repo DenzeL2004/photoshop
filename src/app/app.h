@@ -79,13 +79,13 @@ class AppWindow: public Window
         virtual bool OnKeyboardPressed  (const KeyboardKey);
         virtual bool OnKeyboardReleased (const KeyboardKey);
 
-        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) const override;  
+        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;  
 
         virtual void PassTime           (const time_t delta_time);
 
     protected:
         
-        CanvaseManager canvase_manager_;
+        CanvaseManager canvas_manager_;
         Button *button_create_;
         ButtonList *tools_button_;
         ButtonList *colors_button_;

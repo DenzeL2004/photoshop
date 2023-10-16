@@ -46,7 +46,7 @@ Frame::Frame( const char *path_texture, Button* close_button,
     return;
 }
 
-void Frame::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
+void Frame::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
@@ -91,7 +91,6 @@ bool Frame::OnMouseMoved(const double x, const double y, Container<Transform> &s
     
     if(state_ == Hold)
     {
-
         uint8_t mask = ClickOnBorder(x, y, last_trf);
         if (mask)
             Scale(new_coord, mask);
@@ -185,15 +184,15 @@ bool Frame::OnMousePressed(const double x, const double y, const MouseKey key, C
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
 
-    Dot new_coord = last_trf.ApplyTransform({x, y});
+    bool flag  = close_button_->OnMousePressed(x, y, key, stack_transform);
+         flag |= decarable_->OnMousePressed(x, y, key, stack_transform);
 
-    bool flag = CheckIn(new_coord);
-    if (flag)
+    if (!flag)
     {
-        bool flag  = close_button_->OnMousePressed(x, y, key, stack_transform);
-             flag |= decarable_->OnMousePressed(x, y, key, stack_transform);
+        Dot new_coord = last_trf.ApplyTransform({x, y});
+        flag = CheckIn(new_coord);    
 
-        if (!flag)
+        if (flag)
         {
             if (key == MouseKey::Left)
             {
@@ -252,3 +251,157 @@ void Frame::PassTime(const time_t delta_time)
 }
 
 //================================================================================
+
+Scrollbar::Scrollbar(Button *top_button, Button *bottom_button, Button *center_button, 
+                     Widget *decarable, const Dot &offset, const Vector &scale):
+                     top_button_(top_button), bottom_button_(bottom_button), center_button_(center_button),
+                     decarable_(decarable), transform_({offset, scale})
+{}
+
+void Scrollbar::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
+{
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform last_trf = stack_transform.GetBack();
+    
+    top_button_->Draw(target, stack_transform);
+    bottom_button_->Draw(target, stack_transform);
+    center_button_->Draw(target, stack_transform);
+    
+    decarable_->Draw(target, stack_transform);
+
+    stack_transform.PopBack();
+
+    return;
+}
+
+//================================================================================
+
+bool Scrollbar::OnMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
+{
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform last_trf = stack_transform.GetBack();
+
+    bool flag = flag = decarable_->OnMouseMoved(x, y, stack_transform);;
+
+    top_button_->OnMouseMoved(x, y, stack_transform);
+    bottom_button_->OnMouseMoved(x, y, stack_transform);
+    //if (!flag) flag |= center_button_->OnMouseMoved(x, y, stack_transform);
+
+    //rintf("%d %d\n", center_button_->prev_state_, center_button_->state_);
+
+    if (center_button_->OnMouseMoved(x, y, stack_transform) &&
+        center_button_->prev_state_ == Button::Button_State::Pressed &&
+        center_button_->state_ == Button::Button_State::Covered)
+    {
+        Dot new_coord = last_trf.ApplyTransform({x, y});
+        MoveCenter(new_coord);
+        
+    
+    }
+    else    
+        center_button_->state_ == Button::Button_State::Released;
+
+
+
+    stack_transform.PopBack();
+
+    return flag;
+}
+
+
+
+void Scrollbar::MoveCenter(const Dot &new_coord)
+{
+    Transform center_trf = center_button_->GetTransform();
+
+    Transform top_trf    = top_button_->GetTransform();
+    Transform bottom_trf = bottom_button_->GetTransform();
+
+    Vector delta(new_coord.x - center_trf.offset.x, 0);
+    
+    if (center_trf.offset.x + delta.x > top_trf.offset.x + top_trf.scale.x && 
+        center_trf.offset.x + delta.x + center_trf.scale.x < bottom_trf.offset.x)
+    {
+        center_button_->Move(delta);
+    }
+
+    return;
+}
+
+//================================================================================
+
+bool Scrollbar::OnMousePressed(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
+{
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform last_trf = stack_transform.GetBack();
+
+    bool flag = decarable_->OnMousePressed(x, y, key, stack_transform);;
+    if (!flag) flag |= top_button_->OnMousePressed(x, y, key, stack_transform);
+    if (!flag) flag |= bottom_button_->OnMousePressed(x, y, key, stack_transform);
+
+    if (!flag) flag |= center_button_->OnMousePressed(x, y, key, stack_transform);
+    
+    if (!flag)
+    {
+        Dot new_coord = last_trf.ApplyTransform({x, y});
+        flag = CheckIn(new_coord);
+
+        if (flag)
+        {
+            Dot offset = new_coord - center_button_->GetTransform().offset;
+            if (offset.x < Eps || offset.y < Eps)
+                (*top_button_->action_)();
+            
+            if (offset.x > Eps || offset.y > Eps)
+                (*bottom_button_->action_)();
+        }
+    } 
+        
+
+    stack_transform.PopBack();
+
+    return flag;
+}
+
+//================================================================================
+
+bool Scrollbar::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
+{
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+
+    printf("RELEASE");
+
+    top_button_->OnMouseReleased(x, y, key, stack_transform);
+    bottom_button_->OnMouseReleased(x, y, key, stack_transform);
+    center_button_->OnMouseReleased(x, y, key, stack_transform);
+    
+    decarable_->OnMouseReleased(x, y, key, stack_transform);
+
+    stack_transform.PopBack();
+
+    return true;
+}
+
+//================================================================================
+
+bool Scrollbar::OnKeyboardPressed(const KeyboardKey key)
+{
+    printf("Scrollbar: mouse keyboard kye pressed\n");
+    return false;
+}
+
+//================================================================================
+
+bool Scrollbar::OnKeyboardReleased(const KeyboardKey key)
+{
+    printf("Scrollbar: mouse keyboard kye released\n");
+    return false;
+}
+
+//================================================================================
+
+void Scrollbar::PassTime(const time_t delta_time)
+{
+    printf("Scrollbar: mouse keyboard kye released\n");
+    return;
+}

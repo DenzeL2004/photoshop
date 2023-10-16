@@ -45,7 +45,7 @@ Button::Button (const char *released_texture_file, const char *covered_texture_f
 
 //================================================================================
 
-void Button::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
+void Button::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
@@ -120,6 +120,7 @@ bool Button::OnMouseMoved(const double x, const double y, Container<Transform> &
     { 
         covering_time_ = 0;
         state_ = prev_state_;
+        
     }
     else
     {
@@ -150,9 +151,13 @@ bool Button::OnMousePressed(const double x, const double y, const MouseKey key, 
     if (flag && key == Left)
     {
         if (action_ != nullptr) (*action_)();
+        state_ = Button::Button_State::Pressed;
     }
     else
+    {
         flag = false;
+        state_ = Button::Button_State::Released;
+    }
 
     stack_transform.PopBack();
 
@@ -167,6 +172,7 @@ bool Button::OnMouseReleased(const double x, const double y, const MouseKey key,
         return false;
 
     state_ = Button::Button_State::Released;
+    prev_state_ = Button::Button_State::Released;
 
     return true;
 }
@@ -195,9 +201,15 @@ void Button::PassTime(const time_t delta_time)
     return;
 }
 
+
+void Button::Move (const Vector &offset)
+{
+    transform_.offset += offset;
+}
+
 //================================================================================
 
-void ButtonList::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
+void ButtonList::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
     Button::Draw(target, stack_transform);
     

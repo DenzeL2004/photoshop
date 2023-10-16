@@ -21,7 +21,7 @@ Window::Window (const char *path_texture,
 
 //================================================================================
 
-void Window::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
+void Window::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
@@ -139,7 +139,8 @@ void Tool::Draw(sf::RenderTarget &target, const Dot &pos)
 
 //=======================================================================================
 //CANVASE
-Canvase::Canvase(const double width, const double hieght, Tool *tool, 
+
+Canvas::Canvas(const double width, const double hieght, Tool *tool, 
                  const Dot &offset, const Vector &scale):
                   transform_({offset, scale}),
                   width_(width), hieght_(hieght), tool_(tool),
@@ -160,13 +161,14 @@ Canvase::Canvase(const double width, const double hieght, Tool *tool,
 
 //=======================================================================================
 
-void Canvase::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
+void Canvas::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
 
     sf::VertexArray vertex_array(sf::Quads, 4);
 
+    CorrectRealCoord(last_trf);
     GetNewSize(vertex_array, last_trf);
 
     target.draw(vertex_array, &(background_.getTexture()));
@@ -176,7 +178,7 @@ void Canvase::Draw(sf::RenderTarget &target, Container<Transform> &stack_transfo
     return;
 }
 
-void Canvase::GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const
+void Canvas::GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const
 {
     vertex_array[0].position = transform.RollbackTransform({0, 0});
     vertex_array[1].position = transform.RollbackTransform({1, 0});
@@ -185,6 +187,7 @@ void Canvase::GetNewSize(sf::VertexArray &vertex_array, const Transform &transfo
 
     float new_width  = vertex_array[1].position.x - vertex_array[0].position.x;
     float new_hieght = vertex_array[2].position.y - vertex_array[1].position.y;
+
     vertex_array[0].texCoords = sf::Vector2f((float)real_pos_.x, (float)real_pos_.y);
     vertex_array[1].texCoords = sf::Vector2f((float)real_pos_.x + (float)new_width - 1, (float)real_pos_.y);
     vertex_array[2].texCoords = sf::Vector2f((float)real_pos_.x + (float)new_width - 1, (float)real_pos_.y + (float)new_hieght - 1);
@@ -195,12 +198,13 @@ void Canvase::GetNewSize(sf::VertexArray &vertex_array, const Transform &transfo
 
 //================================================================================
 
-bool Canvase::OnMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
+bool Canvas::OnMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
-    
+
     Dot new_coord = last_trf.ApplyTransform({x, y});
+    
 
     bool flag = CheckIn(new_coord);
     if (flag)
@@ -218,7 +222,7 @@ bool Canvase::OnMouseMoved(const double x, const double y, Container<Transform> 
 
 //================================================================================
 
-bool Canvase::OnMousePressed(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
+bool Canvas::OnMousePressed(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
@@ -239,7 +243,7 @@ bool Canvase::OnMousePressed(const double x, const double y, const MouseKey key,
 
 //================================================================================
 
-bool Canvase::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
+bool Canvas::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
 
@@ -250,45 +254,68 @@ bool Canvase::OnMouseReleased(const double x, const double y, const MouseKey key
     return true;
 }
 
-Dot Canvase::GetCanvaseCoord(double x, double y, const Transform &transform) const
+Dot Canvas::GetCanvaseCoord(double x, double y, const Transform &transform) const
 {
     return Dot(real_pos_.x + x - transform.offset.x, hieght_ - (real_pos_.y + y - transform.offset.y));
 }
 
 //================================================================================
 
-bool Canvase::OnKeyboardPressed(const KeyboardKey key)
+bool Canvas::OnKeyboardPressed(const KeyboardKey key)
 {
-    printf("Canvase: mouse keyboard kye pressed\n");
+    printf("Canvas: mouse keyboard kye pressed\n");
     return false;
 }
 
 //================================================================================
 
-bool Canvase::OnKeyboardReleased(const KeyboardKey key)
+bool Canvas::OnKeyboardReleased(const KeyboardKey key)
 {
-    printf("Canvase: mouse keyboard kye released\n");
+    printf("Canvas: mouse keyboard kye released\n");
     return false;
 }
 
 //================================================================================
 
-void Canvase::PassTime(const time_t delta_time)
+void Canvas::PassTime(const time_t delta_time)
 {
-    printf("Canvase: mouse keyboard kye released\n");
+    printf("Canvas: mouse keyboard kye released\n");
+    return;
+}
+
+//================================================================================
+
+void Canvas::Move(const Dot &offset)
+{
+    real_pos_ += offset;
     return;
 }
 
 
+void Canvas::CorrectRealCoord(const Transform &transform)
+{
+    if (real_pos_.x < Eps)
+        real_pos_.x = Eps;
+
+    if (real_pos_.y < Eps)
+        real_pos_.y = Eps;
+
+    if (real_pos_.x + transform.scale.x  > width_ - Eps)
+        real_pos_.x =  width_ - Eps - transform.scale.x;
+
+    if (real_pos_.y + transform.scale.y > hieght_ - Eps)
+        real_pos_.y = hieght_ - Eps - transform.scale.y;    
+}
+
 //=======================================================================================
 // //CONTAINER WINDOW
 
-void CanvaseManager::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform) const
+void CanvaseManager::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
     Window::Draw(target, stack_transform);
 
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
-    
+
     size_t size = canvases_.GetSize();
     for (size_t it = 0; it < size; it++)
         canvases_[it]->Draw(target, stack_transform);
@@ -312,8 +339,7 @@ bool CanvaseManager::OnMouseMoved(const double x, const double y, Container<Tran
 
    
     canvases_[size - 1]->OnMouseMoved(x, y, stack_transform);
-
-
+    
     stack_transform.PopBack();
 
     return true;
@@ -361,23 +387,21 @@ bool CanvaseManager::OnMouseReleased(const double x, const double y, const Mouse
     Transform last_trf = stack_transform.GetBack();
     Dot new_coord = last_trf.ApplyTransform({x, y});
 
-    bool flag = false;
     int size = (int)canvases_.GetSize();
     for (int it = size - 1; it >= 0; it--)
     {
-        flag |= canvases_[it]->OnMouseReleased(x, y, key, stack_transform);
+        canvases_[it]->OnMouseReleased(x, y, key, stack_transform);
     }
 
     stack_transform.PopBack();
 
-    return flag;
+    return true;
 }
 
 //================================================================================
 
 bool CanvaseManager::OnKeyboardPressed(const KeyboardKey key)
 {
-    
     return false;
 }
 
@@ -402,16 +426,34 @@ void CanvaseManager::CreateCanvase(Tool *tool)
     }
 
     cnt_++;
-    sprintf(buf, "canvase %lu", cnt_);
+    sprintf(buf, "canvas %lu", cnt_);
 
     Button *close_button = new Button(Cross_Button_Release, Cross_Button_Covered, 
                                       Cross_Button_Release, Cross_Button_Covered, 
                                       new Click(&delte_canvase_), 
                                       Cross_Button_Offset, Cross_Button_Scale);
 
-    Canvase *new_canvase = new Canvase(Width_Canvase, Hieght_Canvase, tool, Canvase_Offset, Canvase_Scale);
+    Canvas *new_canvase = new Canvas(Width_Canvase, Hieght_Canvase, tool, Canvase_Offset, Canvase_Scale);
+
+    Button *top_button = new Button("src/img/left.png", "src/img/left.png", 
+                                    "src/img/left.png", "src/img/left.png", 
+                                    new ScrollCanvas(Dot(-10, 0), new_canvase), 
+                                    Dot(0.025, 0), Vector(0.03, 0.03));
+
+    Button *bottom_button = new Button("src/img/right.png", "src/img/right.png", 
+                                       "src/img/right.png", "src/img/right.png", 
+                                       new ScrollCanvas(Vector(10, 0), new_canvase), 
+                                       Dot(0.995, 0), Vector(0.03, 0.03));
+
+    Button *center_button = new Button("src/img/horizontal.png", "src/img/horizontal.png", 
+                                       "src/img/horizontal.png", "src/img/horizontal.png", 
+                                       new ScrollCanvas(Dot(0, 0), new_canvase), 
+                                       Dot(0.05, 0.0), Vector(0.1, 0.03));
+
+    Scrollbar *scroll = new Scrollbar(top_button, bottom_button, center_button, new_canvase, Dot(0, 0.05), Vector(0.95, 0.87));
+
     Widget *new_frame = new Frame(Frame_Texture, close_button, {buf, sf::Color::Black}, 
-                                  new_canvase, Canvase_Frame_Offset, Canvase_Frame_Scale);
+                                  scroll, Canvase_Frame_Offset, Canvase_Frame_Scale);
 
     canvases_.PushBack(new_frame);
 }
