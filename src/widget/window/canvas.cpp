@@ -317,7 +317,7 @@ void CanvaseManager::CreateCanvase(Tool *tool)
     cnt_++;
     sprintf(buf, "canvas %lu", cnt_);
 
-    Button *close_button = new Button(Cross_Button_Release, Cross_Button_Covered, 
+    Button *close_btn = new Button(Cross_Button_Release, Cross_Button_Covered, 
                                       Cross_Button_Release, Cross_Button_Covered, 
                                       new Click(&delte_canvase_), 
                                       Cross_Button_Offset, Cross_Button_Scale);
@@ -327,40 +327,34 @@ void CanvaseManager::CreateCanvase(Tool *tool)
     WidgetContainer *scrolls = new WidgetContainer(Dot(0.02, 0.05), Vector(0.95, 0.87));
     
 
-    Button *left_button = new Button("src/img/left.png", "src/img/left.png", 
-                            "src/img/left.png", "src/img/left.png", 
-                            new ScrollCanvas(Dot(-0.05, 0), new_canvase), 
-                            Dot(0.0, 0), Vector(0.03, 0.03));
+    Button *left_btn = new Button(  Left_Scl, Left_Scl, Left_Scl, Left_Scl, 
+                                    new ScrollCanvas(Dot(-0.05, 0), new_canvase), 
+                                    Dot(0.0, 0.0), Vector(0.03, 0.03));
 
-    Button *right_button = new Button("src/img/right.png", "src/img/right.png", 
-                                "src/img/right.png", "src/img/right.png", 
-                                new ScrollCanvas(Vector(0.05, 0), new_canvase), 
-                                Dot(0.92, 0), Vector(0.03, 0.03));
+    Button *right_btn = new Button( Right_Scl, Right_Scl, Right_Scl, Right_Scl, 
+                                    new ScrollCanvas(Vector(0.05, 0), new_canvase), 
+                                    Dot(0.92, 0), Vector(0.03, 0.03));
 
-    Button *hor_button = new Button("src/img/horizontal.png", "src/img/horizontal.png", 
-                                "src/img/horizontal.png", "src/img/horizontal.png", 
-                                new ScrollCanvas(Dot(0, 0), new_canvase), 
-                                Dot(0.03, 0.0), Vector(1.0, 0.03));
+    Button *hor_btn = new Button(   Hor_Scl, Hor_Scl, Hor_Scl, Hor_Scl, 
+                                    new ScrollCanvas(Dot(0, 0), new_canvase), 
+                                    Dot(0.03, 0.0), Vector(1.0, 0.03));
 
-    Scrollbar *scroll_hor = new Scrollbar(left_button, right_button, hor_button, new_canvase, 
+    Scrollbar *scroll_hor = new Scrollbar(left_btn, right_btn, hor_btn, new_canvase, 
                                      Scrollbar::Scroll_Type::Horizontal, Dot(0.00, 0.00), Vector(1.0, 1.0));
 
-    Button *up_button = new Button("src/img/up.png", "src/img/up.png", 
-                            "src/img/up.png", "src/img/up.png", 
-                            new ScrollCanvas(Dot(0.0, -0.05), new_canvase), 
-                            Dot(0.0, 0.0), Vector(0.03, 0.03));
+    Button *up_btn = new Button(Up_Scl, Up_Scl, Up_Scl, Up_Scl, 
+                                new ScrollCanvas(Dot(0.0, -0.05), new_canvase), 
+                                Dot(0.0, 0.0), Vector(0.03, 0.03));
 
-    Button *down_button = new Button("src/img/down.png", "src/img/down.png", 
-                                "src/img/down.png", "src/img/down.png", 
+    Button *down_btn = new Button(Down_Scl, Down_Scl, Down_Scl, Down_Scl, 
                                 new ScrollCanvas(Vector(0.0, 0.05), new_canvase), 
                                 Dot(0, 0.97), Vector(0.03, 0.03));
 
-    Button *ver_button = new Button("src/img/vertical.png", "src/img/vertical.png", 
-                                "src/img/vertical.png", "src/img/vertical.png", 
+    Button *ver_btn = new Button(Ver_Scl, Ver_Scl, Ver_Scl, Ver_Scl, 
                                 new ScrollCanvas(Dot(0, 0), new_canvase), 
                                 Dot(0.0, 0.03), Vector(0.03, 1.0));
 
-    Scrollbar *scroll_ver = new Scrollbar(up_button, down_button, ver_button, new_canvase, 
+    Scrollbar *scroll_ver = new Scrollbar(up_btn, down_btn, ver_btn, new_canvase, 
                                      Scrollbar::Scroll_Type::Vertical, Dot(0.96, 0.05), Vector(1.0, 1.0));
    
 
@@ -368,7 +362,7 @@ void CanvaseManager::CreateCanvase(Tool *tool)
     scrolls->AddWidget(scroll_hor);
     scrolls->AddWidget(scroll_ver);
 
-    Widget *new_frame = new Frame(Frame_Texture, close_button, {buf, sf::Color::Black}, 
+    Widget *new_frame = new Frame(Frame_Texture, close_btn, {buf, sf::Color::Black}, 
                                   scrolls, Canvase_Frame_Offset, Canvase_Frame_Scale);
 
     canvases_.PushBack(new_frame);
@@ -464,7 +458,6 @@ void Scrollbar::MoveCenter(Dot &prev_pos)
         offset = Dot((canvas_->GetRealPos().x - prev_pos.x) / canvas_->GetSize().x, 0.0);
         offset.x = std::min(bottom_trf.offset.x - Eps - (center_trf.offset.x + center_trf.scale.x), 
                         std::max(top_trf.offset.x + top_trf.scale.x + Eps - center_trf.offset.x, offset.x));
-
     }
 
     if (type_ == Scrollbar::Scroll_Type::Vertical)
@@ -520,8 +513,6 @@ bool Scrollbar::OnMousePressed(const double x, const double y, const MouseKey ke
         }
     }
     
-    
-
     canvas_->CorrectRealCoord(canvas_->GetTransform().ApplyPrev(last_trf));
     MoveCenter(prev_real_pos);
 

@@ -4,6 +4,9 @@
 #include "window.h"
 #include "../decorator/decorator.h"
 
+#include "canvas_config.h"
+
+
 class Tool
 {
     public:
