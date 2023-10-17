@@ -12,8 +12,8 @@ static Vector Cross_Button_Scale    = Vector(0.02, 0.025);
 static double Width_Canvase  = 2000.0;
 static double Hieght_Canvase = 2000.0;
 
-static Dot    Canvase_Offset = Dot(0.0, 0.035);
-static Vector Canvase_Scale  = Vector(1.0, 1.0);
+static Dot    Canvase_Offset = Dot(0.00, 0.05);
+static Vector Canvase_Scale  = Vector(0.95, 1.0);
 
 static Dot    Canvase_Frame_Offset = Dot(0.1, 0.1);
 static Vector Canvase_Frame_Scale  = Vector(0.6, 0.6);

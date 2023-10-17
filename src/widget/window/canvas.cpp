@@ -18,7 +18,6 @@ void Tool::Draw(sf::RenderTarget &target, const Dot &pos)
     }
 }
 
-
 Canvas::Canvas  (const double width, const double hieght, Tool *tool, 
                 const Dot &offset, const Vector &scale):
                 transform_({offset, scale}),
@@ -325,11 +324,52 @@ void CanvaseManager::CreateCanvase(Tool *tool)
 
     Canvas *new_canvase = new Canvas(Width_Canvase, Hieght_Canvase, tool, Canvase_Offset, Canvase_Scale);
 
+    WidgetContainer *scrolls = new WidgetContainer(Dot(0.02, 0.05), Vector(0.95, 0.87));
+    
 
-    Scrollbar *scroll = new Scrollbar(new_canvase, Scrollbar::Scroll_Type::Horizontal, Dot(0.02, 0.05), Vector(0.95, 0.87));
+    Button *left_button = new Button("src/img/left.png", "src/img/left.png", 
+                            "src/img/left.png", "src/img/left.png", 
+                            new ScrollCanvas(Dot(-0.05, 0), new_canvase), 
+                            Dot(0.0, 0), Vector(0.03, 0.03));
+
+    Button *right_button = new Button("src/img/right.png", "src/img/right.png", 
+                                "src/img/right.png", "src/img/right.png", 
+                                new ScrollCanvas(Vector(0.05, 0), new_canvase), 
+                                Dot(0.92, 0), Vector(0.03, 0.03));
+
+    Button *hor_button = new Button("src/img/horizontal.png", "src/img/horizontal.png", 
+                                "src/img/horizontal.png", "src/img/horizontal.png", 
+                                new ScrollCanvas(Dot(0, 0), new_canvase), 
+                                Dot(0.03, 0.0), Vector(1.0, 0.03));
+
+    Scrollbar *scroll_hor = new Scrollbar(left_button, right_button, hor_button, new_canvase, 
+                                     Scrollbar::Scroll_Type::Horizontal, Dot(0.00, 0.00), Vector(1.0, 1.0));
+
+    Button *up_button = new Button("src/img/up.png", "src/img/up.png", 
+                            "src/img/up.png", "src/img/up.png", 
+                            new ScrollCanvas(Dot(0.0, -0.05), new_canvase), 
+                            Dot(0.0, 0.0), Vector(0.03, 0.03));
+
+    Button *down_button = new Button("src/img/down.png", "src/img/down.png", 
+                                "src/img/down.png", "src/img/down.png", 
+                                new ScrollCanvas(Vector(0.0, 0.05), new_canvase), 
+                                Dot(0, 0.97), Vector(0.03, 0.03));
+
+    Button *ver_button = new Button("src/img/vertical.png", "src/img/vertical.png", 
+                                "src/img/vertical.png", "src/img/vertical.png", 
+                                new ScrollCanvas(Dot(0, 0), new_canvase), 
+                                Dot(0.0, 0.03), Vector(0.03, 1.0));
+
+    Scrollbar *scroll_ver = new Scrollbar(up_button, down_button, ver_button, new_canvase, 
+                                     Scrollbar::Scroll_Type::Vertical, Dot(0.96, 0.05), Vector(1.0, 1.0));
+   
+
+    scrolls->AddWidget(new_canvase);
+    scrolls->AddWidget(scroll_hor);
+    scrolls->AddWidget(scroll_ver);
 
     Widget *new_frame = new Frame(Frame_Texture, close_button, {buf, sf::Color::Black}, 
-                                  scroll, Canvase_Frame_Offset, Canvase_Frame_Scale);
+                                  scrolls, Canvase_Frame_Offset, Canvase_Frame_Scale);
 
     canvases_.PushBack(new_frame);
 }
@@ -337,43 +377,16 @@ void CanvaseManager::CreateCanvase(Tool *tool)
 //================================================================================
 
 
-Scrollbar::Scrollbar(Canvas *canvas, Scroll_Type type, const Dot &offset, const Vector &scale):
-                     top_button_(nullptr), bottom_button_(nullptr), center_button_(nullptr),
-                     canvas_(canvas), transform_({offset, scale}), pos_press_(offset), type_(type)
-{
-    top_button_ = new Button("src/img/left.png", "src/img/left.png", 
-                            "src/img/left.png", "src/img/left.png", 
-                            new ScrollCanvas(Dot(-0.05, 0), canvas), 
-                            Dot(0.0, 0), Vector(0.03, 0.03));
-
-    bottom_button_ = new Button("src/img/right.png", "src/img/right.png", 
-                                "src/img/right.png", "src/img/right.png", 
-                                new ScrollCanvas(Vector(0.05, 0), canvas), 
-                                Dot(0.97, 0), Vector(0.03, 0.03));
-
-    center_button_ = new Button("src/img/horizontal.png", "src/img/horizontal.png", 
-                                "src/img/horizontal.png", "src/img/horizontal.png", 
-                                new ScrollCanvas(Dot(0, 0), canvas), 
-                                Dot(0.032, 0.0), Vector(0.4, 0.03));
-
-    return;
-
-}
-
 void Scrollbar::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
 
-
     ResizeCenterButton(canvas_->GetTransform().ApplyPrev(last_trf));
     
-
     top_button_->Draw(target, stack_transform);
     bottom_button_->Draw(target, stack_transform);
     center_button_->Draw(target, stack_transform);
-    
-    canvas_->Draw(target, stack_transform);
 
     stack_transform.PopBack();
 
@@ -399,10 +412,7 @@ void Scrollbar::ResizeCenterButton(const Transform &canvas_trf)
 
     Dot prev = canvas_->GetRealPos();
     MoveCenter(prev);
-
 }
-
-
 
 //================================================================================
 
@@ -410,8 +420,6 @@ bool Scrollbar::OnMouseMoved(const double x, const double y, Container<Transform
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
-
-    bool flag = flag = canvas_->OnMouseMoved(x, y, stack_transform);;
 
     top_button_->OnMouseMoved(x, y, stack_transform);
     bottom_button_->OnMouseMoved(x, y, stack_transform);
@@ -426,6 +434,7 @@ bool Scrollbar::OnMouseMoved(const double x, const double y, Container<Transform
         
         if (type_ == Scrollbar::Scroll_Type::Horizontal)
             canvas_->Move(Dot((new_coord.x - pos_press_.x) * canvas_->GetSize().x, 0));
+
         if (type_ == Scrollbar::Scroll_Type::Vertical)
             canvas_->Move(Dot(0.0, (new_coord.y - pos_press_.y) * canvas_->GetSize().y));
 
@@ -438,7 +447,7 @@ bool Scrollbar::OnMouseMoved(const double x, const double y, Container<Transform
     
     stack_transform.PopBack();
 
-    return flag;
+    return true;
 }
 
 void Scrollbar::MoveCenter(Dot &prev_pos)
@@ -449,11 +458,22 @@ void Scrollbar::MoveCenter(Dot &prev_pos)
     Transform bottom_trf = bottom_button_->GetTransform();
 
 
-    Dot offset((canvas_->GetRealPos().x - prev_pos.x) / canvas_->GetSize().x, 0.0);
-
-    offset.x = std::min(bottom_trf.offset.x - Eps - (center_trf.offset.x + center_trf.scale.x), 
+    Dot offset(0.0, 0.0);
+    if (type_ == Scrollbar::Scroll_Type::Horizontal)
+    { 
+        offset = Dot((canvas_->GetRealPos().x - prev_pos.x) / canvas_->GetSize().x, 0.0);
+        offset.x = std::min(bottom_trf.offset.x - Eps - (center_trf.offset.x + center_trf.scale.x), 
                         std::max(top_trf.offset.x + top_trf.scale.x + Eps - center_trf.offset.x, offset.x));
-  
+
+    }
+
+    if (type_ == Scrollbar::Scroll_Type::Vertical)
+    {
+        offset = Dot(0.0, (canvas_->GetRealPos().y - prev_pos.y) / canvas_->GetSize().y);
+        offset.y = std::min(bottom_trf.offset.y - Eps - (center_trf.offset.y + center_trf.scale.y), 
+                        std::max(top_trf.offset.y + top_trf.scale.y + Eps - center_trf.offset.y, offset.y));
+    }
+    
     center_trf.offset += offset;
 
     center_button_->SetTransform(center_trf);
@@ -473,27 +493,24 @@ bool Scrollbar::OnMousePressed(const double x, const double y, const MouseKey ke
 
     Dot prev_real_pos = canvas_->GetRealPos();
 
+    Dot area_coord = press_area_.ApplyPrev(last_trf).ApplyTransform({x, y});
     bool flag = false;
-    flag |= top_button_->OnMousePressed(x, y, key, stack_transform);
-    flag |= bottom_button_->OnMousePressed(x, y, key, stack_transform);
 
-    flag |= center_button_->OnMousePressed(x, y, key, stack_transform);
-    flag |= canvas_->OnMousePressed(x, y, key, stack_transform);;
-
-    if (!flag)
+    if (CheckIn(area_coord))
     {
-        flag = CheckIn(new_coord);
+        flag |= top_button_->OnMousePressed(x, y, key, stack_transform);
+        flag |= bottom_button_->OnMousePressed(x, y, key, stack_transform);
 
-        if (flag)
+        flag |= center_button_->OnMousePressed(x, y, key, stack_transform);
+
+        if (!flag)
         {
-
             Dot offset = new_coord - center_button_->GetTransform().offset;
 
             if (type_ == Scrollbar::Scroll_Type::Horizontal)
                 offset.y = 0.0;
             if (type_ == Scrollbar::Scroll_Type::Vertical)
                 offset.x = 0.0;
-           
 
             if (offset.x < -Eps || offset.y < -Eps)
                 (*top_button_->action_)();
@@ -501,7 +518,9 @@ bool Scrollbar::OnMousePressed(const double x, const double y, const MouseKey ke
             if (offset.x > Eps || offset.y > Eps)
                 (*bottom_button_->action_)();
         }
-    } 
+    }
+    
+    
 
     canvas_->CorrectRealCoord(canvas_->GetTransform().ApplyPrev(last_trf));
     MoveCenter(prev_real_pos);
@@ -520,8 +539,6 @@ bool Scrollbar::OnMouseReleased(const double x, const double y, const MouseKey k
     top_button_->OnMouseReleased(x, y, key, stack_transform);
     bottom_button_->OnMouseReleased(x, y, key, stack_transform);
     center_button_->OnMouseReleased(x, y, key, stack_transform);
-    
-    canvas_->OnMouseReleased(x, y, key, stack_transform);
 
     stack_transform.PopBack();
 
@@ -551,3 +568,6 @@ void Scrollbar::PassTime(const time_t delta_time)
     printf("Scrollbar: mouse keyboard kye released\n");
     return;
 }
+
+//=================================================================================
+

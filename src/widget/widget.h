@@ -58,6 +58,41 @@ class Widget
         virtual void PassTime           (const time_t delta_time) = 0;
 };
 
+class WidgetContainer: public Widget
+{
+
+    public:
+        WidgetContainer(const Dot &offset, const Vector &scale):
+                        widgets_(), transform_({offset, scale}){}
+        ~WidgetContainer()
+        {
+            size_t size = widgets_.GetSize();
+            for (size_t it = 0; it < size; it++)
+                delete widgets_[it];
+        }
+
+        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);
+        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
+
+        
+        virtual void Draw               (sf::RenderTarget &target, Container<Transform> &stack_transform);  
+
+        virtual bool OnKeyboardPressed  (const KeyboardKey);
+        virtual bool OnKeyboardReleased (const KeyboardKey);
+
+        virtual void PassTime           (const time_t delta_time);
+
+        void AddWidget(Widget *ptr);
+       
+
+    private:
+
+        Container<Widget*> widgets_;
+
+        Transform transform_;
+};
+
 
 void EventAdapter (Widget &widget, int mouse_x, int mouse_y, sf::Event &event, Container<Transform> &stack_transform);
 

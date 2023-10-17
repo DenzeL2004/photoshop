@@ -141,25 +141,35 @@ class Scrollbar: public Widget
             Vertical,
         };
 
-        Scrollbar  (Canvas *canvas, Scroll_Type type, const Dot &offset, const Vector &scale);
+        Scrollbar(Button *top_button, Button *bottom_button, Button *center_button, 
+                     Canvas *canvas, Scroll_Type type, const Dot &offset, const Vector &scale):
+                     top_button_(top_button), bottom_button_(bottom_button), center_button_(center_button),
+                     canvas_(canvas), transform_({offset, scale}), press_area_(), pos_press_(offset), type_(type)
+        {
+            press_area_ = top_button->GetTransform();
+            if (type == Scrollbar::Scroll_Type::Horizontal)
+                press_area_.scale.x = 1.0;
+
+            if (type == Scrollbar::Scroll_Type::Vertical)
+                press_area_.scale.y = 1.0;
+
+        }
 
         virtual ~Scrollbar()
         {
             delete top_button_;
             delete bottom_button_;
             delete center_button_;
-
-            delete canvas_;
         }
 
         virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
         virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);
         virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
 
+        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;  
+
         virtual bool OnKeyboardPressed  (const KeyboardKey);
         virtual bool OnKeyboardReleased (const KeyboardKey);
-
-        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;  
 
         virtual void PassTime           (const time_t delta_time);
 
@@ -172,6 +182,7 @@ class Scrollbar: public Widget
         Canvas *canvas_;
 
         Transform transform_;
+        Transform press_area_;
 
         Vector pos_press_;
 
