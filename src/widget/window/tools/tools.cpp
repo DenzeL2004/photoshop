@@ -20,7 +20,7 @@ ToolPalette::ToolPalette():
     tools_.PushBack(new BrushTool(&foreground_color_));
     tools_.PushBack(new SquareTool(&foreground_color_));
     tools_.PushBack(new CircleTool(&foreground_color_));
-    tools_.PushBack(new FillTool(&foreground_color_));
+    tools_.PushBack(new PollyLineTool(&foreground_color_));
 }
 
 
@@ -53,8 +53,8 @@ Tool* ToolPalette::GetActiveTool () const
             return tools_[ToolPalette::Tool_Type::CIRCLE];
             break;
 
-        case ToolPalette::Tool_Type::FILL:
-            return tools_[ToolPalette::Tool_Type::FILL];
+        case ToolPalette::Tool_Type::POLLYLINE:
+            return tools_[ToolPalette::Tool_Type::POLLYLINE];
             break;
         
         default:
@@ -381,7 +381,7 @@ void BrushTool::DrawForm (const Dot &pos, Canvas &canvas)
 
 
 //================================================================================
-//Brushh
+//Fill
 
 FillTool::FillTool(const sf::Color *cur_color):
                     using_(false), cur_color_(*cur_color){}
@@ -397,14 +397,16 @@ void FillTool::OnMainButton(Button::Button_State key, const Dot &pos, Canvas &ca
 
     using_ = true;
     sf::Image image = canvas.background_.getTexture().copyToImage();
-    sf::Color fill_color = image.getPixel(size_t(pos.x), size_t(pos.y));
 
-    Fill(fill_color, pos, canvas, image);
+    Dot new_pos = ShiftDot(pos, canvas);
+    sf::Color fill_color = image.getPixel(size_t(new_pos.x), size_t(new_pos.y));
+
+    Fill(fill_color, new_pos, canvas, image);
 
     sf::Texture texture;
     texture.loadFromImage(image);
     sf::Sprite sprite(texture);
-    sprite.setPosition({0, 0});
+    sprite.scale(-1.f, 1.f);
 
     canvas.background_.draw(sprite);
 
@@ -466,3 +468,67 @@ void FillTool::Fill(sf::Color &fill_color, const Dot &start_pos, Canvas &canvas,
     
 }
 
+
+//================================================================================
+PollyLineTool::PollyLineTool(const sf::Color *cur_color):
+                  using_(false), start_pos_(), end_pos_(), 
+                  preview_(new PollyLineWidget(&end_pos_, cur_color)), cur_color_(*cur_color){}
+
+void PollyLineTool::OnMainButton(Button::Button_State key, const Dot &pos, Canvas &canvas)
+{
+    if (key == Button::Button_State::CONFIRM)
+    {
+        using_ = false;
+        OnConfirm(pos, canvas);
+        return;
+    }
+
+
+    start_pos_ = end_pos_ = pos;
+    preview_->arr_.append(sf::Vector2f(start_pos_.x, start_pos_.y));
+
+    using_ = true;
+}
+
+void PollyLineTool::OnMove(const Dot &pos, Canvas &canvas)
+{
+    if (!using_)
+        return;
+    
+    end_pos_ = pos; 
+}
+
+void PollyLineTool::OnConfirm (const Dot &pos, Canvas &canvas)
+{
+    if (using_) return;
+
+    size_t size = preview_->arr_.getVertexCount();
+    
+    if (size == 0)
+    {
+        using_ = false;
+        return;
+    }
+    else
+    {
+        Dot cur(0.0, 0.0); Dot next = Dot(preview_->arr_[size - 1].position.x, preview_->arr_[size - 1].position.y);
+
+        for (size_t it = 0; it < size - 1; it++)
+        {
+            cur  = Dot(preview_->arr_[it].position.x, preview_->arr_[it].position.y);
+            next = Dot(preview_->arr_[it + 1].position.x, preview_->arr_[it + 1].position.y);
+            DrawLine(canvas.background_, ShiftDot(cur, canvas),  ShiftDot(next, canvas), cur_color_);
+        }
+
+        start_pos_ = end_pos_ = Dot(0, 0);
+        preview_->arr_.clear();
+    }
+    
+}
+
+Widget* PollyLineTool::GetWidget() const
+{
+    return preview_;
+}
+
+//================================================================================

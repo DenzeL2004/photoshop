@@ -43,7 +43,7 @@ class ToolPalette
             BRUSH   = 1,    
             SQUARE  = 2, 
             CIRCLE  = 3,
-            FILL    = 4,
+            POLLYLINE = 4,
         };
 
         ToolPalette ();

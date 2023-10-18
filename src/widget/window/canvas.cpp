@@ -48,8 +48,8 @@ void Canvas::GetNewSize(sf::VertexArray &vertex_array, const Transform &transfor
     vertex_array[2].position = transform.RollbackTransform({1, 1});
     vertex_array[3].position = transform.RollbackTransform({0, 1});
 
-    float new_width  = vertex_array[1].position.x - vertex_array[0].position.x;
-    float new_hieght = vertex_array[2].position.y - vertex_array[1].position.y;
+    float new_width  = fabs(vertex_array[1].position.x - vertex_array[0].position.x);
+    float new_hieght = fabs(vertex_array[2].position.y - vertex_array[1].position.y);
 
     vertex_array[0].texCoords = sf::Vector2f((float)real_pos_.x, (float)real_pos_.y);
     vertex_array[1].texCoords = sf::Vector2f((float)real_pos_.x + (float)new_width - 1, (float)real_pos_.y);
@@ -92,6 +92,12 @@ bool Canvas::OnMousePressed(const double x, const double y, const MouseKey key, 
     {
         Tool *active_tool = tool_palette_.GetActiveTool(); 
         if (active_tool) active_tool->OnMainButton(Button::Button_State::PRESSED, GetCanvaseCoord(x, y, last_trf), *this);
+    }
+
+    if (flag && key == MouseKey::RIGHT)
+    {
+        Tool *active_tool = tool_palette_.GetActiveTool(); 
+        if (active_tool) active_tool->OnMainButton(Button::Button_State::CONFIRM, GetCanvaseCoord(x, y, last_trf), *this);
     }
 
     stack_transform.PopBack();

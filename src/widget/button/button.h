@@ -61,6 +61,7 @@ class Button : public Widget
             COVERED,
             PRESSED,
             DISABLED,
+            CONFIRM,
         };
 
         Button_State state_;

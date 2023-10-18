@@ -43,7 +43,7 @@ AppWindow::AppWindow(const char *path_texture, const Dot &offset, const Vector &
         
         tools_button_->buttons_.PushBack(new Button("src/img/PenReleased.png", "src/img/PenCovered.png", 
                                                     "src/img/PenCovered.png",  "src/img/PenCovered.png", 
-                                                    new ChooseTool(ToolPalette::FILL, &tool_pallette_), 
+                                                    new ChooseTool(ToolPalette::POLLYLINE, &tool_pallette_), 
                                                     Button_Fill_Offset, Button_Fill_Scale));
         
         size_t size = tools_button_->buttons_.GetSize();
