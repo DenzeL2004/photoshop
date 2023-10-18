@@ -300,6 +300,8 @@ bool ButtonList::OnMousePressed(const double x, const double y, const MouseKey k
         
     }
    
+    if (flag) return true;
+
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
     
@@ -319,6 +321,8 @@ bool ButtonList::OnMousePressed(const double x, const double y, const MouseKey k
     else
         state_ =  Button::Button_State::RELEASED;
     
+  
+
     return flag;
 }
 

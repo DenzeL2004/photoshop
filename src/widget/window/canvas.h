@@ -42,6 +42,8 @@ class ToolPalette
             LINE    = 0, 
             BRUSH   = 1,    
             SQUARE  = 2, 
+            CIRCLE  = 3,
+            FILL    = 4,
         };
 
         ToolPalette ();

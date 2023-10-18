@@ -35,6 +35,16 @@ AppWindow::AppWindow(const char *path_texture, const Dot &offset, const Vector &
                                                     "src/img/PenCovered.png",  "src/img/PenCovered.png", 
                                                     new ChooseTool(ToolPalette::SQUARE, &tool_pallette_), 
                                                     Button_Square_Offset, Button_Square_Scale));
+
+        tools_button_->buttons_.PushBack(new Button("src/img/PenReleased.png", "src/img/PenCovered.png", 
+                                                    "src/img/PenCovered.png",  "src/img/PenCovered.png", 
+                                                    new ChooseTool(ToolPalette::CIRCLE, &tool_pallette_), 
+                                                    Button_Circle_Offset, Button_Circle_Scale));
+        
+        tools_button_->buttons_.PushBack(new Button("src/img/PenReleased.png", "src/img/PenCovered.png", 
+                                                    "src/img/PenCovered.png",  "src/img/PenCovered.png", 
+                                                    new ChooseTool(ToolPalette::FILL, &tool_pallette_), 
+                                                    Button_Fill_Offset, Button_Fill_Scale));
         
         size_t size = tools_button_->buttons_.GetSize();
         for (size_t it = 0; it < size; it++)
@@ -64,6 +74,7 @@ AppWindow::AppWindow(const char *path_texture, const Dot &offset, const Vector &
                                                     "src/img/GreenCovered.png",  "src/img/GreenCovered.png", 
                                                     new ChooseColor(sf::Color::Green, &tool_pallette_), 
                                                     Button_Green_Offset, Button_Green_Scale));
+        
         
         size_t size = colors_button_->buttons_.GetSize();
         for (size_t it = 0; it < size; it++)
@@ -125,6 +136,7 @@ bool AppWindow::OnMousePressed(const double x, const double y, const MouseKey ke
         flag |= tools_button_->OnMousePressed(x, y, key, stack_transform);
         flag |= colors_button_->OnMousePressed(x, y, key, stack_transform);
         if (!flag) flag |= canvas_manager_.OnMousePressed(x, y, key, stack_transform);
+        
     }
 
     stack_transform.PopBack();

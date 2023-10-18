@@ -57,7 +57,6 @@ void DrawCircle(sf::RenderTarget &window, const Dot &pos,
 void DrawRectangle(sf::RenderTarget &window, 
                    const Dot &left_up, const Dot &right_down, const sf::Color color)
 {
-
     float hieght = (float)(right_down.y - left_up.y);
     float width  = (float)(right_down.x - left_up.x);
 

@@ -19,6 +19,8 @@ ToolPalette::ToolPalette():
     tools_.PushBack(new LineTool(&foreground_color_));
     tools_.PushBack(new BrushTool(&foreground_color_));
     tools_.PushBack(new SquareTool(&foreground_color_));
+    tools_.PushBack(new CircleTool(&foreground_color_));
+    tools_.PushBack(new FillTool(&foreground_color_));
 }
 
 
@@ -45,6 +47,14 @@ Tool* ToolPalette::GetActiveTool () const
 
         case ToolPalette::Tool_Type::SQUARE:
             return tools_[ToolPalette::Tool_Type::SQUARE];
+            break;
+
+        case ToolPalette::Tool_Type::CIRCLE:
+            return tools_[ToolPalette::Tool_Type::CIRCLE];
+            break;
+
+        case ToolPalette::Tool_Type::FILL:
+            return tools_[ToolPalette::Tool_Type::FILL];
             break;
         
         default:
@@ -173,9 +183,8 @@ class SquareWidget : public Widget
 
         void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform)
         {
-            
             Transform last_trf = stack_transform.GetBack();
-            DrawRectangle(targert, start_pos_ + last_trf.offset, end_pos_ + last_trf.offset, cur_color_);
+            DrawRectangle(targert, start_pos_ + last_trf.offset, end_pos_ + last_trf.offset, cur_color_);     
         }
     
         sf::Color GetColor() const {return cur_color_;}
@@ -233,10 +242,100 @@ Widget* SquareTool::GetWidget() const
 }
 
 //================================================================================
+
+//Circle
+
+class CircleWidget : public Widget
+{
+    public:
+        CircleWidget(const Dot *start_pos, const Dot *end_pos, const sf::Color *cur_color):
+                    start_pos_(*start_pos), end_pos_(*end_pos), cur_color_(*cur_color){}
+
+        ~CircleWidget(){}
+
+        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform) {return true;};
+        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform) {return true;}
+        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform){return true;}
+
+        bool OnKeyboardPressed  (const KeyboardKey){return true;}
+        bool OnKeyboardReleased (const KeyboardKey){return true;}
+
+        void PassTime           (const time_t delta_time){}
+
+        void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform)
+        {
+            
+            Transform last_trf = stack_transform.GetBack();
+
+            Dot center = start_pos_ + last_trf.offset;
+            Dot other  = end_pos_ + last_trf.offset;
+
+            double rad = (center - other).Len();
+
+            DrawCircle(targert, center, (float)rad, cur_color_);
+        }
+    
+        sf::Color GetColor() const {return cur_color_;}
+
+    private:
+       const Dot &start_pos_;
+       const Dot &end_pos_;
+       const sf::Color &cur_color_;
+};
+
+//================================================================================
+
+CircleTool::CircleTool(const sf::Color *cur_color):
+                  using_(false), start_pos_(), end_pos_(), 
+                  preview_(new CircleWidget(&start_pos_, &end_pos_, cur_color)), cur_color_(*cur_color){}
+
+void CircleTool::OnMainButton(Button::Button_State key, const Dot &pos, Canvas &canvas)
+{
+    if (key != Button::Button_State::PRESSED)
+        return;
+
+    if (using_)
+        return;
+
+    start_pos_ = end_pos_ = pos;
+
+    using_ = true;
+}
+
+void CircleTool::OnMove(const Dot &pos, Canvas &canvas)
+{
+    if (!using_)
+        return;
+    
+    end_pos_ = pos; 
+}
+
+void CircleTool::OnConfirm (const Dot &pos, Canvas &canvas)
+{
+    if (!using_)
+        return;
+
+    Dot center = ShiftDot(start_pos_, canvas);
+    Dot other  = ShiftDot(pos, canvas);
+
+    double rad = (center - other).Len();
+
+    DrawCircle(canvas.background_, center, (float)rad, cur_color_);
+    start_pos_  = end_pos_ = {0, 0};
+
+    using_ = false;
+}
+
+Widget* CircleTool::GetWidget() const
+{
+    return preview_;
+}
+
+//================================================================================
 //Brushh
 
 BrushTool::BrushTool(const sf::Color *cur_color):
-                    using_(false), prev_pos_(), cur_color_(*cur_color){}
+                    using_(false), cur_color_(*cur_color){}
 
 
 void BrushTool::OnMainButton(Button::Button_State key, const Dot &pos, Canvas &canvas)
@@ -247,7 +346,6 @@ void BrushTool::OnMainButton(Button::Button_State key, const Dot &pos, Canvas &c
     if (using_)
         return;
 
-    prev_pos_ = pos;
     using_ = true;
 
     DrawForm(pos, canvas);
@@ -258,10 +356,6 @@ void BrushTool::OnMove(const Dot &pos, Canvas &canvas)
     if (!using_)
         return;
 
-    Dot delta = prev_pos_ - pos;
-
-    f
-    
     DrawForm(pos, canvas);
 }
 
@@ -284,3 +378,91 @@ void BrushTool::DrawForm (const Dot &pos, Canvas &canvas)
     Dot canvas_dot  =  ShiftDot(pos, canvas);
     DrawCircle(canvas.background_, canvas_dot, 10, cur_color_);
 }
+
+
+//================================================================================
+//Brushh
+
+FillTool::FillTool(const sf::Color *cur_color):
+                    using_(false), cur_color_(*cur_color){}
+
+
+void FillTool::OnMainButton(Button::Button_State key, const Dot &pos, Canvas &canvas)
+{
+    if (key != Button::Button_State::PRESSED)
+        return;
+
+    if (using_)
+        return;
+
+    using_ = true;
+    sf::Image image = canvas.background_.getTexture().copyToImage();
+    sf::Color fill_color = image.getPixel(size_t(pos.x), size_t(pos.y));
+
+    Fill(fill_color, pos, canvas, image);
+
+    sf::Texture texture;
+    texture.loadFromImage(image);
+    sf::Sprite sprite(texture);
+    sprite.setPosition({0, 0});
+
+    canvas.background_.draw(sprite);
+
+    OnConfirm(pos, canvas);
+}
+
+
+void FillTool::OnConfirm (const Dot &pos, Canvas &canvas)
+{
+    if (!using_)
+        return;
+
+    using_ = false;
+}
+
+Widget* FillTool::GetWidget() const
+{
+    return nullptr;
+}
+
+void FillTool::Fill(sf::Color &fill_color, const Dot &start_pos, Canvas &canvas, sf::Image &image)
+{
+    Container<sf::Vector2u> dots_;
+
+    const size_t x_limit = canvas.GetSize().x;
+    const size_t y_limit = canvas.GetSize().y;
+
+    dots_.PushBack(sf::Vector2u((size_t)start_pos.x, (size_t)start_pos.y));
+
+    while (!dots_.IsEmpty())
+    {
+        sf::Vector2u cur_dot = dots_.GetBack();
+        dots_.PopBack();
+
+        if (cur_dot.x > 0 && image.getPixel(cur_dot.x - 1, start_pos.y) == fill_color) 
+        {
+            image.setPixel(cur_dot.x - 1, cur_dot.y, cur_color_);
+            dots_.PushBack(sf::Vector2u(cur_dot.x - 1, cur_dot.y)); 
+        }
+
+        if (cur_dot.y > 0 && image.getPixel(cur_dot.x, start_pos.y - 1) == fill_color) 
+        {
+            image.setPixel(cur_dot.x, cur_dot.y - 1, cur_color_);
+            dots_.PushBack(sf::Vector2u(cur_dot.x, cur_dot.y - 1));
+        }
+
+        if (cur_dot.x < x_limit && image.getPixel(cur_dot.x + 1, start_pos.y) == fill_color) 
+        {
+            image.setPixel(cur_dot.x + 1, cur_dot.y, cur_color_);
+            dots_.PushBack(sf::Vector2u(cur_dot.x + 1, cur_dot.y));  
+        }
+
+        if (cur_dot.y + 1 < y_limit && image.getPixel(cur_dot.x, start_pos.y + 1) == fill_color) 
+        {
+            image.setPixel(cur_dot.x, cur_dot.y + 1, cur_color_);
+            dots_.PushBack(sf::Vector2u(cur_dot.x, cur_dot.y + 1)); 
+        }
+    }
+    
+}
+

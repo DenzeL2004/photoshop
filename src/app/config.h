@@ -40,6 +40,12 @@ static Vector Button_Brush_Scale  = Vector(0.1, 0.1);
 static Dot    Button_Square_Offset = Dot(0.1, 0.3);
 static Vector Button_Square_Scale  = Vector(0.1, 0.1);
 
+static Dot    Button_Circle_Offset = Dot(0.1, 0.4);
+static Vector Button_Circle_Scale  = Vector(0.1, 0.1);
+
+static Dot    Button_Fill_Offset = Dot(0.1, 0.5);
+static Vector Button_Fill_Scale  = Vector(0.1, 0.1);
+
 
 //Colors
 static Dot    Button_Colors_Offset = Dot(0.2, 0.0);
