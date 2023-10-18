@@ -319,7 +319,6 @@ bool ButtonList::OnMousePressed(const double x, const double y, const MouseKey k
     else
         state_ =  Button::Button_State::RELEASED;
     
-
     return flag;
 }
 

@@ -31,11 +31,15 @@ static Vector Button_Create_Scale  = Vector(0.1, 0.1);
 static Dot    Button_Tools_Offset = Dot(0.1, 0.0);
 static Vector Button_Tools_Scale  = Vector(0.1, 0.1);
 
-static Dot    Button_Brush_Offset = Dot(0.1, 0.1);
+static Dot    Button_Line_Offset = Dot(0.1, 0.1);
+static Vector Button_Line_Scale  = Vector(0.1, 0.1);
+
+static Dot    Button_Brush_Offset = Dot(0.1, 0.2);
 static Vector Button_Brush_Scale  = Vector(0.1, 0.1);
 
-static Dot    Button_Pen_Offset = Dot(0.1, 0.2);
-static Vector Button_Pen_Scale  = Vector(0.1, 0.1);
+static Dot    Button_Square_Offset = Dot(0.1, 0.3);
+static Vector Button_Square_Scale  = Vector(0.1, 0.1);
+
 
 //Colors
 static Dot    Button_Colors_Offset = Dot(0.2, 0.0);

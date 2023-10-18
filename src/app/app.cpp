@@ -22,13 +22,19 @@ AppWindow::AppWindow(const char *path_texture, const Dot &offset, const Vector &
         tools_button_->buttons_.PushBack(new Button("src/img/LineReleased.png", "src/img/LinePressed.png", 
                                                     "src/img/LinePressed.png",  "src/img/LinePressed.png", 
                                                     new ChooseTool(ToolPalette::LINE, &tool_pallette_), 
-                                                    Button_Brush_Offset, Button_Brush_Scale));
+                                                    Button_Line_Offset, Button_Line_Scale));
         
         
 
-        // tools_button_->buttons_.PushBack(new Button("src/img/PenReleased.png", "src/img/PenCovered.png", 
-        //                                             "src/img/PenCovered.png",  "src/img/PenCovered.png", 
-        //                                             new ChooseTool(Tool::Type::Pen, &tool_), Button_Pen_Offset, Button_Pen_Scale));
+        tools_button_->buttons_.PushBack(new Button("src/img/BrushReleased.png", "src/img/BrushCovered.png", 
+                                                    "src/img/BrushCovered.png",  "src/img/BrushCovered.png", 
+                                                    new ChooseTool(ToolPalette::BRUSH, &tool_pallette_), 
+                                                    Button_Brush_Offset, Button_Brush_Scale));
+        
+        tools_button_->buttons_.PushBack(new Button("src/img/PenReleased.png", "src/img/PenCovered.png", 
+                                                    "src/img/PenCovered.png",  "src/img/PenCovered.png", 
+                                                    new ChooseTool(ToolPalette::SQUARE, &tool_pallette_), 
+                                                    Button_Square_Offset, Button_Square_Scale));
         
         size_t size = tools_button_->buttons_.GetSize();
         for (size_t it = 0; it < size; it++)
