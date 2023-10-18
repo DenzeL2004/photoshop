@@ -10,52 +10,53 @@
 class AddCanvase : public Action
 {
     public:
-        AddCanvase(CanvaseManager *canvase_manager, Tool *tool): 
-                   canvase_manager_(canvase_manager), tool_(tool){};
+        AddCanvase(CanvaseManager *canvase_manager, ToolPalette *palette): 
+                   canvase_manager_(canvase_manager), palette_(*palette){};
         ~AddCanvase(){};
 
         void operator() () const
         {
-            canvase_manager_->CreateCanvase(tool_);   
+            canvase_manager_->CreateCanvase(&palette_);   
         }
 
     private:
         CanvaseManager *canvase_manager_;
-        Tool *tool_; 
+        ToolPalette &palette_; 
 };
 
 class ChooseTool : public Action
 {
     public:
-        ChooseTool(Tool::Type type, Tool *tool): 
-                type_(type), tool_(tool){};
+        ChooseTool(ToolPalette::Tool_Type type, ToolPalette *palette): 
+                    palette_(*palette), type_(type){};
         ~ChooseTool(){};
 
         void operator() () const
         {
-            tool_->type_ = type_;   
+            palette_.SetActiveTool(type_);
         }
 
     private:
-        Tool::Type type_;
-        Tool *tool_; 
+        ToolPalette &palette_;
+        ToolPalette::Tool_Type type_;
 };
 
 class ChooseColor : public Action
 {
     public:
-        ChooseColor(sf::Color color, Tool *tool): 
-                color_(color), tool_(tool){};
+        ChooseColor(sf::Color color, ToolPalette *palette_color): 
+                    palette_(*palette_color), color_(color) {};
         ~ChooseColor(){};
 
         void operator() () const
         {
-            tool_->color_ = color_;   
+            palette_.SetActiveColor(color_);   
         }
 
     private:
+        ToolPalette &palette_;
         sf::Color color_;
-        Tool *tool_; 
+        
 };
 
 
@@ -90,7 +91,7 @@ class AppWindow: public Window
         ButtonList *tools_button_;
         ButtonList *colors_button_;
 
-        Tool tool_;
+        ToolPalette tool_pallette_;
 };
 
 

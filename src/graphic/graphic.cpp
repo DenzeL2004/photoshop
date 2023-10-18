@@ -18,6 +18,21 @@ void DrawLine(sf::RenderTarget &window,
    
 }
 
+void DrawLine(sf::RenderTarget &window, 
+              const sf::Vector2f &dot_begin, const sf::Vector2f &dot_end, const sf::Color color_line)
+{
+    sf::Vertex line[] =
+    {
+        sf::Vertex(dot_begin, color_line),
+        sf::Vertex(dot_end, color_line)
+    };
+
+    window.draw(line, 2, sf::Lines);
+
+    return;
+   
+}
+
 //================================================================================
 
 

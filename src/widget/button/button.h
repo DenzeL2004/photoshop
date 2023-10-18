@@ -57,10 +57,10 @@ class Button : public Widget
 
         enum Button_State
         {
-            Released, 
-            Covered,
-            Pressed,
-            Disabled,
+            RELEASED, 
+            COVERED,
+            PRESSED,
+            DISABLED,
         };
 
         Button_State state_;

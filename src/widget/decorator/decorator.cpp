@@ -111,15 +111,15 @@ uint8_t Frame::ClickOnBorder(double x, double y, const Transform &Last_transform
 
     Transform tmp = left_border_.ApplyPrev(Last_transform);
     Dot new_coord = tmp.ApplyTransform({x, y});
-    if (CheckIn(new_coord)) mask |= Frame::Borders::Left;
+    if (CheckIn(new_coord)) mask |= Frame::Borders::LEFT;
 
     tmp = right_border_.ApplyPrev(Last_transform);
     new_coord = tmp.ApplyTransform({x, y});
-    if (CheckIn(new_coord)) mask |= Frame::Borders::Right;
+    if (CheckIn(new_coord)) mask |= Frame::Borders::RIGHT;
 
     tmp = bottom_border_.ApplyPrev(Last_transform);
     new_coord = tmp.ApplyTransform({x, y});
-    if (CheckIn(new_coord)) mask |= Frame::Borders::Bottom;
+    if (CheckIn(new_coord)) mask |= Frame::Borders::BOTTOM;
     
     return mask;
 }
@@ -137,9 +137,9 @@ void Frame::Scale(const Dot &new_coord, uint8_t mask)
     
     Dot cur = transform_.offset;
     
-    if (mask & Frame::Borders::Left || mask & Frame::Borders::Right)
+    if (mask & Frame::Borders::LEFT || mask & Frame::Borders::RIGHT)
     {
-        if (mask & Frame::Borders::Left) 
+        if (mask & Frame::Borders::LEFT) 
         {
             Move({new_coord.x, hold_pos_.y});
             if (transform_.offset == cur) return;   
@@ -151,7 +151,7 @@ void Frame::Scale(const Dot &new_coord, uint8_t mask)
             transform_.scale.x += delta.x;
     }
 
-    if (mask & Frame::Borders::Bottom)
+    if (mask & Frame::Borders::BOTTOM)
     {
         if (transform_.offset.y + transform_.scale.y + delta.y < 1 - Eps && 
             transform_.scale.y + delta.y > Scale_Limit.y + Eps)
@@ -195,7 +195,7 @@ bool Frame::OnMousePressed(const double x, const double y, const MouseKey key, C
 
         if (flag)
         {
-            if (key == MouseKey::Left)
+            if (key == MouseKey::LEFT)
             {
                 state_ = Hold;
                 hold_pos_ = new_coord;
@@ -215,7 +215,6 @@ bool Frame::OnMousePressed(const double x, const double y, const MouseKey key, C
 bool Frame::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
-    Transform last_trf = stack_transform.GetBack();
 
     close_button_->OnMouseReleased(x, y, key, stack_transform);
     decarable_->OnMouseReleased(x, y, key, stack_transform);

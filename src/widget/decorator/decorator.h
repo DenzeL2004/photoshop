@@ -93,10 +93,10 @@ class Frame: public Widget
 
         enum Borders
         {
-            Left    = 1 << 1,
-            Right   = 1 << 2,
-            Top     = 1 << 3,
-            Bottom  = 1 << 4,
+            LEFT    = 1 << 1,
+            RIGHT   = 1 << 2,
+            TOP     = 1 << 3,
+            BOTTOM  = 1 << 4,
         };
 
         Transform left_border_, top_border_, right_border_, bottom_border_;

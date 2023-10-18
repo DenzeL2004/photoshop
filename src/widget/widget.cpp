@@ -57,16 +57,16 @@ static MouseKey GetMouseKey(sf::Event &event)
     switch (event.mouseButton.button)
     {
         case sf::Mouse::Left:
-            return MouseKey::Left;
+            return MouseKey::LEFT;
         
         case sf::Mouse::Right:
-            return MouseKey::Right;
+            return MouseKey::RIGHT;
 
         default:
             break;
     }
 
-    return MouseKey::Nothing;
+    return MouseKey::NOTHING;
 }
 
 
@@ -129,10 +129,14 @@ bool WidgetContainer::OnMousePressed(const double x, const double y, const Mouse
 
 bool WidgetContainer::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
+    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+
     size_t size = widgets_.GetSize();
     bool flag = false;
     for (size_t it = 0; it < size; it++)
         flag |= widgets_[it]->OnMouseReleased(x, y, key, stack_transform);
+
+    stack_transform.PopBack();
 
     return false;
 }

@@ -4,50 +4,71 @@
 #include "window.h"
 #include "../decorator/decorator.h"
 
-#include "canvas_config.h"
 
+class Canvas;
 
 class Tool
 {
     public:
-        enum Type
-        {
-            Pen, 
-            Brash,
-            Nothing,
-        };
+        virtual void OnMainButton       (Button::Button_State key, const Dot &pos, Canvas &canvas) = 0;
+        virtual void OnSecondaryButton  (Button::Button_State key, const Dot &pos, Canvas &canvas) = 0;
 
-        enum State
-        {
-            Default,
-            Hold, 
-        };
+        virtual void OnModifier1        (Button::Button_State key, const Dot &pos, Canvas &canvas) = 0;
+        virtual void OnModifier2        (Button::Button_State key, const Dot &pos, Canvas &canvas) = 0;
+        virtual void OnModifier3        (Button::Button_State key, const Dot &pos, Canvas &canvas) = 0;
 
-        Tool(const Tool::Type type, const sf::Color color, const float thickness):
-            type_(type), state_(Default), color_(color), thickness_(thickness), 
-            hold_pos_(0.0, 0.0){}
+        virtual void OnMove             (const Dot &pos, Canvas &canvas) = 0;
+        virtual void OnConfirm          (const Dot &pos, Canvas &canvas) = 0;
+        virtual void OnCancel           (const Dot &pos, Canvas &canvas) = 0;
 
-        ~Tool(){}
-
-        void Draw(sf::RenderTarget &target, const Dot &pos);
-
-        Tool::Type type_;
-        Tool::State state_;
-
-        sf::Color color_;
-
-        float thickness_;
-
-        Dot hold_pos_;
-        
+        virtual Widget* GetWidget() const = 0;
 };
+
+class ToolPalette
+{
+    public:
+        enum Color_Type
+        {
+            BACKGROUND,
+            FOREGROUND,
+        };
+
+        enum Tool_Type
+        {
+            NOTHING = -1,
+            LINE    = 0, 
+            PEN     = 1,    
+            SQUARE  = 2, 
+        };
+
+        ToolPalette ();
+        ~ToolPalette ();
+
+        void SetActiveTool  (const Tool_Type tool_type);
+        void SetActiveColor (const sf::Color &color);
+
+        Tool* GetActiveTool () const;
+
+    private:
+        Tool_Type active_tool_;
+
+        Container<Tool*>  tools_;
+
+        Color_Type color_type_;
+
+        sf::Color foreground_color_;
+        sf::Color background_color_;
+
+};
+
+
 
 class Canvas : public Widget
 {
 
     public:
         
-        Canvas (const double width, const double hieght, Tool *tool,  
+        Canvas (const double width, const double hieght, ToolPalette *tool_palette,  
                  const Dot &offset, const Vector &scale);
         
         virtual ~Canvas(){}
@@ -70,15 +91,16 @@ class Canvas : public Widget
         void Move               (const Dot &offset);
         void CorrectRealCoord   (const Transform &transform);
 
+        sf::RenderTexture background_;
+        
     private:
         void GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const;
-        Dot GetCanvaseCoord(double x, double y, const Transform &transform) const;
+        Dot  GetCanvaseCoord(double x, double y, const Transform &transform) const;
         
         Transform transform_;
-        double width_, hieght_;
-        sf::RenderTexture background_;
+        double width_, hieght_;        
 
-        Tool *tool_;
+        ToolPalette &tool_palette_;
         Dot real_pos_;
 };
 
@@ -126,7 +148,7 @@ class CanvaseManager : public Window
         virtual void Draw               (sf::RenderTarget &target, Container<Transform> &stack_transform);
 
 
-        void CreateCanvase(Tool *tool);
+        void CreateCanvase(ToolPalette *palette);
     private:
         Container<Widget*> canvases_;
         bool delte_canvase_;
@@ -140,8 +162,8 @@ class Scrollbar: public Widget
     public:
         enum Scroll_Type
         {
-            Horizontal,
-            Vertical,
+            HORIZONTAL,
+            VERTICAL,
         };
 
         Scrollbar(Button *top_button, Button *bottom_button, Button *center_button, 
@@ -150,10 +172,10 @@ class Scrollbar: public Widget
                      canvas_(canvas), transform_({offset, scale}), press_area_(), pos_press_(offset), type_(type)
         {
             press_area_ = top_button->GetTransform();
-            if (type == Scrollbar::Scroll_Type::Horizontal)
+            if (type == Scrollbar::Scroll_Type::HORIZONTAL)
                 press_area_.scale.x = 1.0;
 
-            if (type == Scrollbar::Scroll_Type::Vertical)
+            if (type == Scrollbar::Scroll_Type::VERTICAL)
                 press_area_.scale.y = 1.0;
 
         }

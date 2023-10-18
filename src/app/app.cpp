@@ -5,11 +5,12 @@ const double HIEGHT = 900.0;
 
 AppWindow::AppWindow(const char *path_texture, const Dot &offset, const Vector &scale):
            Window(path_texture, offset, scale), canvas_manager_(Empty_texture, Canvase_Manager_Offset, Canvase_Manager_Scale),
-           tool_(Tool::Type::Nothing, sf::Color(0, 0, 0, 255), 15u)
+           tool_pallette_()
 {
     button_create_ = new Button("src/img/NewCanvansReleased.png", "src/img/NewCanvansCovered.png", 
                                 "src/img/NewCanvansReleased.png", "src/img/NewCanvansCovered.png", 
-                                new AddCanvase(&canvas_manager_, &tool_), Button_Create_Offset, Button_Create_Scale);
+                                new AddCanvase(&canvas_manager_, &tool_pallette_), 
+                                Button_Create_Offset, Button_Create_Scale);
     {
         tools_button_ = new ButtonList("src/img/ToolsReleased.png", "src/img/ToolsCovered.png", 
                                        "src/img/ToolsCovered.png", "src/img/ToolsCovered.png", 
@@ -18,19 +19,20 @@ AppWindow::AppWindow(const char *path_texture, const Dot &offset, const Vector &
         tools_button_->action_ = new ShowButtonList(&(tools_button_->buttons_)); 
 
         
-        tools_button_->buttons_.PushBack(new Button("src/img/BrushReleased.png", "src/img/BrushCovered.png", 
-                                                    "src/img/BrushCovered.png",  "src/img/BrushCovered.png", 
-                                                    new ChooseTool(Tool::Type::Brash, &tool_), Button_Brush_Offset, Button_Brush_Scale));
+        tools_button_->buttons_.PushBack(new Button("src/img/LineReleased.png", "src/img/LinePressed.png", 
+                                                    "src/img/LinePressed.png",  "src/img/LinePressed.png", 
+                                                    new ChooseTool(ToolPalette::LINE, &tool_pallette_), 
+                                                    Button_Brush_Offset, Button_Brush_Scale));
         
         
 
-        tools_button_->buttons_.PushBack(new Button("src/img/PenReleased.png", "src/img/PenCovered.png", 
-                                                    "src/img/PenCovered.png",  "src/img/PenCovered.png", 
-                                                    new ChooseTool(Tool::Type::Pen, &tool_), Button_Pen_Offset, Button_Pen_Scale));
+        // tools_button_->buttons_.PushBack(new Button("src/img/PenReleased.png", "src/img/PenCovered.png", 
+        //                                             "src/img/PenCovered.png",  "src/img/PenCovered.png", 
+        //                                             new ChooseTool(Tool::Type::Pen, &tool_), Button_Pen_Offset, Button_Pen_Scale));
         
         size_t size = tools_button_->buttons_.GetSize();
         for (size_t it = 0; it < size; it++)
-            tools_button_->buttons_[it]->state_ = Button::Button_State::Disabled;
+            tools_button_->buttons_[it]->state_ = Button::Button_State::DISABLED;
        
     }
 
@@ -44,19 +46,22 @@ AppWindow::AppWindow(const char *path_texture, const Dot &offset, const Vector &
         
         colors_button_->buttons_.PushBack(new Button("src/img/RedReleased.png", "src/img/RedCovered.png", 
                                                     "src/img/RedCovered.png",  "src/img/RedCovered.png", 
-                                                    new ChooseColor(sf::Color::Red, &tool_), Button_Red_Offset, Button_Red_Scale));
+                                                    new ChooseColor(sf::Color::Red, &tool_pallette_), 
+                                                    Button_Red_Offset, Button_Red_Scale));
 
         colors_button_->buttons_.PushBack(new Button("src/img/BlueReleased.png", "src/img/BlueCovered.png", 
                                                     "src/img/BlueCovered.png",  "src/img/BlueCovered.png", 
-                                                    new ChooseColor(sf::Color::Blue, &tool_), Button_Blue_Offset, Button_Blue_Scale));
+                                                    new ChooseColor(sf::Color::Blue, &tool_pallette_), 
+                                                    Button_Blue_Offset, Button_Blue_Scale));
 
         colors_button_->buttons_.PushBack(new Button("src/img/GreenReleased.png", "src/img/GreenCovered.png", 
                                                     "src/img/GreenCovered.png",  "src/img/GreenCovered.png", 
-                                                    new ChooseColor(sf::Color::Green, &tool_), Button_Green_Offset, Button_Green_Scale));
+                                                    new ChooseColor(sf::Color::Green, &tool_pallette_), 
+                                                    Button_Green_Offset, Button_Green_Scale));
         
         size_t size = colors_button_->buttons_.GetSize();
         for (size_t it = 0; it < size; it++)
-            colors_button_->buttons_[it]->state_ = Button::Button_State::Disabled;
+            colors_button_->buttons_[it]->state_ = Button::Button_State::DISABLED;
     }
 
 } 

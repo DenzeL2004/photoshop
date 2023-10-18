@@ -15,8 +15,6 @@ Window::Window (const char *path_texture,
 
     width_  = background_.getSize().x;
     hieght_ = background_.getSize().y;
-
-    return;
 }
 
 //================================================================================
@@ -33,8 +31,6 @@ void Window::Draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
     target.draw(vertex_array, &background_);
 
     stack_transform.PopBack();
-
-    return;
 }
 
 void Window::GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const
@@ -48,8 +44,6 @@ void Window::GetNewSize(sf::VertexArray &vertex_array, const Transform &transfor
     vertex_array[1].position = transform.RollbackTransform({1, 0});
     vertex_array[2].position = transform.RollbackTransform({1, 1});
     vertex_array[3].position = transform.RollbackTransform({0, 1});
-
-    return;
 }
 
 //================================================================================
@@ -113,7 +107,6 @@ bool Window::OnKeyboardReleased(const KeyboardKey key)
 void Window::PassTime(const time_t delta_time)
 {
     printf("Window: mouse keyboard kye released\n");
-    return;
 }
 
 //=======================================================================================

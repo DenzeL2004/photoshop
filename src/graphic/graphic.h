@@ -15,6 +15,9 @@
 void    DrawLine        (sf::RenderTarget &window, 
                          const Dot &dot_begin, const Dot &dot_end, const sf::Color color = sf::Color::White);
 
+void    DrawLine        (sf::RenderTarget &window, 
+                            const sf::Vector2f &dot_begin, const sf::Vector2f &dot_end, const sf::Color color = sf::Color::White);
+
 void    DrawCircle      (sf::RenderTarget &window, const Dot &pos, 
                          const float radius, const sf::Color color = sf::Color::White);
 

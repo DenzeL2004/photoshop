@@ -20,6 +20,11 @@ static Vector Canvase_Frame_Scale  = Vector(0.6, 0.6);
 
 static const char *Empty_texture = "src/img/empty.png";
 
+static Dot    Canvase_Manager_Offset = Dot(0.0, 0.1);
+static Vector Canvase_Manager_Scale  = Vector(1, 0.9);
+
+static Dot    Button_Create_Offset = Dot(0.0, 0.0);
+static Vector Button_Create_Scale  = Vector(0.1, 0.1);
 
 
 //Tools

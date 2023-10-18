@@ -20,8 +20,8 @@ struct Transform
         Transform():
         offset(0, 0), scale(0, 0){}
 
-        Transform (const Vector offset, const Vector scale):
-        offset(offset), scale(scale){}
+        Transform (const Vector offset_, const Vector scale_):
+        offset(offset_), scale(scale_){}
 
         ~Transform(){}
 
@@ -30,6 +30,7 @@ struct Transform
 
         Transform       ApplyPrev         (const Transform &prev) const;
         Vector          ApplyTransform    (const Dot &pos)        const;
+        
         sf::Vector2f    RollbackTransform (const Vector &vec)     const;
 
         Vector offset;
