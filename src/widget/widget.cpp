@@ -1,7 +1,5 @@
 #include "widget.h"
 
-static MouseKey     GetMouseKey     (sf::Event &event);
-
 //=======================================================================================
 
 Transform Transform::ApplyPrev(const Transform &prev) const
@@ -28,46 +26,6 @@ sf::Vector2f Transform::RollbackTransform (const Vector &vec) const
 }
 
 //================================================================================
-
-void EventAdapter(Widget &widget, int mouse_x, int mouse_y, sf::Event &event, Container<Transform> &stack_transform)
-{
-    if (event.type == sf::Event::MouseMoved)
-    {
-        widget.OnMouseMoved((double)mouse_x, (double)mouse_y, stack_transform);
-    }
-    else
-    {
-        if (event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased)
-        {
-            
-            MouseKey mouse_key = GetMouseKey(event);
-            if (event.type == sf::Event::MouseButtonPressed)
-                widget.OnMousePressed((double)mouse_x, (double)mouse_y, mouse_key, stack_transform);
-            
-            if (event.type == sf::Event::MouseButtonReleased)
-                widget.OnMouseReleased((double)mouse_x, (double)mouse_y, mouse_key, stack_transform);
-        }
-    }
-
-    return;
-}
-
-static MouseKey GetMouseKey(sf::Event &event)
-{
-    switch (event.mouseButton.button)
-    {
-        case sf::Mouse::Left:
-            return MouseKey::LEFT;
-        
-        case sf::Mouse::Right:
-            return MouseKey::RIGHT;
-
-        default:
-            break;
-    }
-
-    return MouseKey::NOTHING;
-}
 
 
 bool CheckIn(const Dot &mouse_pos)

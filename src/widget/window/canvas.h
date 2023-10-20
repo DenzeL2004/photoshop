@@ -10,12 +10,12 @@ class Canvas;
 class Tool
 {
     public:
-        virtual void OnMainButton       (Button::Button_State key, const Dot &pos, Canvas &canvas) = 0;
-        virtual void OnSecondaryButton  (Button::Button_State key, const Dot &pos, Canvas &canvas) = 0;
+        virtual void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas) = 0;
+        virtual void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas) = 0;
 
-        virtual void OnModifier1        (Button::Button_State key, const Dot &pos, Canvas &canvas) = 0;
-        virtual void OnModifier2        (Button::Button_State key, const Dot &pos, Canvas &canvas) = 0;
-        virtual void OnModifier3        (Button::Button_State key, const Dot &pos, Canvas &canvas) = 0;
+        virtual void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas) = 0;
+        virtual void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas) = 0;
+        virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas) = 0;
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas) = 0;
         virtual void OnConfirm          (const Dot &pos, Canvas &canvas) = 0;
@@ -30,13 +30,13 @@ class Tool
 class ToolPalette
 {
     public:
-        enum Color_Type
+        enum ColorType
         {
             BACKGROUND,
             FOREGROUND,
         };
 
-        enum Tool_Type
+        enum ToolType
         {
             NOTHING = -1,
             LINE    = 0, 
@@ -49,17 +49,17 @@ class ToolPalette
         ToolPalette ();
         ~ToolPalette ();
 
-        void SetActiveTool  (const Tool_Type tool_type);
+        void SetActiveTool  (const ToolType tool_type);
         void SetActiveColor (const sf::Color &color);
 
         Tool* GetActiveTool () const;
 
     private:
-        Tool_Type active_tool_;
+        ToolType active_tool_;
 
         Container<Tool*>  tools_;
 
-        Color_Type color_type_;
+        ColorType color_type_;
 
         sf::Color foreground_color_;
         sf::Color background_color_;
@@ -165,22 +165,22 @@ class Scrollbar: public Widget
 {
 
     public:
-        enum Scroll_Type
+        enum ScrollType
         {
             HORIZONTAL,
             VERTICAL,
         };
 
         Scrollbar(Button *top_button, Button *bottom_button, Button *center_button, 
-                     Canvas *canvas, Scroll_Type type, const Dot &offset, const Vector &scale):
+                     Canvas *canvas, ScrollType type, const Dot &offset, const Vector &scale):
                      top_button_(top_button), bottom_button_(bottom_button), center_button_(center_button),
                      canvas_(canvas), transform_({offset, scale}), press_area_(), pos_press_(offset), type_(type)
         {
             press_area_ = top_button->GetTransform();
-            if (type == Scrollbar::Scroll_Type::HORIZONTAL)
+            if (type == Scrollbar::ScrollType::HORIZONTAL)
                 press_area_.scale.x = 1.0;
 
-            if (type == Scrollbar::Scroll_Type::VERTICAL)
+            if (type == Scrollbar::ScrollType::VERTICAL)
                 press_area_.scale.y = 1.0;
 
         }
@@ -216,7 +216,7 @@ class Scrollbar: public Widget
 
         Vector pos_press_;
 
-        Scroll_Type type_;
+        ScrollType type_;
 };
 
 #endif

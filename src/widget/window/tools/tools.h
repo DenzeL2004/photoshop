@@ -16,12 +16,12 @@ class LineTool : public Tool
             delete preview_;
         };
 
-        void OnMainButton       (Button::Button_State key, const Dot &pos, Canvas &canvas);
-        void OnSecondaryButton  (Button::Button_State key, const Dot &pos, Canvas &canvas){}
+        void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
+        void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnModifier1        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
-        void OnModifier2        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
-        void OnModifier3        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
+        void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
         void OnMove             (const Dot &pos, Canvas &canvas);
         void OnConfirm          (const Dot &pos, Canvas &canvas);
@@ -48,12 +48,12 @@ class BrushTool : public Tool
 
         ~BrushTool(){}
 
-        void OnMainButton       (Button::Button_State key, const Dot &pos, Canvas &canvas);
-        void OnSecondaryButton  (Button::Button_State key, const Dot &pos, Canvas &canvas){}
+        void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
+        void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnModifier1        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
-        void OnModifier2        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
-        void OnModifier3        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
+        void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
         void OnMove             (const Dot &pos, Canvas &canvas);
         void OnConfirm          (const Dot &pos, Canvas &canvas);
@@ -84,12 +84,12 @@ class SquareTool : public Tool
             delete preview_;
         };
 
-        void OnMainButton       (Button::Button_State key, const Dot &pos, Canvas &canvas);
-        void OnSecondaryButton  (Button::Button_State key, const Dot &pos, Canvas &canvas){}
+        void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
+        void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnModifier1        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
-        void OnModifier2        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
-        void OnModifier3        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
+        void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
         void OnMove             (const Dot &pos, Canvas &canvas);
         void OnConfirm          (const Dot &pos, Canvas &canvas);
@@ -121,12 +121,12 @@ class CircleTool : public Tool
             delete preview_;
         };
 
-        void OnMainButton       (Button::Button_State key, const Dot &pos, Canvas &canvas);
-        void OnSecondaryButton  (Button::Button_State key, const Dot &pos, Canvas &canvas){}
+        void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
+        void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnModifier1        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
-        void OnModifier2        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
-        void OnModifier3        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
+        void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
         void OnMove             (const Dot &pos, Canvas &canvas);
         void OnConfirm          (const Dot &pos, Canvas &canvas);
@@ -152,12 +152,12 @@ class FillTool : public Tool
 
         ~FillTool(){}
 
-        void OnMainButton       (Button::Button_State key, const Dot &pos, Canvas &canvas);
-        void OnSecondaryButton  (Button::Button_State key, const Dot &pos, Canvas &canvas){}
+        void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
+        void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnModifier1        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
-        void OnModifier2        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
-        void OnModifier3        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
+        void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
         void OnMove             (const Dot &pos, Canvas &canvas){}
         void OnConfirm          (const Dot &pos, Canvas &canvas);
@@ -187,12 +187,12 @@ class PollyLineTool : public Tool
 
         ~PollyLineTool(){}
 
-        void OnMainButton       (Button::Button_State key, const Dot &pos, Canvas &canvas);
-        void OnSecondaryButton  (Button::Button_State key, const Dot &pos, Canvas &canvas){}
+        void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
+        void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnModifier1        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
-        void OnModifier2        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
-        void OnModifier3        (Button::Button_State key, const Dot &pos, Canvas &canvas){}
+        void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
         void OnMove             (const Dot &pos, Canvas &canvas);
         void OnConfirm          (const Dot &pos, Canvas &canvas);

@@ -55,17 +55,16 @@ class Button : public Widget
 
         const Action *action_;
 
-        enum Button_State
+        enum ButtonState
         {
             RELEASED, 
             COVERED,
             PRESSED,
             DISABLED,
-            CONFIRM,
         };
 
-        Button_State state_;
-        Button_State prev_state_;
+        ButtonState state_;
+        ButtonState prev_state_;
 
     protected:
 

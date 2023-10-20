@@ -1,18 +1,14 @@
 #ifndef _WIDGET_H_
 #define _WIDGET_H_
 
-#include <SFML/System/Vector2.hpp>
-
 #include "../generals_func/generals.h"
 #include "../log_info/log_errors.h"
-
-#include "event.h"
 
 #include "../graphic/graphic.h"
 #include "../container/container.h"
 
 #include "../app/config.h"
-
+#include "event/event.h"
 
 struct Transform
 {
@@ -93,10 +89,6 @@ class WidgetContainer: public Widget
 
         Transform transform_;
 };
-
-
-void EventAdapter (Widget &widget, int mouse_x, int mouse_y, sf::Event &event, Container<Transform> &stack_transform);
-
 
 bool CheckIn(const Dot &mouse_pos);
 

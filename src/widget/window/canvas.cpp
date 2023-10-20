@@ -91,7 +91,7 @@ bool Canvas::OnMousePressed(const double x, const double y, const MouseKey key, 
     if (flag && key == MouseKey::LEFT)
     {
         Tool *active_tool = tool_palette_.GetActiveTool(); 
-        if (active_tool) active_tool->OnMainButton(Button::Button_State::PRESSED, GetCanvaseCoord(x, y, last_trf), *this);
+        if (active_tool) active_tool->OnMainButton(ButtonState::PRESSED, GetCanvaseCoord(x, y, last_trf), *this);
     }
 
     if (flag && key == MouseKey::RIGHT)
@@ -337,7 +337,7 @@ void CanvaseManager::CreateCanvase(ToolPalette *palette)
                                     Dot(0.03, 0.0), Vector(1.0, 0.03));
 
     Scrollbar *scroll_hor = new Scrollbar(left_btn, right_btn, hor_btn, new_canvase, 
-                                     Scrollbar::Scroll_Type::HORIZONTAL, Dot(0.00, 0.00), Vector(1.0, 1.0));
+                                     Scrollbar::ScrollType::HORIZONTAL, Dot(0.00, 0.00), Vector(1.0, 1.0));
 
     Button *up_btn = new Button(Up_Scl, Up_Scl, Up_Scl, Up_Scl, 
                                 new ScrollCanvas(Dot(0.0, -0.05), new_canvase), 
@@ -352,7 +352,7 @@ void CanvaseManager::CreateCanvase(ToolPalette *palette)
                                 Dot(0.0, 0.03), Vector(0.03, 1.0));
 
     Scrollbar *scroll_ver = new Scrollbar(up_btn, down_btn, ver_btn, new_canvase, 
-                                     Scrollbar::Scroll_Type::VERTICAL, Dot(0.96, 0.05), Vector(1.0, 1.0));
+                                     Scrollbar::ScrollType::VERTICAL, Dot(0.96, 0.05), Vector(1.0, 1.0));
    
 
     scrolls->AddWidget(new_canvase);
@@ -392,10 +392,10 @@ void Scrollbar::ResizeCenterButton(const Transform &canvas_trf)
 
     Transform center_trf = center_button_->GetTransform();
     
-    if (type_ == Scrollbar::Scroll_Type::HORIZONTAL)
+    if (type_ == Scrollbar::ScrollType::HORIZONTAL)
         center_trf.scale.x = canvas_trf.scale.x / size.x; 
     
-    if (type_ == Scrollbar::Scroll_Type::VERTICAL)
+    if (type_ == Scrollbar::ScrollType::VERTICAL)
         center_trf.scale.y = canvas_trf.scale.y / size.y; 
     
     center_button_->SetTransform(center_trf);
@@ -418,15 +418,15 @@ bool Scrollbar::OnMouseMoved(const double x, const double y, Container<Transform
 
     Dot new_coord = last_trf.ApplyTransform({x, y});
     
-    if (center_button_->prev_state_ == Button::Button_State::PRESSED || 
-        center_button_->state_ == Button::Button_State::PRESSED)
+    if (center_button_->prev_state_ == Button::ButtonState::PRESSED || 
+        center_button_->state_      == Button::ButtonState::PRESSED)
     {
         Dot prev_real_pos = canvas_->GetRealPos();
         
-        if (type_ == Scrollbar::Scroll_Type::HORIZONTAL)
+        if (type_ == Scrollbar::ScrollType::HORIZONTAL)
             canvas_->Move(Dot((new_coord.x - pos_press_.x) * canvas_->GetSize().x, 0));
 
-        if (type_ == Scrollbar::Scroll_Type::VERTICAL)
+        if (type_ == Scrollbar::ScrollType::VERTICAL)
             canvas_->Move(Dot(0.0, (new_coord.y - pos_press_.y) * canvas_->GetSize().y));
 
         canvas_->CorrectRealCoord(canvas_->GetTransform().ApplyPrev(last_trf));
@@ -450,14 +450,14 @@ void Scrollbar::MoveCenter(Dot &prev_pos)
 
 
     Dot offset(0.0, 0.0);
-    if (type_ == Scrollbar::Scroll_Type::HORIZONTAL)
+    if (type_ == Scrollbar::ScrollType::HORIZONTAL)
     { 
         offset = Dot((canvas_->GetRealPos().x - prev_pos.x) / canvas_->GetSize().x, 0.0);
         offset.x = std::min(bottom_trf.offset.x - Eps - (center_trf.offset.x + center_trf.scale.x), 
                         std::max(top_trf.offset.x + top_trf.scale.x + Eps - center_trf.offset.x, offset.x));
     }
 
-    if (type_ == Scrollbar::Scroll_Type::VERTICAL)
+    if (type_ == Scrollbar::ScrollType::VERTICAL)
     {
         offset = Dot(0.0, (canvas_->GetRealPos().y - prev_pos.y) / canvas_->GetSize().y);
         offset.y = std::min(bottom_trf.offset.y - Eps - (center_trf.offset.y + center_trf.scale.y), 
@@ -497,9 +497,9 @@ bool Scrollbar::OnMousePressed(const double x, const double y, const MouseKey ke
         {
             Dot offset = new_coord - center_button_->GetTransform().offset;
 
-            if (type_ == Scrollbar::Scroll_Type::HORIZONTAL)
+            if (type_ == Scrollbar::ScrollType::HORIZONTAL)
                 offset.y = 0.0;
-            if (type_ == Scrollbar::Scroll_Type::VERTICAL)
+            if (type_ == Scrollbar::ScrollType::VERTICAL)
                 offset.x = 0.0;
 
             if (offset.x < -Eps || offset.y < -Eps)

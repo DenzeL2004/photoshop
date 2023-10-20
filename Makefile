@@ -10,8 +10,8 @@ FLAGS = -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equa
 SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 
-run:		obj/vector.o obj/graphic.o obj/window.o obj/canvas.o obj/tools.o obj/log_errors.o obj/generals.o obj/widget.o obj/button.o obj/decorator.o obj/app.o obj/main.o
-	g++   	obj/vector.o obj/graphic.o obj/window.o obj/canvas.o obj/tools.o obj/log_errors.o obj/generals.o obj/widget.o obj/button.o obj/decorator.o obj/app.o obj/main.o -o run  $(SFML_FLAGS)
+run:		obj/vector.o obj/graphic.o obj/event.o obj/window.o obj/canvas.o obj/tools.o obj/log_errors.o obj/generals.o obj/widget.o obj/button.o obj/decorator.o obj/app.o obj/main.o
+	g++   	obj/vector.o obj/graphic.o obj/event.o obj/window.o obj/canvas.o obj/tools.o obj/log_errors.o obj/generals.o obj/widget.o obj/button.o obj/decorator.o obj/app.o obj/main.o -o run  $(SFML_FLAGS)
 
 
 obj/main.o: main.cpp
@@ -54,6 +54,10 @@ obj/decorator.o:  	src/widget/decorator/decorator.cpp src/widget/decorator/decor
 
 obj/widget.o:  	src/widget/widget.cpp src/widget/widget.h
 		g++		src/widget/widget.cpp -c -o obj/widget.o $(FLAGS)
+
+obj/event.o:  	src/widget/event/event.cpp src/widget/event/event.h
+		g++		src/widget/event/event.cpp -c -o obj/event.o $(FLAGS)
+
 
 .PHONY: cleanup mkdirectory
 

@@ -27,7 +27,7 @@ class AddCanvase : public Action
 class ChooseTool : public Action
 {
     public:
-        ChooseTool(ToolPalette::Tool_Type type, ToolPalette *palette): 
+        ChooseTool(ToolPalette::ToolType type, ToolPalette *palette): 
                     palette_(*palette), type_(type){};
         ~ChooseTool(){};
 
@@ -38,7 +38,7 @@ class ChooseTool : public Action
 
     private:
         ToolPalette &palette_;
-        ToolPalette::Tool_Type type_;
+        ToolPalette::ToolType type_;
 };
 
 class ChooseColor : public Action

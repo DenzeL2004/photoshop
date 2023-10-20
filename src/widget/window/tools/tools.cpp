@@ -13,7 +13,7 @@ Dot Tool::ShiftDot (const Dot &pos, Canvas &canvas)
 
 ToolPalette::ToolPalette():
         tools_(),
-        active_tool_(Tool_Type::NOTHING), 
+        active_tool_(ToolType::NOTHING), 
         color_type_(FOREGROUND), foreground_color_(sf::Color::Transparent), background_color_(sf::Color::Transparent)
 {
     tools_.PushBack(new LineTool(&foreground_color_));
@@ -37,24 +37,24 @@ Tool* ToolPalette::GetActiveTool () const
 {
     switch (active_tool_)
     {
-        case ToolPalette::Tool_Type::LINE:
-            return tools_[ToolPalette::Tool_Type::LINE];
+        case ToolPalette::ToolType::LINE:
+            return tools_[ToolPalette::ToolType::LINE];
             break;
 
-        case ToolPalette::Tool_Type::BRUSH:
-            return tools_[ToolPalette::Tool_Type::BRUSH];
+        case ToolPalette::ToolType::BRUSH:
+            return tools_[ToolPalette::ToolType::BRUSH];
             break;
 
-        case ToolPalette::Tool_Type::SQUARE:
-            return tools_[ToolPalette::Tool_Type::SQUARE];
+        case ToolPalette::ToolType::SQUARE:
+            return tools_[ToolPalette::ToolType::SQUARE];
             break;
 
-        case ToolPalette::Tool_Type::CIRCLE:
-            return tools_[ToolPalette::Tool_Type::CIRCLE];
+        case ToolPalette::ToolType::CIRCLE:
+            return tools_[ToolPalette::ToolType::CIRCLE];
             break;
 
-        case ToolPalette::Tool_Type::POLLYLINE:
-            return tools_[ToolPalette::Tool_Type::POLLYLINE];
+        case ToolPalette::ToolType::POLLYLINE:
+            return tools_[ToolPalette::ToolType::POLLYLINE];
             break;
         
         default:
@@ -65,16 +65,16 @@ Tool* ToolPalette::GetActiveTool () const
 
 void ToolPalette::SetActiveColor (const sf::Color &color) 
 {
-    if (color_type_ == ToolPalette::Color_Type::FOREGROUND)
+    if (color_type_ == ToolPalette::ColorType::FOREGROUND)
         foreground_color_ = color;
 
-    if (color_type_ == ToolPalette::Color_Type::BACKGROUND)
+    if (color_type_ == ToolPalette::ColorType::BACKGROUND)
         background_color_ = color;
 }
 
 //================================================================================
 
-void ToolPalette::SetActiveTool(const Tool_Type tool_type)
+void ToolPalette::SetActiveTool(const ToolType tool_type)
 {
     active_tool_ = tool_type;
 }
@@ -121,9 +121,9 @@ LineTool::LineTool(const sf::Color *cur_color):
 
 
 //================================================================================
-void LineTool::OnMainButton(Button::Button_State key, const Dot &pos, Canvas &canvas)
+void LineTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
 {
-    if (key != Button::Button_State::PRESSED)
+    if (key != ButtonState::PRESSED)
         return;
 
     if (using_)
@@ -201,9 +201,9 @@ SquareTool::SquareTool(const sf::Color *cur_color):
                   using_(false), start_pos_(), end_pos_(), 
                   preview_(new SquareWidget(&start_pos_, &end_pos_, cur_color)), cur_color_(*cur_color){}
 
-void SquareTool::OnMainButton(Button::Button_State key, const Dot &pos, Canvas &canvas)
+void SquareTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
 {
-    if (key != Button::Button_State::PRESSED)
+    if (key != ButtonState::PRESSED)
         return;
 
     if (using_)
@@ -289,9 +289,9 @@ CircleTool::CircleTool(const sf::Color *cur_color):
                   using_(false), start_pos_(), end_pos_(), 
                   preview_(new CircleWidget(&start_pos_, &end_pos_, cur_color)), cur_color_(*cur_color){}
 
-void CircleTool::OnMainButton(Button::Button_State key, const Dot &pos, Canvas &canvas)
+void CircleTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
 {
-    if (key != Button::Button_State::PRESSED)
+    if (key != ButtonState::PRESSED)
         return;
 
     if (using_)
@@ -338,9 +338,9 @@ BrushTool::BrushTool(const sf::Color *cur_color):
                     using_(false), cur_color_(*cur_color){}
 
 
-void BrushTool::OnMainButton(Button::Button_State key, const Dot &pos, Canvas &canvas)
+void BrushTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
 {
-    if (key != Button::Button_State::PRESSED)
+    if (key != ButtonState::PRESSED)
         return;
 
     if (using_)
@@ -387,9 +387,9 @@ FillTool::FillTool(const sf::Color *cur_color):
                     using_(false), cur_color_(*cur_color){}
 
 
-void FillTool::OnMainButton(Button::Button_State key, const Dot &pos, Canvas &canvas)
+void FillTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
 {
-    if (key != Button::Button_State::PRESSED)
+    if (key != ButtonState::PRESSED)
         return;
 
     if (using_)
@@ -524,9 +524,9 @@ PollyLineTool::PollyLineTool(const sf::Color *cur_color):
                   using_(false), start_pos_(), end_pos_(), 
                   preview_(new PollyLineWidget(&end_pos_, cur_color)), cur_color_(*cur_color){}
 
-void PollyLineTool::OnMainButton(Button::Button_State key, const Dot &pos, Canvas &canvas)
+void PollyLineTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
 {
-    if (key != Button::Button_State::PRESSED)
+    if (key != ButtonState::PRESSED)
         return;
 
 

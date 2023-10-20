@@ -80,17 +80,17 @@ const sf::Texture* Button::DefineTexture() const
 {
     switch (state_)
     {
-        case  Button::Button_State::RELEASED:
+        case  Button::ButtonState::RELEASED:
             return &released_texture_;
 
-        case  Button::Button_State::PRESSED:
+        case  Button::ButtonState::PRESSED:
             return &pressed_texture_;
     
-        case  Button::Button_State::DISABLED:
+        case  Button::ButtonState::DISABLED:
             return &disabled_texture_;
 
-        case  Button::Button_State::COVERED:
-            if (prev_state_ == Button::Button_State::PRESSED)
+        case  Button::ButtonState::COVERED:
+            if (prev_state_ == Button::ButtonState::PRESSED)
                 return &pressed_texture_;
             else
                 return &covered_texture_;
@@ -105,7 +105,7 @@ const sf::Texture* Button::DefineTexture() const
 
 bool Button::OnMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
 {
-    if (state_ ==  Button::Button_State::DISABLED)
+    if (state_ ==  Button::ButtonState::DISABLED)
         return false;
 
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
@@ -124,10 +124,10 @@ bool Button::OnMouseMoved(const double x, const double y, Container<Transform> &
     }
     else
     {
-        if (state_ !=  Button::Button_State::COVERED)
+        if (state_ !=  Button::ButtonState::COVERED)
         {
             prev_state_ = state_;
-            state_ =  Button::Button_State::COVERED;
+            state_ =  Button::ButtonState::COVERED;
         }
     }
 
@@ -138,7 +138,7 @@ bool Button::OnMouseMoved(const double x, const double y, Container<Transform> &
 
 bool Button::OnMousePressed(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
-    if (state_ == Button::Button_State::DISABLED)
+    if (state_ == Button::ButtonState::DISABLED)
         return false;
 
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
@@ -148,15 +148,15 @@ bool Button::OnMousePressed(const double x, const double y, const MouseKey key, 
 
     bool flag = CheckIn(new_coord);
 
-    if (flag && key == LEFT)
+    if (flag && key == MouseKey::LEFT)
     {
         if (action_ != nullptr) (*action_)();
-        state_ = Button::Button_State::PRESSED;
+        state_ = Button::ButtonState::PRESSED;
     }
     else
     {
         flag = false;
-        state_ = Button::Button_State::RELEASED;
+        state_ = Button::ButtonState::RELEASED;
     }
 
     stack_transform.PopBack();
@@ -168,11 +168,11 @@ bool Button::OnMousePressed(const double x, const double y, const MouseKey key, 
 
 bool Button::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
-    if (state_ == Button::Button_State::DISABLED)
+    if (state_ == Button::ButtonState::DISABLED)
         return false;
 
-    state_ = Button::Button_State::RELEASED;
-    prev_state_ = Button::Button_State::RELEASED;
+    state_ = Button::ButtonState::RELEASED;
+    prev_state_ = Button::ButtonState::RELEASED;
 
     return true;
 }
@@ -215,7 +215,7 @@ void ButtonList::Draw(sf::RenderTarget &target, Container<Transform> &stack_tran
     size_t size = buttons_.GetSize();
     for (size_t it = 0; it < size; it++)
     {
-        if (buttons_[it]->state_ != Button::Button_State::DISABLED)
+        if (buttons_[it]->state_ != Button::ButtonState::DISABLED)
             buttons_[it]->Draw(target, stack_transform); 
     }
 }
@@ -224,7 +224,7 @@ void ButtonList::Draw(sf::RenderTarget &target, Container<Transform> &stack_tran
 
 bool ButtonList::OnMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
 {
-    if (state_ ==  Button::Button_State::DISABLED)
+    if (state_ ==  Button::ButtonState::DISABLED)
         return false;
 
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
@@ -242,10 +242,10 @@ bool ButtonList::OnMouseMoved(const double x, const double y, Container<Transfor
     }
     else
     {
-        if (state_ !=  Button::Button_State::COVERED)
+        if (state_ !=  Button::ButtonState::COVERED)
         {
             prev_state_ = state_;
-            state_ =  Button::Button_State::COVERED;
+            state_ =  Button::ButtonState::COVERED;
         }
     }
 
@@ -253,13 +253,13 @@ bool ButtonList::OnMouseMoved(const double x, const double y, Container<Transfor
     size_t size = buttons_.GetSize();
     for (size_t it = 0; it < size; it++)
     {
-        if (state_ == Button::Button_State::COVERED || state_ == Button::Button_State::PRESSED)
+        if (state_ == Button::ButtonState::COVERED || state_ == Button::ButtonState::PRESSED)
         {
             buttons_[it]->state_ = buttons_[it]->prev_state_;
             buttons_[it]->OnMouseMoved(x, y, stack_transform);
         }
         else
-            buttons_[it]->state_ = Button::Button_State::DISABLED;
+            buttons_[it]->state_ = Button::ButtonState::DISABLED;
 
             
     }
@@ -271,32 +271,32 @@ bool ButtonList::OnMouseMoved(const double x, const double y, Container<Transfor
 
 bool ButtonList::OnMousePressed(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
-    if (state_ == Button::Button_State::DISABLED)
+    if (state_ == Button::ButtonState::DISABLED)
         return false;
     
     bool flag = false;
     
-    if (state_ == Button::Button_State::PRESSED)
+    if (state_ == Button::ButtonState::PRESSED)
     {
         size_t size = buttons_.GetSize();
 
         int last_presed = -1;
         for (size_t it = 0; it < size; it++)
         {
-            if (buttons_[it]->state_ == Button::Button_State::PRESSED) last_presed = it;
+            if (buttons_[it]->state_ == Button::ButtonState::PRESSED) last_presed = it;
             flag |= buttons_[it]->OnMousePressed(x, y, key, stack_transform);
             
 
             buttons_[it]->prev_state_ = buttons_[it]->state_;
-            buttons_[it]->state_ = Button::Button_State::DISABLED;
+            buttons_[it]->state_ = Button::ButtonState::DISABLED;
         }
 
         if (!flag && last_presed != -1)
-            buttons_[last_presed]->prev_state_ = Button::Button_State::PRESSED;
+            buttons_[last_presed]->prev_state_ = Button::ButtonState::PRESSED;
 
 
-        state_      = Button::Button_State::RELEASED;
-        prev_state_ = Button::Button_State::RELEASED;
+        state_      = Button::ButtonState::RELEASED;
+        prev_state_ = Button::ButtonState::RELEASED;
         
     }
    
@@ -310,16 +310,16 @@ bool ButtonList::OnMousePressed(const double x, const double y, const MouseKey k
     flag = CheckIn(new_coord);
     stack_transform.PopBack();
 
-    if (flag && state_ != Button::Button_State::PRESSED)
+    if (flag && state_ != Button::ButtonState::PRESSED)
     {
-        if (key == LEFT)
+        if (key == MouseKey::LEFT)
         {
             if (action_ != nullptr) (*action_)();
-            state_ =  Button::Button_State::PRESSED;
+            state_ =  Button::ButtonState::PRESSED;
         }
     }
     else
-        state_ =  Button::Button_State::RELEASED;
+        state_ =  Button::ButtonState::RELEASED;
     
   
 
@@ -331,7 +331,7 @@ bool ButtonList::OnMousePressed(const double x, const double y, const MouseKey k
 
 bool ButtonList::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
-    if (state_ == Button::Button_State::DISABLED)
+    if (state_ == Button::ButtonState::DISABLED)
         return false;
 
     return true;

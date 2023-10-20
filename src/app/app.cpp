@@ -48,7 +48,7 @@ AppWindow::AppWindow(const char *path_texture, const Dot &offset, const Vector &
         
         size_t size = tools_button_->buttons_.GetSize();
         for (size_t it = 0; it < size; it++)
-            tools_button_->buttons_[it]->state_ = Button::Button_State::DISABLED;
+            tools_button_->buttons_[it]->state_ = Button::ButtonState::DISABLED;
        
     }
 
@@ -78,7 +78,7 @@ AppWindow::AppWindow(const char *path_texture, const Dot &offset, const Vector &
         
         size_t size = colors_button_->buttons_.GetSize();
         for (size_t it = 0; it < size; it++)
-            colors_button_->buttons_[it]->state_ = Button::Button_State::DISABLED;
+            colors_button_->buttons_[it]->state_ = Button::ButtonState::DISABLED;
     }
 
 } 
