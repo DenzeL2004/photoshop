@@ -94,12 +94,6 @@ bool Canvas::OnMousePressed(const double x, const double y, const MouseKey key, 
         if (active_tool) active_tool->OnMainButton(ButtonState::PRESSED, GetCanvaseCoord(x, y, last_trf), *this);
     }
 
-    if (flag && key == MouseKey::RIGHT)
-    {
-        Tool *active_tool = tool_palette_.GetActiveTool(); 
-        if (active_tool) active_tool->OnConfirm(GetCanvaseCoord(x, y, last_trf), *this);
-    }
-
     stack_transform.PopBack();
 
     return flag;
@@ -136,7 +130,14 @@ bool Canvas::OnKeyboardPressed(const KeyboardKey key)
 
 bool Canvas::OnKeyboardReleased(const KeyboardKey key)
 {
-    printf("Canvas: mouse keyboard kye released\n");
+    if (key == KeyboardKey::ENTER)
+    {
+        Tool *active_tool = tool_palette_.GetActiveTool(); 
+        if (active_tool) active_tool->OnConfirm(Dot(0, 0), *this);
+
+        return true;
+    }
+
     return false;
 }
 
@@ -153,7 +154,6 @@ Dot Canvas::GetSize() const
 {
     return Dot(width_, hieght_);
 }
-
 
 void Canvas::Move(const Dot &offset)
 {
@@ -288,6 +288,7 @@ bool CanvaseManager::OnMouseReleased(const double x, const double y, const Mouse
 
 bool CanvaseManager::OnKeyboardPressed(const KeyboardKey key)
 {
+    printf("CanvaseManager: mouse keyboard kye released\n");
     return false;
 }
 
@@ -295,8 +296,11 @@ bool CanvaseManager::OnKeyboardPressed(const KeyboardKey key)
 
 bool CanvaseManager::OnKeyboardReleased(const KeyboardKey key)
 {
-    printf("Window: mouse keyboard kye released\n");
-    return false;
+    size_t size = canvases_.GetSize();
+    if (size == 0)
+        return false;
+        
+    return canvases_[size - 1]->OnKeyboardReleased(key);
 }
 //================================================================================
 
@@ -545,7 +549,6 @@ bool Scrollbar::OnKeyboardPressed(const KeyboardKey key)
 
 bool Scrollbar::OnKeyboardReleased(const KeyboardKey key)
 {
-    printf("Scrollbar: mouse keyboard kye released\n");
     return false;
 }
 

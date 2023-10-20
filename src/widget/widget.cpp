@@ -111,7 +111,13 @@ bool WidgetContainer::OnKeyboardPressed(const KeyboardKey key)
 
 bool WidgetContainer::OnKeyboardReleased(const KeyboardKey key)
 {
-    printf("WidgetContainer: mouse keyboard kye released\n");
+    size_t size = widgets_.GetSize();
+    for (size_t it = 0; it < size; it++)
+    {
+        if (widgets_[it]->OnKeyboardReleased(key))
+            return true;
+    }
+
     return false;
 }
 

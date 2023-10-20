@@ -20,7 +20,8 @@ ToolPalette::ToolPalette():
     tools_.PushBack(new BrushTool(&foreground_color_));
     tools_.PushBack(new SquareTool(&foreground_color_));
     tools_.PushBack(new CircleTool(&foreground_color_));
-    tools_.PushBack(new PollyLineTool(&foreground_color_));
+    tools_.PushBack(new PolyLineTool(&foreground_color_));
+    tools_.PushBack(new BrushTool(&sf::Color::White));
 }
 
 
@@ -53,10 +54,14 @@ Tool* ToolPalette::GetActiveTool () const
             return tools_[ToolPalette::ToolType::CIRCLE];
             break;
 
-        case ToolPalette::ToolType::POLLYLINE:
-            return tools_[ToolPalette::ToolType::POLLYLINE];
+        case ToolPalette::ToolType::POLYLINE:
+            return tools_[ToolPalette::ToolType::POLYLINE];
             break;
-        
+
+        case ToolPalette::ToolType::ERASER:
+            return tools_[ToolPalette::ToolType::ERASER];
+            break;
+
         default:
             return nullptr;
             break;
@@ -379,6 +384,54 @@ void BrushTool::DrawForm (const Dot &pos, Canvas &canvas)
     DrawCircle(canvas.background_, canvas_dot, 10, cur_color_);
 }
 
+//================================================================================
+// //Eraeser
+
+// EreaserTool::EreaserTool(const sf::Color *cur_color):
+//                 using_(false), cur_color_(*cur_color){}
+
+
+// void EreaserTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
+// {
+//     if (key != ButtonState::PRESSED)
+//         return;
+
+//     if (using_)
+//         return;
+
+//     using_ = true;
+
+//     DrawForm(pos, canvas);
+// }
+
+// void EreaserTool::OnMove(const Dot &pos, Canvas &canvas)
+// {
+//     if (!using_)
+//         return;
+
+//     DrawForm(pos, canvas);
+// }
+
+// void EreaserTool::OnConfirm (const Dot &pos, Canvas &canvas)
+// {
+//     if (!using_)
+//         return;
+
+//     using_ = false;
+// }
+
+// Widget* EreaserTool::GetWidget() const
+// {
+//     return nullptr;
+// }
+
+
+// void EreaserTool::DrawForm (const Dot &pos, Canvas &canvas)
+// {
+//     Dot canvas_dot  =  ShiftDot(pos, canvas);
+//     DrawCircle(canvas.background_, canvas_dot, 10, cur_color_);
+// }
+
 
 //================================================================================
 //Fill
@@ -471,13 +524,13 @@ void FillTool::Fill(sf::Color &fill_color, const Dot &start_pos, Canvas &canvas,
 
 //================================================================================
 
-class PollyLineWidget : public Widget
+class PolyLineWidget : public Widget
 {
     public:
-        PollyLineWidget(const Dot *end_pos, const sf::Color *cur_color):
+        PolyLineWidget(const Dot *end_pos, const sf::Color *cur_color):
                         end_pos_(*end_pos), cur_color_(*cur_color){}
 
-        ~PollyLineWidget(){}
+        ~PolyLineWidget(){}
 
         virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform) {return true;};
         virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform) {return true;}
@@ -520,11 +573,11 @@ class PollyLineWidget : public Widget
 };
 
 
-PollyLineTool::PollyLineTool(const sf::Color *cur_color):
+PolyLineTool::PolyLineTool(const sf::Color *cur_color):
                   using_(false), start_pos_(), end_pos_(), 
-                  preview_(new PollyLineWidget(&end_pos_, cur_color)), cur_color_(*cur_color){}
+                  preview_(new PolyLineWidget(&end_pos_, cur_color)), cur_color_(*cur_color){}
 
-void PollyLineTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
+void PolyLineTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
 {
     if (key != ButtonState::PRESSED)
         return;
@@ -536,12 +589,12 @@ void PollyLineTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas
     using_ = true;
 }
 
-void PollyLineTool::OnMove(const Dot &pos, Canvas &canvas)
+void PolyLineTool::OnMove(const Dot &pos, Canvas &canvas)
 {
     end_pos_ = pos; 
 }
 
-void PollyLineTool::OnConfirm (const Dot &pos, Canvas &canvas)
+void PolyLineTool::OnConfirm (const Dot &pos, Canvas &canvas)
 {
     if (using_) 
     {
@@ -571,7 +624,7 @@ void PollyLineTool::OnConfirm (const Dot &pos, Canvas &canvas)
     preview_->arr_.clear();
 }
 
-Widget* PollyLineTool::GetWidget() const
+Widget* PolyLineTool::GetWidget() const
 {
     return preview_;
 }

@@ -14,18 +14,18 @@ class LineTool : public Tool
         ~LineTool()
         {
             delete preview_;
-        };
+        }
 
-        void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
-        void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
+        virtual void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnMove             (const Dot &pos, Canvas &canvas);
-        void OnConfirm          (const Dot &pos, Canvas &canvas);
-        void OnCancel           (const Dot &pos, Canvas &canvas){}
+        virtual void OnMove             (const Dot &pos, Canvas &canvas);
+        virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
+        virtual void OnCancel           (const Dot &pos, Canvas &canvas){}
 
         Widget* GetWidget() const;
 
@@ -48,21 +48,21 @@ class BrushTool : public Tool
 
         ~BrushTool(){}
 
-        void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
-        void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
+        virtual void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnMove             (const Dot &pos, Canvas &canvas);
-        void OnConfirm          (const Dot &pos, Canvas &canvas);
-        void OnCancel           (const Dot &pos, Canvas &canvas){}
+        virtual void OnMove             (const Dot &pos, Canvas &canvas);
+        virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
+        virtual void OnCancel           (const Dot &pos, Canvas &canvas){}
 
         Widget* GetWidget() const;
 
     private:
-        void DrawForm(const Dot &pos, Canvas &canvas);
+        virtual void DrawForm(const Dot &pos, Canvas &canvas);
 
 
         bool using_;
@@ -82,18 +82,18 @@ class SquareTool : public Tool
         ~SquareTool()
         {
             delete preview_;
-        };
+        }
 
-        void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
-        void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
+        virtual void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnMove             (const Dot &pos, Canvas &canvas);
-        void OnConfirm          (const Dot &pos, Canvas &canvas);
-        void OnCancel           (const Dot &pos, Canvas &canvas){}
+        virtual void OnMove             (const Dot &pos, Canvas &canvas);
+        virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
+        virtual void OnCancel           (const Dot &pos, Canvas &canvas){}
 
         Widget* GetWidget() const;
 
@@ -119,18 +119,18 @@ class CircleTool : public Tool
         ~CircleTool()
         {
             delete preview_;
-        };
+        }
 
-        void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
-        void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
+        virtual void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnMove             (const Dot &pos, Canvas &canvas);
-        void OnConfirm          (const Dot &pos, Canvas &canvas);
-        void OnCancel           (const Dot &pos, Canvas &canvas){}
+        virtual void OnMove             (const Dot &pos, Canvas &canvas);
+        virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
+        virtual void OnCancel           (const Dot &pos, Canvas &canvas){}
 
         Widget* GetWidget() const;
 
@@ -152,21 +152,21 @@ class FillTool : public Tool
 
         ~FillTool(){}
 
-        void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
-        void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
+        virtual void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnMove             (const Dot &pos, Canvas &canvas){}
-        void OnConfirm          (const Dot &pos, Canvas &canvas);
-        void OnCancel           (const Dot &pos, Canvas &canvas){}
+        virtual void OnMove             (const Dot &pos, Canvas &canvas){}
+        virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
+        virtual void OnCancel           (const Dot &pos, Canvas &canvas){}
 
         Widget* GetWidget() const;
 
     private:
-        void Fill(sf::Color &fill_color, const Dot &start_pos, Canvas &canvas, sf::Image &image);
+        virtual void Fill(sf::Color &fill_color, const Dot &start_pos, Canvas &canvas, sf::Image &image);
 
 
         bool using_;
@@ -176,27 +176,25 @@ class FillTool : public Tool
         const sf::Color &cur_color_;
 };
 
+class PolyLineWidget;
 
-
-class PollyLineWidget;
-
-class PollyLineTool : public Tool
+class PolyLineTool : public Tool
 {
     public:
-        PollyLineTool(const sf::Color *cur_color);
+        PolyLineTool(const sf::Color *cur_color);
 
-        ~PollyLineTool(){}
+        ~PolyLineTool(){}
 
-        void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
-        void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
+        virtual void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
-        void OnMove             (const Dot &pos, Canvas &canvas);
-        void OnConfirm          (const Dot &pos, Canvas &canvas);
-        void OnCancel           (const Dot &pos, Canvas &canvas){}
+        virtual void OnMove             (const Dot &pos, Canvas &canvas);
+        virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
+        virtual void OnCancel           (const Dot &pos, Canvas &canvas){}
 
         Widget* GetWidget() const;
 
@@ -205,9 +203,40 @@ class PollyLineTool : public Tool
 
         Dot start_pos_;
         Dot end_pos_;
-        PollyLineWidget* preview_;
+        PolyLineWidget* preview_;
         
         const sf::Color &cur_color_;
 };
+
+// class EreaserTool : public BrushTool
+// {
+//     public:
+//         EreaserTool() = delete;
+
+//         EreaserTool(const sf::Color *cur_color);
+
+//         ~EreaserTool(){}
+
+//         virtual void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
+//         virtual void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
+
+//         virtual void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
+//         virtual void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
+//         virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
+
+//         virtual void OnMove             (const Dot &pos, Canvas &canvas);
+//         virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
+//         virtual void OnCancel           (const Dot &pos, Canvas &canvas){}
+
+//         Widget* GetWidget() const;
+
+//     private:
+//         virtual void DrawForm(const Dot &pos, Canvas &canvas);
+
+//         bool using_;
+//         Dot prev_pos_;
+
+//         const sf::Color &cur_color_;
+// };
 
 #endif

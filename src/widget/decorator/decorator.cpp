@@ -238,8 +238,9 @@ bool Frame::OnKeyboardPressed(const KeyboardKey key)
 
 bool Frame::OnKeyboardReleased(const KeyboardKey key)
 {
-    printf("Frame: mouse keyboard kye released\n");
-    return false;
+    bool flag = decarable_->OnKeyboardReleased(key);
+
+    return flag;
 }
 
 //================================================================================

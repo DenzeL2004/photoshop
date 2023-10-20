@@ -38,12 +38,13 @@ class ToolPalette
 
         enum ToolType
         {
-            NOTHING = -1,
-            LINE    = 0, 
-            BRUSH   = 1,    
-            SQUARE  = 2, 
-            CIRCLE  = 3,
-            POLLYLINE = 4,
+            NOTHING  = -1,
+            LINE     = 0, 
+            BRUSH    = 1,    
+            SQUARE   = 2, 
+            CIRCLE   = 3,
+            POLYLINE = 4,
+            ERASER  = 5,
         };
 
         ToolPalette ();

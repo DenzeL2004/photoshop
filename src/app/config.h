@@ -43,8 +43,12 @@ static Vector Button_Square_Scale  = Vector(0.1, 0.1);
 static Dot    Button_Circle_Offset = Dot(0.1, 0.4);
 static Vector Button_Circle_Scale  = Vector(0.1, 0.1);
 
-static Dot    Button_Fill_Offset = Dot(0.1, 0.5);
-static Vector Button_Fill_Scale  = Vector(0.1, 0.1);
+static Dot    Button_Polyline_Offset = Dot(0.1, 0.5);
+static Vector Button_Polyline_Scale  = Vector(0.1, 0.1);
+
+
+static Dot    Button_Eraser_Offset = Dot(0.1, 0.6);
+static Vector Button_Eraser_Scale  = Vector(0.1, 0.1);
 
 
 //Colors
