@@ -97,7 +97,7 @@ bool Canvas::OnMousePressed(const double x, const double y, const MouseKey key, 
     if (flag && key == MouseKey::RIGHT)
     {
         Tool *active_tool = tool_palette_.GetActiveTool(); 
-        if (active_tool) active_tool->OnMainButton(Button::Button_State::CONFIRM, GetCanvaseCoord(x, y, last_trf), *this);
+        if (active_tool) active_tool->OnConfirm(GetCanvaseCoord(x, y, last_trf), *this);
     }
 
     stack_transform.PopBack();

@@ -148,7 +148,7 @@ void LineTool::OnConfirm (const Dot &pos, Canvas &canvas)
         return;
 
     Dot begin   = ShiftDot(start_pos_, canvas);
-    Dot end     = ShiftDot(pos, canvas);
+    Dot end     = ShiftDot(end_pos_, canvas);
 
     DrawLine(canvas.background_, begin, end, cur_color_);
     start_pos_  = end_pos_ = {0, 0};
@@ -228,7 +228,7 @@ void SquareTool::OnConfirm (const Dot &pos, Canvas &canvas)
         return;
 
     Dot left_up     = ShiftDot(start_pos_, canvas);
-    Dot right_down  = ShiftDot(pos, canvas);
+    Dot right_down  = ShiftDot(end_pos_, canvas);
 
     DrawRectangle(canvas.background_, left_up, right_down, cur_color_);
     start_pos_  = end_pos_ = {0, 0};
@@ -316,7 +316,7 @@ void CircleTool::OnConfirm (const Dot &pos, Canvas &canvas)
         return;
 
     Dot center = ShiftDot(start_pos_, canvas);
-    Dot other  = ShiftDot(pos, canvas);
+    Dot other  = ShiftDot(end_pos_, canvas);
 
     double rad = (center - other).Len();
 
@@ -470,18 +470,64 @@ void FillTool::Fill(sf::Color &fill_color, const Dot &start_pos, Canvas &canvas,
 
 
 //================================================================================
+
+class PollyLineWidget : public Widget
+{
+    public:
+        PollyLineWidget(const Dot *end_pos, const sf::Color *cur_color):
+                        end_pos_(*end_pos), cur_color_(*cur_color){}
+
+        ~PollyLineWidget(){}
+
+        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform) {return true;};
+        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform) {return true;}
+        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform){return true;}
+
+        bool OnKeyboardPressed  (const KeyboardKey){return true;}
+        bool OnKeyboardReleased (const KeyboardKey){return true;}
+
+        void PassTime           (const time_t delta_time){}
+
+        void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform)
+        {
+            Transform last_trf = stack_transform.GetBack();
+            size_t size = arr_.getVertexCount();
+
+            if (size == 0)
+                return;
+
+            Dot cur(0.0, 0.0); 
+            Dot next = Dot(arr_[size - 1].position.x, arr_[size - 1].position.y);
+
+            for (size_t it = 0; it < size - 1; it++)
+            {
+                cur  = Dot(arr_[it].position.x, arr_[it].position.y);
+                next = Dot(arr_[it + 1].position.x, arr_[it + 1].position.y);
+                DrawLine(targert, cur + last_trf.offset, next + last_trf.offset, cur_color_);
+            }
+
+            DrawLine(targert, next + last_trf.offset,  end_pos_ + last_trf.offset, cur_color_);
+
+        }
+    
+        sf::Color GetColor() const {return cur_color_;}
+
+        sf::VertexArray arr_;
+    private:
+        const Dot &end_pos_;
+       
+        const sf::Color &cur_color_;
+};
+
+
 PollyLineTool::PollyLineTool(const sf::Color *cur_color):
                   using_(false), start_pos_(), end_pos_(), 
                   preview_(new PollyLineWidget(&end_pos_, cur_color)), cur_color_(*cur_color){}
 
 void PollyLineTool::OnMainButton(Button::Button_State key, const Dot &pos, Canvas &canvas)
 {
-    if (key == Button::Button_State::CONFIRM)
-    {
-        using_ = false;
-        OnConfirm(pos, canvas);
+    if (key != Button::Button_State::PRESSED)
         return;
-    }
 
 
     start_pos_ = end_pos_ = pos;
@@ -492,15 +538,16 @@ void PollyLineTool::OnMainButton(Button::Button_State key, const Dot &pos, Canva
 
 void PollyLineTool::OnMove(const Dot &pos, Canvas &canvas)
 {
-    if (!using_)
-        return;
-    
     end_pos_ = pos; 
 }
 
 void PollyLineTool::OnConfirm (const Dot &pos, Canvas &canvas)
 {
-    if (using_) return;
+    if (using_) 
+    {
+        using_ = false;
+        return;
+    }
 
     size_t size = preview_->arr_.getVertexCount();
     
@@ -509,21 +556,19 @@ void PollyLineTool::OnConfirm (const Dot &pos, Canvas &canvas)
         using_ = false;
         return;
     }
-    else
-    {
-        Dot cur(0.0, 0.0); Dot next = Dot(preview_->arr_[size - 1].position.x, preview_->arr_[size - 1].position.y);
-
-        for (size_t it = 0; it < size - 1; it++)
-        {
-            cur  = Dot(preview_->arr_[it].position.x, preview_->arr_[it].position.y);
-            next = Dot(preview_->arr_[it + 1].position.x, preview_->arr_[it + 1].position.y);
-            DrawLine(canvas.background_, ShiftDot(cur, canvas),  ShiftDot(next, canvas), cur_color_);
-        }
-
-        start_pos_ = end_pos_ = Dot(0, 0);
-        preview_->arr_.clear();
-    }
+ 
     
+    Dot cur(0.0, 0.0); Dot next = Dot(preview_->arr_[size - 1].position.x, preview_->arr_[size - 1].position.y);
+
+    for (size_t it = 0; it < size - 1; it++)
+    {
+        cur  = Dot(preview_->arr_[it].position.x, preview_->arr_[it].position.y);
+        next = Dot(preview_->arr_[it + 1].position.x, preview_->arr_[it + 1].position.y);
+        DrawLine(canvas.background_, ShiftDot(cur, canvas),  ShiftDot(next, canvas), cur_color_);
+    }
+
+    start_pos_ = end_pos_ = Dot(0, 0);
+    preview_->arr_.clear();
 }
 
 Widget* PollyLineTool::GetWidget() const

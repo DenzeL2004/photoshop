@@ -4,6 +4,7 @@
 #include "../canvas.h"
 
 
+class LineWidget;
         
 class LineTool : public Tool
 {
@@ -34,7 +35,7 @@ class LineTool : public Tool
         Dot start_pos_;
         Dot end_pos_;
 
-        Widget* preview_;
+        LineWidget* preview_;
         
         const sf::Color &cur_color_;
 };
@@ -71,6 +72,8 @@ class BrushTool : public Tool
         const sf::Color &cur_color_;
 };
 
+class SquareWidget;
+
 class SquareTool : public Tool
 {
     public:
@@ -106,6 +109,8 @@ class SquareTool : public Tool
 };
 
 
+class CircleWidget;
+
 class CircleTool : public Tool
 {
     public:
@@ -135,7 +140,7 @@ class CircleTool : public Tool
         Dot start_pos_;
         Dot end_pos_;
 
-        Widget* preview_;
+        CircleWidget* preview_;
         
         const sf::Color &cur_color_;
 };
@@ -172,53 +177,8 @@ class FillTool : public Tool
 };
 
 
-class PollyLineWidget : public Widget
-{
-    public:
-        PollyLineWidget(const Dot *end_pos, const sf::Color *cur_color):
-                        end_pos_(*end_pos), cur_color_(*cur_color){}
 
-        ~PollyLineWidget(){}
-
-        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform) {return true;};
-        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform) {return true;}
-        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform){return true;}
-
-        bool OnKeyboardPressed  (const KeyboardKey){return true;}
-        bool OnKeyboardReleased (const KeyboardKey){return true;}
-
-        void PassTime           (const time_t delta_time){}
-
-        void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform)
-        {
-            Transform last_trf = stack_transform.GetBack();
-            size_t size = arr_.getVertexCount();
-
-            if (size == 0)
-                return;
-
-            Dot cur(0.0, 0.0); 
-            Dot next = Dot(arr_[size - 1].position.x, arr_[size - 1].position.y);
-
-            for (size_t it = 0; it < size - 1; it++)
-            {
-                cur  = Dot(arr_[it].position.x, arr_[it].position.y);
-                next = Dot(arr_[it + 1].position.x, arr_[it + 1].position.y);
-                DrawLine(targert, cur + last_trf.offset, next + last_trf.offset, cur_color_);
-            }
-
-            DrawLine(targert, next + last_trf.offset,  end_pos_ + last_trf.offset, cur_color_);
-
-        }
-    
-        sf::Color GetColor() const {return cur_color_;}
-
-        sf::VertexArray arr_;
-    private:
-        const Dot &end_pos_;
-       
-       const sf::Color &cur_color_;
-};
+class PollyLineWidget;
 
 class PollyLineTool : public Tool
 {
