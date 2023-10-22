@@ -22,9 +22,6 @@ class Tool
         virtual void OnCancel           (const Dot &pos, Canvas &canvas) = 0;
 
         virtual Widget* GetWidget() const = 0;
-
-        virtual Dot ShiftDot (const Dot &pos, Canvas &canvas);
-
 };
 
 class ToolPalette

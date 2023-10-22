@@ -48,13 +48,14 @@ void Canvas::GetNewSize(sf::VertexArray &vertex_array, const Transform &transfor
     vertex_array[2].position = transform.RollbackTransform({1, 1});
     vertex_array[3].position = transform.RollbackTransform({0, 1});
 
+   
     float new_width  = fabs(vertex_array[1].position.x - vertex_array[0].position.x);
     float new_hieght = fabs(vertex_array[2].position.y - vertex_array[1].position.y);
 
-    vertex_array[0].texCoords = sf::Vector2f((float)real_pos_.x, (float)real_pos_.y);
-    vertex_array[1].texCoords = sf::Vector2f((float)real_pos_.x + (float)new_width - 1, (float)real_pos_.y);
-    vertex_array[2].texCoords = sf::Vector2f((float)real_pos_.x + (float)new_width - 1, (float)real_pos_.y + (float)new_hieght - 1);
-    vertex_array[3].texCoords = sf::Vector2f((float)real_pos_.x, (float)real_pos_.y + (float)new_hieght - 1);
+    vertex_array[3].texCoords = sf::Vector2f((float)real_pos_.x,  hieght_ - (float)real_pos_.y - new_hieght);
+    vertex_array[2].texCoords = sf::Vector2f((float)real_pos_.x + (float)new_width - 1, hieght_ - (float)real_pos_.y - new_hieght);
+    vertex_array[1].texCoords = sf::Vector2f((float)real_pos_.x + (float)new_width - 1, hieght_ - (float)real_pos_.y - 1);
+    vertex_array[0].texCoords = sf::Vector2f((float)real_pos_.x, hieght_ - (float)real_pos_.y - 1);
 }
 
 //================================================================================
@@ -134,6 +135,14 @@ bool Canvas::OnKeyboardReleased(const KeyboardKey key)
     {
         Tool *active_tool = tool_palette_.GetActiveTool(); 
         if (active_tool) active_tool->OnConfirm(Dot(0, 0), *this);
+
+        return true;
+    }
+
+    if (key == KeyboardKey::ESC)
+    {
+        Tool *active_tool = tool_palette_.GetActiveTool(); 
+        if (active_tool) active_tool->OnCancel(Dot(0, 0), *this);
 
         return true;
     }
@@ -299,7 +308,7 @@ bool CanvaseManager::OnKeyboardReleased(const KeyboardKey key)
     size_t size = canvases_.GetSize();
     if (size == 0)
         return false;
-        
+
     return canvases_[size - 1]->OnKeyboardReleased(key);
 }
 //================================================================================

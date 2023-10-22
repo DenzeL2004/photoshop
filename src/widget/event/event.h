@@ -19,8 +19,9 @@ enum class MouseKey
 
 enum class KeyboardKey
 {
-    ENTER,
     NOTHING,
+    ENTER,
+    ESC, 
 };
 
 enum class ButtonState

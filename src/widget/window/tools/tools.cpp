@@ -1,16 +1,5 @@
 #include "tools.h"
 
-Dot Tool::ShiftDot (const Dot &pos, Canvas &canvas)
-{
-    Dot real_pos = canvas.GetRealPos();
-    Dot canvas_size = canvas.GetSize();
-
-    Dot canvas_dot = pos + real_pos;
-        canvas_dot.y = canvas_size.y - canvas_dot.y;
-
-    return canvas_dot;
-}
-
 ToolPalette::ToolPalette():
         tools_(),
         active_tool_(ToolType::NOTHING), 
@@ -152,10 +141,17 @@ void LineTool::OnConfirm (const Dot &pos, Canvas &canvas)
     if (!using_)
         return;
 
-    Dot begin   = ShiftDot(start_pos_, canvas);
-    Dot end     = ShiftDot(end_pos_, canvas);
+    DrawLine(canvas.background_, start_pos_, end_pos_, cur_color_);
+    start_pos_  = end_pos_ = {0, 0};
 
-    DrawLine(canvas.background_, begin, end, cur_color_);
+    using_ = false;
+}
+
+void LineTool::OnCancel (const Dot &pos, Canvas &canvas)
+{
+    if (!using_)
+        return;
+
     start_pos_  = end_pos_ = {0, 0};
 
     using_ = false;
@@ -232,10 +228,7 @@ void SquareTool::OnConfirm (const Dot &pos, Canvas &canvas)
     if (!using_)
         return;
 
-    Dot left_up     = ShiftDot(start_pos_, canvas);
-    Dot right_down  = ShiftDot(end_pos_, canvas);
-
-    DrawRectangle(canvas.background_, left_up, right_down, cur_color_);
+    DrawRectangle(canvas.background_, start_pos_, end_pos_, cur_color_);
     start_pos_  = end_pos_ = {0, 0};
 
     using_ = false;
@@ -320,12 +313,9 @@ void CircleTool::OnConfirm (const Dot &pos, Canvas &canvas)
     if (!using_)
         return;
 
-    Dot center = ShiftDot(start_pos_, canvas);
-    Dot other  = ShiftDot(end_pos_, canvas);
+    double rad = (start_pos_ - end_pos_).Len();
 
-    double rad = (center - other).Len();
-
-    DrawCircle(canvas.background_, center, (float)rad, cur_color_);
+    DrawCircle(canvas.background_, start_pos_, (float)rad, cur_color_);
     start_pos_  = end_pos_ = {0, 0};
 
     using_ = false;
@@ -380,58 +370,8 @@ Widget* BrushTool::GetWidget() const
 
 void BrushTool::DrawForm (const Dot &pos, Canvas &canvas)
 {
-    Dot canvas_dot  =  ShiftDot(pos, canvas);
-    DrawCircle(canvas.background_, canvas_dot, 10, cur_color_);
+    DrawCircle(canvas.background_, pos, 10, cur_color_);
 }
-
-//================================================================================
-// //Eraeser
-
-// EreaserTool::EreaserTool(const sf::Color *cur_color):
-//                 using_(false), cur_color_(*cur_color){}
-
-
-// void EreaserTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
-// {
-//     if (key != ButtonState::PRESSED)
-//         return;
-
-//     if (using_)
-//         return;
-
-//     using_ = true;
-
-//     DrawForm(pos, canvas);
-// }
-
-// void EreaserTool::OnMove(const Dot &pos, Canvas &canvas)
-// {
-//     if (!using_)
-//         return;
-
-//     DrawForm(pos, canvas);
-// }
-
-// void EreaserTool::OnConfirm (const Dot &pos, Canvas &canvas)
-// {
-//     if (!using_)
-//         return;
-
-//     using_ = false;
-// }
-
-// Widget* EreaserTool::GetWidget() const
-// {
-//     return nullptr;
-// }
-
-
-// void EreaserTool::DrawForm (const Dot &pos, Canvas &canvas)
-// {
-//     Dot canvas_dot  =  ShiftDot(pos, canvas);
-//     DrawCircle(canvas.background_, canvas_dot, 10, cur_color_);
-// }
-
 
 //================================================================================
 //Fill
@@ -451,10 +391,10 @@ void FillTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
     using_ = true;
     sf::Image image = canvas.background_.getTexture().copyToImage();
 
-    Dot new_pos = ShiftDot(pos, canvas);
-    sf::Color fill_color = image.getPixel(size_t(new_pos.x), size_t(new_pos.y));
+    //Dot pos = ShiftDot(pos, canvas);
+    sf::Color fill_color = image.getPixel(size_t(pos.x), size_t(pos.y));
 
-    Fill(fill_color, new_pos, canvas, image);
+    Fill(fill_color, pos, canvas, image);
 
     sf::Texture texture;
     texture.loadFromImage(image);
@@ -617,11 +557,19 @@ void PolyLineTool::OnConfirm (const Dot &pos, Canvas &canvas)
     {
         cur  = Dot(preview_->arr_[it].position.x, preview_->arr_[it].position.y);
         next = Dot(preview_->arr_[it + 1].position.x, preview_->arr_[it + 1].position.y);
-        DrawLine(canvas.background_, ShiftDot(cur, canvas),  ShiftDot(next, canvas), cur_color_);
+        DrawLine(canvas.background_, cur,  next, cur_color_);
     }
 
     start_pos_ = end_pos_ = Dot(0, 0);
     preview_->arr_.clear();
+}
+
+void PolyLineTool::OnCancel (const Dot &pos, Canvas &canvas)
+{
+    using_ = false;
+
+    preview_->arr_.clear();
+    start_pos_ = end_pos_ = Dot(0, 0);
 }
 
 Widget* PolyLineTool::GetWidget() const

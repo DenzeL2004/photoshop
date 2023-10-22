@@ -61,7 +61,7 @@ void DrawRectangle(sf::RenderTarget &window,
     float width  = (float)(right_down.x - left_up.x);
 
     sf::RectangleShape rectangle;
-    rectangle.setSize({ width, hieght});
+    rectangle.setSize({width, hieght});
     rectangle.setFillColor(color);
 
     rectangle.setPosition((float)left_up.x, (float)left_up.y);

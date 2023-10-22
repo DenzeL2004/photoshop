@@ -25,7 +25,7 @@ class LineTool : public Tool
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas);
         virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
-        virtual void OnCancel           (const Dot &pos, Canvas &canvas){}
+        virtual void OnCancel           (const Dot &pos, Canvas &canvas);
 
         Widget* GetWidget() const;
 
@@ -194,7 +194,7 @@ class PolyLineTool : public Tool
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas);
         virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
-        virtual void OnCancel           (const Dot &pos, Canvas &canvas){}
+        virtual void OnCancel           (const Dot &pos, Canvas &canvas);
 
         Widget* GetWidget() const;
 
@@ -207,36 +207,5 @@ class PolyLineTool : public Tool
         
         const sf::Color &cur_color_;
 };
-
-// class EreaserTool : public BrushTool
-// {
-//     public:
-//         EreaserTool() = delete;
-
-//         EreaserTool(const sf::Color *cur_color);
-
-//         ~EreaserTool(){}
-
-//         virtual void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
-//         virtual void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
-
-//         virtual void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
-//         virtual void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
-//         virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
-
-//         virtual void OnMove             (const Dot &pos, Canvas &canvas);
-//         virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
-//         virtual void OnCancel           (const Dot &pos, Canvas &canvas){}
-
-//         Widget* GetWidget() const;
-
-//     private:
-//         virtual void DrawForm(const Dot &pos, Canvas &canvas);
-
-//         bool using_;
-//         Dot prev_pos_;
-
-//         const sf::Color &cur_color_;
-// };
 
 #endif

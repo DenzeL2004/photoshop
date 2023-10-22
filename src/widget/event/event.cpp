@@ -56,5 +56,8 @@ static KeyboardKey GetKeyboard(sf::Event &event)
     if (event.key.code == sf::Keyboard::Enter)
             return KeyboardKey::ENTER;
 
+    if (event.key.code == sf::Keyboard::Escape)
+            return KeyboardKey::ESC;
+
     return KeyboardKey::NOTHING;
 }
