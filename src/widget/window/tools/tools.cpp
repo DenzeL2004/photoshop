@@ -51,6 +51,10 @@ Tool* ToolPalette::GetActiveTool () const
             return tools_[ToolPalette::ToolType::ERASER];
             break;
 
+        case ToolPalette::ToolType::FILL:
+            return tools_[ToolPalette::ToolType::FILL];
+            break;
+
         default:
             return nullptr;
             break;
@@ -136,24 +140,21 @@ void LineTool::OnMove(const Dot &pos, Canvas &canvas)
     end_pos_ = pos; 
 }
 
-void LineTool::OnConfirm (const Dot &pos, Canvas &canvas)
+void LineTool::OnConfirm (Canvas &canvas)
 {
     if (!using_)
         return;
 
-    DrawLine(canvas.background_, start_pos_, end_pos_, cur_color_);
+    Dot real_pos = canvas.GetRealPos();
+    DrawLine(canvas.background_, start_pos_ + real_pos, end_pos_ + real_pos, cur_color_);
     start_pos_  = end_pos_ = {0, 0};
 
     using_ = false;
 }
 
-void LineTool::OnCancel (const Dot &pos, Canvas &canvas)
+void LineTool::OnCancel ()
 {
-    if (!using_)
-        return;
-
     start_pos_  = end_pos_ = {0, 0};
-
     using_ = false;
 }
 
@@ -223,16 +224,25 @@ void SquareTool::OnMove(const Dot &pos, Canvas &canvas)
     end_pos_ = pos; 
 }
 
-void SquareTool::OnConfirm (const Dot &pos, Canvas &canvas)
+void SquareTool::OnConfirm (Canvas &canvas)
 {
     if (!using_)
         return;
-
-    DrawRectangle(canvas.background_, start_pos_, end_pos_, cur_color_);
+    
+    Dot real_pos = canvas.GetRealPos();
+    DrawRectangle(canvas.background_, start_pos_ + real_pos, end_pos_ + real_pos, cur_color_);
+    
     start_pos_  = end_pos_ = {0, 0};
 
     using_ = false;
 }
+
+void SquareTool::OnCancel ()
+{
+    start_pos_  = end_pos_ = {0, 0};
+    using_ = false;
+}
+
 
 Widget* SquareTool::GetWidget() const
 {
@@ -308,14 +318,22 @@ void CircleTool::OnMove(const Dot &pos, Canvas &canvas)
     end_pos_ = pos; 
 }
 
-void CircleTool::OnConfirm (const Dot &pos, Canvas &canvas)
+void CircleTool::OnConfirm (Canvas &canvas)
 {
     if (!using_)
         return;
 
     double rad = (start_pos_ - end_pos_).Len();
 
-    DrawCircle(canvas.background_, start_pos_, (float)rad, cur_color_);
+    Dot real_pos = canvas.GetRealPos();
+    DrawCircle(canvas.background_, start_pos_ + real_pos, (float)rad, cur_color_);
+    start_pos_  = end_pos_ = {0, 0};
+
+    using_ = false;
+}
+
+void CircleTool::OnCancel ()
+{
     start_pos_  = end_pos_ = {0, 0};
 
     using_ = false;
@@ -343,7 +361,7 @@ void BrushTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
 
     using_ = true;
 
-    DrawForm(pos, canvas);
+    DrawForm(pos + canvas.GetRealPos(), canvas);
 }
 
 void BrushTool::OnMove(const Dot &pos, Canvas &canvas)
@@ -351,10 +369,10 @@ void BrushTool::OnMove(const Dot &pos, Canvas &canvas)
     if (!using_)
         return;
 
-    DrawForm(pos, canvas);
+    DrawForm(pos + canvas.GetRealPos(), canvas);
 }
 
-void BrushTool::OnConfirm (const Dot &pos, Canvas &canvas)
+void BrushTool::OnConfirm (Canvas &canvas)
 {
     if (!using_)
         return;
@@ -366,7 +384,6 @@ Widget* BrushTool::GetWidget() const
 {
     return nullptr;
 }
-
 
 void BrushTool::DrawForm (const Dot &pos, Canvas &canvas)
 {
@@ -390,24 +407,31 @@ void FillTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
 
     using_ = true;
     sf::Image image = canvas.background_.getTexture().copyToImage();
-
-    //Dot pos = ShiftDot(pos, canvas);
-    sf::Color fill_color = image.getPixel(size_t(pos.x), size_t(pos.y));
-
-    Fill(fill_color, pos, canvas, image);
+    
+    sf::Color fill_color = image.getPixel(size_t(pos.x), canvas.GetSize().y - size_t(pos.y));
+   
+    for (size_t it = 10; it < 200; it++)
+    {
+        image.setPixel(130, 2000 - it, sf::Color::Cyan);
+        image.setPixel(131, 2000 - it, sf::Color::Cyan);
+        image.setPixel(132, 2000 - it, sf::Color::Cyan);
+        image.setPixel(133, 2000 - it, sf::Color::Cyan);
+    }
+    
+    Fill(fill_color, {size_t(pos.x), canvas.GetSize().y - size_t(pos.y)}, canvas, &image);
 
     sf::Texture texture;
     texture.loadFromImage(image);
     sf::Sprite sprite(texture);
-    sprite.scale(-1.f, 1.f);
+    sprite.scale(1.f, -1.f);
 
     canvas.background_.draw(sprite);
 
-    OnConfirm(pos, canvas);
+    OnConfirm(canvas);
 }
 
 
-void FillTool::OnConfirm (const Dot &pos, Canvas &canvas)
+void FillTool::OnConfirm (Canvas &canvas)
 {
     if (!using_)
         return;
@@ -415,12 +439,18 @@ void FillTool::OnConfirm (const Dot &pos, Canvas &canvas)
     using_ = false;
 }
 
+void FillTool::OnCancel ()
+{
+    using_ = false;
+}
+
+
 Widget* FillTool::GetWidget() const
 {
     return nullptr;
 }
 
-void FillTool::Fill(sf::Color &fill_color, const Dot &start_pos, Canvas &canvas, sf::Image &image)
+void FillTool::Fill(sf::Color &fill_color, const Dot &start_pos, Canvas &canvas, sf::Image *image)
 {
     Container<sf::Vector2u> dots_;
 
@@ -429,34 +459,43 @@ void FillTool::Fill(sf::Color &fill_color, const Dot &start_pos, Canvas &canvas,
 
     dots_.PushBack(sf::Vector2u((size_t)start_pos.x, (size_t)start_pos.y));
 
+    
+
     while (!dots_.IsEmpty())
     {
         sf::Vector2u cur_dot = dots_.GetBack();
         dots_.PopBack();
 
-        if (cur_dot.x > 0 && image.getPixel(cur_dot.x - 1, start_pos.y) == fill_color) 
-        {
-            image.setPixel(cur_dot.x - 1, cur_dot.y, cur_color_);
-            dots_.PushBack(sf::Vector2u(cur_dot.x - 1, cur_dot.y)); 
-        }
+        // printf("%u %u %u\n", fill_color.r, fill_color.b, fill_color.g);
+        // printf("%u %u %u\n", image.getPixel(cur_dot.x - 1, start_pos.y).r, image.getPixel(cur_dot.x - 1, start_pos.y).b, image.getPixel(cur_dot.x - 1, start_pos.y).g);
 
-        if (cur_dot.y > 0 && image.getPixel(cur_dot.x, start_pos.y - 1) == fill_color) 
-        {
-            image.setPixel(cur_dot.x, cur_dot.y - 1, cur_color_);
-            dots_.PushBack(sf::Vector2u(cur_dot.x, cur_dot.y - 1));
-        }
+        // printf("%u %u\n\n", cur_dot.x, cur_dot.y);
 
-        if (cur_dot.x < x_limit && image.getPixel(cur_dot.x + 1, start_pos.y) == fill_color) 
-        {
-            image.setPixel(cur_dot.x + 1, cur_dot.y, cur_color_);
-            dots_.PushBack(sf::Vector2u(cur_dot.x + 1, cur_dot.y));  
-        }
+        // image.setPixel(cur_dot.x, cur_dot.y, cur_color_);
 
-        if (cur_dot.y + 1 < y_limit && image.getPixel(cur_dot.x, start_pos.y + 1) == fill_color) 
-        {
-            image.setPixel(cur_dot.x, cur_dot.y + 1, cur_color_);
-            dots_.PushBack(sf::Vector2u(cur_dot.x, cur_dot.y + 1)); 
-        }
+        // if (cur_dot.x > 0 && image.getPixel(cur_dot.x - 1, start_pos.y) == fill_color) 
+        // {
+        //     image.setPixel(cur_dot.x - 1, cur_dot.y, cur_color_);
+        //     dots_.PushBack(sf::Vector2u(cur_dot.x - 1, cur_dot.y)); 
+        // }
+
+        // if (cur_dot.y > 0 && image.getPixel(cur_dot.x, start_pos.y - 1) == fill_color) 
+        // {
+        //     image.setPixel(cur_dot.x, cur_dot.y - 1, cur_color_);
+        //     dots_.PushBack(sf::Vector2u(cur_dot.x, cur_dot.y - 1));
+        // }
+
+        // if (cur_dot.x < x_limit && image.getPixel(cur_dot.x + 1, start_pos.y) == fill_color) 
+        // {
+        //     image.setPixel(cur_dot.x + 1, cur_dot.y, cur_color_);
+        //     dots_.PushBack(sf::Vector2u(cur_dot.x + 1, cur_dot.y));  
+        // }
+
+        // if (cur_dot.y + 1 < y_limit && image.getPixel(cur_dot.x, start_pos.y + 1) == fill_color) 
+        // {
+        //     image.setPixel(cur_dot.x, cur_dot.y + 1, cur_color_);
+        //     dots_.PushBack(sf::Vector2u(cur_dot.x, cur_dot.y + 1)); 
+        // }
     }
     
 }
@@ -529,12 +568,12 @@ void PolyLineTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
     using_ = true;
 }
 
-void PolyLineTool::OnMove(const Dot &pos, Canvas &canvas)
+void PolyLineTool::OnMove (const Dot &pos, Canvas &canvas)
 {
     end_pos_ = pos; 
 }
 
-void PolyLineTool::OnConfirm (const Dot &pos, Canvas &canvas)
+void PolyLineTool::OnConfirm (Canvas &canvas)
 {
     if (using_) 
     {
@@ -549,7 +588,8 @@ void PolyLineTool::OnConfirm (const Dot &pos, Canvas &canvas)
         using_ = false;
         return;
     }
- 
+
+    Dot real_pos = canvas.GetRealPos();
     
     Dot cur(0.0, 0.0); Dot next = Dot(preview_->arr_[size - 1].position.x, preview_->arr_[size - 1].position.y);
 
@@ -557,19 +597,19 @@ void PolyLineTool::OnConfirm (const Dot &pos, Canvas &canvas)
     {
         cur  = Dot(preview_->arr_[it].position.x, preview_->arr_[it].position.y);
         next = Dot(preview_->arr_[it + 1].position.x, preview_->arr_[it + 1].position.y);
-        DrawLine(canvas.background_, cur,  next, cur_color_);
+        DrawLine(canvas.background_, cur + real_pos,  next + real_pos, cur_color_);
     }
 
-    start_pos_ = end_pos_ = Dot(0, 0);
+    start_pos_ = end_pos_ = {0, 0};
     preview_->arr_.clear();
 }
 
-void PolyLineTool::OnCancel (const Dot &pos, Canvas &canvas)
+void PolyLineTool::OnCancel ()
 {
     using_ = false;
 
     preview_->arr_.clear();
-    start_pos_ = end_pos_ = Dot(0, 0);
+    start_pos_ = end_pos_ = {0, 0};
 }
 
 Widget* PolyLineTool::GetWidget() const

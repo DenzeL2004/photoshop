@@ -24,8 +24,8 @@ class LineTool : public Tool
         virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas);
-        virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
-        virtual void OnCancel           (const Dot &pos, Canvas &canvas);
+        virtual void OnConfirm          (Canvas &canvas);
+        virtual void OnCancel           ();
 
         Widget* GetWidget() const;
 
@@ -56,8 +56,8 @@ class BrushTool : public Tool
         virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas);
-        virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
-        virtual void OnCancel           (const Dot &pos, Canvas &canvas){}
+        virtual void OnConfirm          (Canvas &canvas);
+        virtual void OnCancel           (){}
 
         Widget* GetWidget() const;
 
@@ -92,8 +92,8 @@ class SquareTool : public Tool
         virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas);
-        virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
-        virtual void OnCancel           (const Dot &pos, Canvas &canvas){}
+        virtual void OnConfirm          (Canvas &canvas);
+        virtual void OnCancel           ();
 
         Widget* GetWidget() const;
 
@@ -129,8 +129,8 @@ class CircleTool : public Tool
         virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas);
-        virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
-        virtual void OnCancel           (const Dot &pos, Canvas &canvas){}
+        virtual void OnConfirm          (Canvas &canvas);
+        virtual void OnCancel           ();
 
         Widget* GetWidget() const;
 
@@ -160,13 +160,13 @@ class FillTool : public Tool
         virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas){}
-        virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
-        virtual void OnCancel           (const Dot &pos, Canvas &canvas){}
+        virtual void OnConfirm          (Canvas &canvas);
+        virtual void OnCancel           ();
 
         Widget* GetWidget() const;
 
     private:
-        virtual void Fill(sf::Color &fill_color, const Dot &start_pos, Canvas &canvas, sf::Image &image);
+        virtual void Fill(sf::Color &fill_color, const Dot &start_pos, Canvas &canvas, sf::Image *image);
 
 
         bool using_;
@@ -193,8 +193,8 @@ class PolyLineTool : public Tool
         virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas);
-        virtual void OnConfirm          (const Dot &pos, Canvas &canvas);
-        virtual void OnCancel           (const Dot &pos, Canvas &canvas);
+        virtual void OnConfirm          (Canvas &canvas);
+        virtual void OnCancel           ();
 
         Widget* GetWidget() const;
 

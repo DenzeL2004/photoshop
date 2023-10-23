@@ -110,7 +110,7 @@ bool Canvas::OnMouseReleased(const double x, const double y, const MouseKey key,
     if (key == MouseKey::LEFT)
     {
         Tool *active_tool = tool_palette_.GetActiveTool(); 
-        if (active_tool) active_tool->OnConfirm(GetCanvaseCoord(x, y, last_trf), *this);
+        if (active_tool) active_tool->OnConfirm(*this);
     }
 
     stack_transform.PopBack();
@@ -134,7 +134,7 @@ bool Canvas::OnKeyboardReleased(const KeyboardKey key)
     if (key == KeyboardKey::ENTER)
     {
         Tool *active_tool = tool_palette_.GetActiveTool(); 
-        if (active_tool) active_tool->OnConfirm(Dot(0, 0), *this);
+        if (active_tool) active_tool->OnConfirm(*this);
 
         return true;
     }
@@ -142,7 +142,7 @@ bool Canvas::OnKeyboardReleased(const KeyboardKey key)
     if (key == KeyboardKey::ESC)
     {
         Tool *active_tool = tool_palette_.GetActiveTool(); 
-        if (active_tool) active_tool->OnCancel(Dot(0, 0), *this);
+        if (active_tool) active_tool->OnCancel();
 
         return true;
     }
@@ -337,11 +337,11 @@ void CanvaseManager::CreateCanvase(ToolPalette *palette)
     WidgetContainer *scrolls = new WidgetContainer(Dot(0.02, 0.05), Vector(0.95, 0.87));
     
 
-    Button *left_btn = new Button(  Left_Scl, Left_Scl, Left_Scl, Left_Scl, 
+    Button *left_btn = new Button(  Left_Scl_Rel, Left_Scl_Prs, Left_Scl_Rel, Left_Scl_Prs,
                                     new ScrollCanvas(Dot(-0.05, 0), new_canvase), 
                                     Dot(0.0, 0.0), Vector(0.03, 0.03));
 
-    Button *right_btn = new Button( Right_Scl, Right_Scl, Right_Scl, Right_Scl, 
+    Button *right_btn = new Button( Right_Scl_Rel, Right_Scl_Prs, Right_Scl_Rel, Right_Scl_Prs, 
                                     new ScrollCanvas(Vector(0.05, 0), new_canvase), 
                                     Dot(0.92, 0), Vector(0.03, 0.03));
 
@@ -352,13 +352,13 @@ void CanvaseManager::CreateCanvase(ToolPalette *palette)
     Scrollbar *scroll_hor = new Scrollbar(left_btn, right_btn, hor_btn, new_canvase, 
                                      Scrollbar::ScrollType::HORIZONTAL, Dot(0.00, 0.00), Vector(1.0, 1.0));
 
-    Button *up_btn = new Button(Up_Scl, Up_Scl, Up_Scl, Up_Scl, 
+    Button *up_btn = new Button(Up_Scl_Rel, Up_Scl_Prs, Up_Scl_Rel, Up_Scl_Prs, 
                                 new ScrollCanvas(Dot(0.0, -0.05), new_canvase), 
                                 Dot(0.0, 0.0), Vector(0.03, 0.03));
 
-    Button *down_btn = new Button(Down_Scl, Down_Scl, Down_Scl, Down_Scl, 
-                                new ScrollCanvas(Vector(0.0, 0.05), new_canvase), 
-                                Dot(0, 0.97), Vector(0.03, 0.03));
+    Button *down_btn = new Button(Down_Scl_Rel, Down_Scl_Prs, Down_Scl_Rel, Down_Scl_Prs, 
+                                  new ScrollCanvas(Vector(0.0, 0.05), new_canvase), 
+                                  Dot(0, 0.97), Vector(0.03, 0.03));
 
     Button *ver_btn = new Button(Ver_Scl, Ver_Scl, Ver_Scl, Ver_Scl, 
                                 new ScrollCanvas(Dot(0, 0), new_canvase), 

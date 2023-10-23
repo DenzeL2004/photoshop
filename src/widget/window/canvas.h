@@ -18,8 +18,8 @@ class Tool
         virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas) = 0;
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas) = 0;
-        virtual void OnConfirm          (const Dot &pos, Canvas &canvas) = 0;
-        virtual void OnCancel           (const Dot &pos, Canvas &canvas) = 0;
+        virtual void OnConfirm          (Canvas &canvas) = 0;
+        virtual void OnCancel           () = 0;
 
         virtual Widget* GetWidget() const = 0;
 };
@@ -41,7 +41,8 @@ class ToolPalette
             SQUARE   = 2, 
             CIRCLE   = 3,
             POLYLINE = 4,
-            ERASER  = 5,
+            ERASER   = 5,
+            FILL     = 6,
         };
 
         ToolPalette ();

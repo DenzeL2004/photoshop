@@ -193,9 +193,9 @@ void UseApp()
     
 
     bool close_window = false;
-    Button *close_button = new Button("src/img/CloseResCrossReleased.png", "src/img/CloseResCrossCovered.png",
-                                "src/img/CloseResCrossReleased.png", "src/img/CloseResCrossCovered.png", new Click(&close_window),
-                                Dot(0.98, 0.0), Vector(0.02, 0.025));
+    Button *close_button = new Button(Cross_Button_Release, Cross_Button_Covered,
+                                      Cross_Button_Release, Cross_Button_Covered, new Click(&close_window),
+                                      Dot(0.98, 0.0), Vector(0.02, 0.025));
  
 
     AppWindow *app = new AppWindow("src/img/window.jpg", {0.025, 0.03}, Vector(0.95, 0.91)); 

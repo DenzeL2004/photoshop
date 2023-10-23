@@ -14,7 +14,7 @@ run:		obj/vector.o obj/graphic.o obj/event.o obj/window.o obj/canvas.o obj/tools
 	g++   	obj/vector.o obj/graphic.o obj/event.o obj/window.o obj/canvas.o obj/tools.o obj/log_errors.o obj/generals.o obj/widget.o obj/button.o obj/decorator.o obj/app.o obj/main.o -o run  $(SFML_FLAGS)
 
 
-obj/main.o: main.cpp
+obj/main.o: main.cpp src/app/config.h
 		g++ main.cpp -c -o obj/main.o $(FLAGS)
 
 

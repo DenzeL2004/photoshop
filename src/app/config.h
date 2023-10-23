@@ -3,11 +3,11 @@
 
 static const char *Frame_Texture = "src/img/border.png";
 
-static const char *Cross_Button_Release = "src/img/CloseResCrossReleased.png";
-static const char *Cross_Button_Covered = "src/img/CloseResCrossCovered.png";
+static const char *Cross_Button_Release = "src/img/closeReleased.png";
+static const char *Cross_Button_Covered = "src/img/closePressed.png";
 
-static Dot    Cross_Button_Offset   = Dot(0.98, 0.0);
-static Vector Cross_Button_Scale    = Vector(0.02, 0.025);
+static Dot    Cross_Button_Offset   = Dot(0.965, 0.005);
+static Vector Cross_Button_Scale    = Vector(0.035, 0.05);
 
 static double Width_Canvase  = 2000.0;
 static double Hieght_Canvase = 2000.0;
