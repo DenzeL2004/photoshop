@@ -73,11 +73,19 @@ bool WidgetContainer::OnMousePressed(const double x, const double y, const Mouse
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     
-    size_t size = widgets_.GetSize();
-    bool flag = false;
-    for (size_t it = 0; it < size; it++)
-        flag |= widgets_[it]->OnMousePressed(x, y, key, stack_transform);
+    Transform last_trf = stack_transform.GetBack();
+    Dot new_coord = last_trf.ApplyTransform({x, y});
+    
+    bool flag = CheckIn(new_coord);
 
+    if (flag)
+    {
+        size_t size = widgets_.GetSize();
+    
+        for (size_t it = 0; it < size; it++)
+            flag |= widgets_[it]->OnMousePressed(x, y, key, stack_transform);
+    }
+    
     stack_transform.PopBack();
 
     return flag;

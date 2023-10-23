@@ -358,7 +358,7 @@ void CanvaseManager::CreateCanvase(ToolPalette *palette)
 
     Button *down_btn = new Button(Down_Scl_Rel, Down_Scl_Prs, Down_Scl_Rel, Down_Scl_Prs, 
                                   new ScrollCanvas(Vector(0.0, 0.05), new_canvase), 
-                                  Dot(0, 0.97), Vector(0.03, 0.03));
+                                  Dot(0, 0.92), Vector(0.03, 0.03));
 
     Button *ver_btn = new Button(Ver_Scl, Ver_Scl, Ver_Scl, Ver_Scl, 
                                 new ScrollCanvas(Dot(0, 0), new_canvase), 
@@ -499,6 +499,7 @@ bool Scrollbar::OnMousePressed(const double x, const double y, const MouseKey ke
     Dot area_coord = press_area_.ApplyPrev(last_trf).ApplyTransform({x, y});
     bool flag = false;
 
+    
     if (CheckIn(area_coord))
     {
         flag |= top_button_->OnMousePressed(x, y, key, stack_transform);

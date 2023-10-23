@@ -88,7 +88,7 @@ class AppWindow: public Window
         
         CanvaseManager canvas_manager_;
         Button *button_create_;
-        ButtonList *tools_button_;
+        WidgetContainer *tools_button_;
         ButtonList *colors_button_;
 
         ToolPalette tool_pallette_;

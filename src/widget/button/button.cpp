@@ -90,10 +90,7 @@ const sf::Texture* Button::DefineTexture() const
             return &disabled_texture_;
 
         case  Button::ButtonState::COVERED:
-            if (prev_state_ == Button::ButtonState::PRESSED)
-                return &pressed_texture_;
-            else
-                return &covered_texture_;
+            return &covered_texture_;
 
         default:
             break;
@@ -120,7 +117,6 @@ bool Button::OnMouseMoved(const double x, const double y, Container<Transform> &
     { 
         covering_time_ = 0;
         state_ = prev_state_;
-        
     }
     else
     {
@@ -145,18 +141,22 @@ bool Button::OnMousePressed(const double x, const double y, const MouseKey key, 
     Transform last_trf = stack_transform.GetBack();
     
     Dot new_coord = last_trf.ApplyTransform({x, y});
-
     bool flag = CheckIn(new_coord);
+
+    printf("%u %lg %lg\n", flag, new_coord.x, new_coord.y);
 
     if (flag && key == MouseKey::LEFT)
     {
         if (action_ != nullptr) (*action_)();
+            printf("sdf");
         state_ = Button::ButtonState::PRESSED;
     }
     else
     {
         flag = false;
+
         state_ = Button::ButtonState::RELEASED;
+        prev_state_ = Button::ButtonState::RELEASED;
     }
 
     stack_transform.PopBack();
@@ -173,7 +173,7 @@ bool Button::OnMouseReleased(const double x, const double y, const MouseKey key,
 
     state_ = Button::ButtonState::RELEASED;
     prev_state_ = Button::ButtonState::RELEASED;
-
+    
     return true;
 }
 

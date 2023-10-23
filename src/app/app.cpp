@@ -7,52 +7,42 @@ AppWindow::AppWindow(const char *path_texture, const Dot &offset, const Vector &
            Window(path_texture, offset, scale), canvas_manager_(Empty_texture, Canvase_Manager_Offset, Canvase_Manager_Scale),
            tool_pallette_()
 {
-    button_create_ = new Button("src/img/NewCanvansReleased.png", "src/img/NewCanvansCovered.png", 
-                                "src/img/NewCanvansReleased.png", "src/img/NewCanvansCovered.png", 
+    button_create_ = new Button("src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
+                                "src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
                                 new AddCanvase(&canvas_manager_, &tool_pallette_), 
                                 Button_Create_Offset, Button_Create_Scale);
     {
-        tools_button_ = new ButtonList("src/img/ToolsReleased.png", "src/img/ToolsCovered.png", 
-                                       "src/img/ToolsCovered.png", "src/img/ToolsCovered.png", 
-                                        nullptr, Button_Tools_Offset, Button_Tools_Scale);
+        tools_button_ = new WidgetContainer(Button_Tools_Offset, Button_Tools_Scale);
+                
+        tools_button_->AddWidget(new Button("src/img/LineReleased.png", "src/img/LinePressed.png", 
+                                            "src/img/LinePressed.png",  "src/img/LinePressed.png", 
+                                            new ChooseTool(ToolPalette::LINE, &tool_pallette_), 
+                                            Button_Line_Offset, Button_Line_Scale));
         
-        tools_button_->action_ = new ShowButtonList(&(tools_button_->buttons_)); 
+        tools_button_->AddWidget(new Button("src/img/BrushReleased.png", "src/img/BrushPressed.png", 
+                                            "src/img/BrushPressed.png",  "src/img/BrushPressed.png", 
+                                            new ChooseTool(ToolPalette::BRUSH, &tool_pallette_), 
+                                            Button_Brush_Offset, Button_Brush_Scale));
+        
+        tools_button_->AddWidget(new Button("src/img/SquareReleased.png", "src/img/SquarePressed.png", 
+                                            "src/img/SquarePressed.png",  "src/img/SquarePressed.png", 
+                                            new ChooseTool(ToolPalette::SQUARE, &tool_pallette_), 
+                                            Button_Square_Offset, Button_Square_Scale));
 
+        tools_button_->AddWidget(new Button("src/img/CircleReleased.png", "src/img/CirclePressed.png", 
+                                            "src/img/CirclePressed.png",  "src/img/CirclePressed.png", 
+                                            new ChooseTool(ToolPalette::CIRCLE, &tool_pallette_), 
+                                            Button_Circle_Offset, Button_Circle_Scale));
         
-        tools_button_->buttons_.PushBack(new Button("src/img/LineReleased.png", "src/img/LinePressed.png", 
-                                                    "src/img/LinePressed.png",  "src/img/LinePressed.png", 
-                                                    new ChooseTool(ToolPalette::LINE, &tool_pallette_), 
-                                                    Button_Line_Offset, Button_Line_Scale));
-        
-        tools_button_->buttons_.PushBack(new Button("src/img/BrushReleased.png", "src/img/BrushCovered.png", 
-                                                    "src/img/BrushCovered.png",  "src/img/BrushCovered.png", 
-                                                    new ChooseTool(ToolPalette::BRUSH, &tool_pallette_), 
-                                                    Button_Brush_Offset, Button_Brush_Scale));
-        
-        tools_button_->buttons_.PushBack(new Button("src/img/SquareReleased.png", "src/img/SquarePressed.png", 
-                                                    "src/img/SquarePressed.png",  "src/img/SquarePressed.png", 
-                                                    new ChooseTool(ToolPalette::SQUARE, &tool_pallette_), 
-                                                    Button_Square_Offset, Button_Square_Scale));
+        tools_button_->AddWidget(new Button("src/img/PolylineReleased.png", "src/img/PolylinePressed.png", 
+                                            "src/img/PolylinePressed.png",  "src/img/PolylinePressed.png", 
+                                            new ChooseTool(ToolPalette::POLYLINE, &tool_pallette_), 
+                                            Button_Polyline_Offset, Button_Polyline_Scale));
 
-        tools_button_->buttons_.PushBack(new Button("src/img/CircleReleased.png", "src/img/CieclePressed.png", 
-                                                    "src/img/CieclePressed.png",  "src/img/CieclePressed.png", 
-                                                    new ChooseTool(ToolPalette::CIRCLE, &tool_pallette_), 
-                                                    Button_Circle_Offset, Button_Circle_Scale));
-        
-        tools_button_->buttons_.PushBack(new Button("src/img/PolylineReleased.png", "src/img/PolylinePressed.png", 
-                                                    "src/img/PolylinePressed.png",  "src/img/PolylinePressed.png", 
-                                                    new ChooseTool(ToolPalette::POLYLINE, &tool_pallette_), 
-                                                    Button_Polyline_Offset, Button_Polyline_Scale));
-
-        tools_button_->buttons_.PushBack(new Button("src/img/EraserReleased.png", "src/img/EraserPressed.png", 
-                                                    "src/img/EraserPressed.png",  "src/img/EraserPressed.png", 
-                                                    new ChooseTool(ToolPalette::ERASER, &tool_pallette_), 
-                                                    Button_Eraser_Offset, Button_Eraser_Scale));
-        
-        size_t size = tools_button_->buttons_.GetSize();
-        for (size_t it = 0; it < size; it++)
-            tools_button_->buttons_[it]->state_ = Button::ButtonState::DISABLED;
-       
+        tools_button_->AddWidget(new Button("src/img/EraserReleased.png", "src/img/EraserPressed.png", 
+                                            "src/img/EraserPressed.png",  "src/img/EraserPressed.png", 
+                                            new ChooseTool(ToolPalette::ERASER, &tool_pallette_), 
+                                            Button_Eraser_Offset, Button_Eraser_Scale));
     }
 
     {
