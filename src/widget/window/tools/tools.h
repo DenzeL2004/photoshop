@@ -3,6 +3,72 @@
 
 #include "../canvas.h"
 
+struct ControlState
+{
+    enum ButtonState
+    {
+       PRESSED, 
+    } state;
+};
+
+
+class Tool
+{
+    public:
+        virtual void OnMainButton       (ControlState state, const Dot &pos, Canvas &canvas) = 0;
+        virtual void OnSecondaryButton  (ControlState state, const Dot &pos, Canvas &canvas) = 0;
+
+        virtual void OnModifier1        (ControlState state, const Dot &pos, Canvas &canvas) = 0;
+        virtual void OnModifier2        (ControlState state, const Dot &pos, Canvas &canvas) = 0;
+        virtual void OnModifier3        (ControlState state, const Dot &pos, Canvas &canvas) = 0;
+
+        virtual void OnMove             (const Dot &pos, Canvas &canvas) = 0;
+        virtual void OnConfirm          (Canvas &canvas) = 0;
+        virtual void OnCancel           () = 0;
+
+        virtual Widget* GetWidget() const = 0;
+};
+
+class ToolPalette
+{
+    public:
+        enum ColorType
+        {
+            BACKGROUND,
+            FOREGROUND,
+        };
+
+        enum ToolType
+        {
+            NOTHING  = -1,
+            LINE     = 0, 
+            BRUSH    = 1,    
+            SQUARE   = 2, 
+            CIRCLE   = 3,
+            POLYLINE = 4,
+            ERASER   = 5,
+            FILL     = 6,
+        };
+
+        ToolPalette ();
+        ~ToolPalette ();
+
+        void SetActiveTool  (const ToolType tool_type);
+        void SetActiveColor (const sf::Color &color);
+
+        Tool* GetActiveTool () const;
+
+    private:
+        ToolType active_tool_;
+
+        Container<Tool*>  tools_;
+
+        ColorType color_type_;
+
+        sf::Color foreground_color_;
+        sf::Color background_color_;
+
+};
 
 class LineWidget;
         
@@ -16,12 +82,12 @@ class LineTool : public Tool
             delete preview_;
         }
 
-        virtual void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
-        virtual void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnMainButton       (ControlState state, const Dot &pos, Canvas &canvas);
+        virtual void OnSecondaryButton  (ControlState state, const Dot &pos, Canvas &canvas){}
 
-        virtual void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        virtual void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier1        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier2        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier3        (ControlState state, const Dot &pos, Canvas &canvas){}
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas);
         virtual void OnConfirm          (Canvas &canvas);
@@ -48,12 +114,12 @@ class BrushTool : public Tool
 
         ~BrushTool(){}
 
-        virtual void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
-        virtual void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnMainButton       (ControlState state, const Dot &pos, Canvas &canvas);
+        virtual void OnSecondaryButton  (ControlState state, const Dot &pos, Canvas &canvas){}
 
-        virtual void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        virtual void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier1        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier2        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier3        (ControlState state, const Dot &pos, Canvas &canvas){}
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas);
         virtual void OnConfirm          (Canvas &canvas);
@@ -84,12 +150,12 @@ class SquareTool : public Tool
             delete preview_;
         }
 
-        virtual void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
-        virtual void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnMainButton       (ControlState state, const Dot &pos, Canvas &canvas);
+        virtual void OnSecondaryButton  (ControlState state, const Dot &pos, Canvas &canvas){}
 
-        virtual void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        virtual void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier1        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier2        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier3        (ControlState state, const Dot &pos, Canvas &canvas){}
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas);
         virtual void OnConfirm          (Canvas &canvas);
@@ -121,12 +187,12 @@ class CircleTool : public Tool
             delete preview_;
         }
 
-        virtual void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
-        virtual void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnMainButton       (ControlState state, const Dot &pos, Canvas &canvas);
+        virtual void OnSecondaryButton  (ControlState state, const Dot &pos, Canvas &canvas){}
 
-        virtual void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        virtual void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier1        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier2        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier3        (ControlState state, const Dot &pos, Canvas &canvas){}
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas);
         virtual void OnConfirm          (Canvas &canvas);
@@ -152,12 +218,12 @@ class FillTool : public Tool
 
         ~FillTool(){}
 
-        virtual void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
-        virtual void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnMainButton       (ControlState state, const Dot &pos, Canvas &canvas);
+        virtual void OnSecondaryButton  (ControlState state, const Dot &pos, Canvas &canvas){}
 
-        virtual void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        virtual void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier1        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier2        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier3        (ControlState state, const Dot &pos, Canvas &canvas){}
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas){}
         virtual void OnConfirm          (Canvas &canvas);
@@ -185,12 +251,12 @@ class PolyLineTool : public Tool
 
         ~PolyLineTool(){}
 
-        virtual void OnMainButton       (ButtonState key, const Dot &pos, Canvas &canvas);
-        virtual void OnSecondaryButton  (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnMainButton       (ControlState state, const Dot &pos, Canvas &canvas);
+        virtual void OnSecondaryButton  (ControlState state, const Dot &pos, Canvas &canvas){}
 
-        virtual void OnModifier1        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        virtual void OnModifier2        (ButtonState key, const Dot &pos, Canvas &canvas){}
-        virtual void OnModifier3        (ButtonState key, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier1        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier2        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void OnModifier3        (ControlState state, const Dot &pos, Canvas &canvas){}
 
         virtual void OnMove             (const Dot &pos, Canvas &canvas);
         virtual void OnConfirm          (Canvas &canvas);

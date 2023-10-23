@@ -4,6 +4,7 @@
 
 #include "../widget/window/canvas.h"
 #include "../widget/button/button.h"
+#include "../widget/window/tools/tools.h"
 
 #include "config.h"
 

@@ -1,6 +1,8 @@
 #include "canvas.h"
 #include "canvas_config.h"
 
+#include "tools/tools.h"
+
 
 Canvas::Canvas  (const double width, const double hieght, ToolPalette *tool_palette, 
                 const Dot &offset, const Vector &scale):
@@ -92,7 +94,7 @@ bool Canvas::OnMousePressed(const double x, const double y, const MouseKey key, 
     if (flag && key == MouseKey::LEFT)
     {
         Tool *active_tool = tool_palette_.GetActiveTool(); 
-        if (active_tool) active_tool->OnMainButton(ButtonState::PRESSED, GetCanvaseCoord(x, y, last_trf), *this);
+        if (active_tool) active_tool->OnMainButton({ControlState::ButtonState::PRESSED}, GetCanvaseCoord(x, y, last_trf), *this);
     }
 
     stack_transform.PopBack();

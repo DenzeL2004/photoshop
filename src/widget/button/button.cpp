@@ -143,12 +143,9 @@ bool Button::OnMousePressed(const double x, const double y, const MouseKey key, 
     Dot new_coord = last_trf.ApplyTransform({x, y});
     bool flag = CheckIn(new_coord);
 
-    printf("%u %lg %lg\n", flag, new_coord.x, new_coord.y);
-
     if (flag && key == MouseKey::LEFT)
     {
         if (action_ != nullptr) (*action_)();
-            printf("sdf");
         state_ = Button::ButtonState::PRESSED;
     }
     else

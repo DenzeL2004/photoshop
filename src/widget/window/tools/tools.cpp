@@ -119,9 +119,9 @@ LineTool::LineTool(const sf::Color *cur_color):
 
 
 //================================================================================
-void LineTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
+void LineTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
-    if (key != ButtonState::PRESSED)
+    if (state.state == ControlState::ButtonState::PRESSED)
         return;
 
     if (using_)
@@ -203,9 +203,9 @@ SquareTool::SquareTool(const sf::Color *cur_color):
                   using_(false), start_pos_(), end_pos_(), 
                   preview_(new SquareWidget(&start_pos_, &end_pos_, cur_color)), cur_color_(*cur_color){}
 
-void SquareTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
+void SquareTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
-    if (key != ButtonState::PRESSED)
+    if (state.state == ControlState::ButtonState::PRESSED)
         return;
 
     if (using_)
@@ -297,9 +297,9 @@ CircleTool::CircleTool(const sf::Color *cur_color):
                   using_(false), start_pos_(), end_pos_(), 
                   preview_(new CircleWidget(&start_pos_, &end_pos_, cur_color)), cur_color_(*cur_color){}
 
-void CircleTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
+void CircleTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
-    if (key != ButtonState::PRESSED)
+    if (state.state == ControlState::ButtonState::PRESSED)
         return;
 
     if (using_)
@@ -351,9 +351,9 @@ BrushTool::BrushTool(const sf::Color *cur_color):
                     using_(false), cur_color_(*cur_color){}
 
 
-void BrushTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
+void BrushTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
-    if (key != ButtonState::PRESSED)
+    if (state.state == ControlState::ButtonState::PRESSED)
         return;
 
     if (using_)
@@ -397,9 +397,9 @@ FillTool::FillTool(const sf::Color *cur_color):
                     using_(false), cur_color_(*cur_color){}
 
 
-void FillTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
+void FillTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
-    if (key != ButtonState::PRESSED)
+    if (state.state == ControlState::ButtonState::PRESSED)
         return;
 
     if (using_)
@@ -556,9 +556,9 @@ PolyLineTool::PolyLineTool(const sf::Color *cur_color):
                   using_(false), start_pos_(), end_pos_(), 
                   preview_(new PolyLineWidget(&end_pos_, cur_color)), cur_color_(*cur_color){}
 
-void PolyLineTool::OnMainButton(ButtonState key, const Dot &pos, Canvas &canvas)
+void PolyLineTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
-    if (key != ButtonState::PRESSED)
+    if (state.state == ControlState::ButtonState::PRESSED)
         return;
 
 
