@@ -29,35 +29,32 @@ Tool* ToolPalette::GetActiveTool () const
     {
         case ToolPalette::ToolType::LINE:
             return tools_[ToolPalette::ToolType::LINE];
-            break;
+            
 
         case ToolPalette::ToolType::BRUSH:
             return tools_[ToolPalette::ToolType::BRUSH];
-            break;
+            
 
         case ToolPalette::ToolType::SQUARE:
             return tools_[ToolPalette::ToolType::SQUARE];
-            break;
+            
 
         case ToolPalette::ToolType::CIRCLE:
             return tools_[ToolPalette::ToolType::CIRCLE];
-            break;
+            
 
         case ToolPalette::ToolType::POLYLINE:
             return tools_[ToolPalette::ToolType::POLYLINE];
-            break;
+
 
         case ToolPalette::ToolType::ERASER:
             return tools_[ToolPalette::ToolType::ERASER];
-            break;
 
         case ToolPalette::ToolType::FILL:
             return tools_[ToolPalette::ToolType::FILL];
-            break;
 
         default:
             return nullptr;
-            break;
     }
 }
 
@@ -121,7 +118,8 @@ LineTool::LineTool(const sf::Color *cur_color):
 //================================================================================
 void LineTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
-    if (state.state == ControlState::ButtonState::PRESSED)
+    
+    if (state.state != ControlState::ButtonState::PRESSED)
         return;
 
     if (using_)
@@ -205,7 +203,7 @@ SquareTool::SquareTool(const sf::Color *cur_color):
 
 void SquareTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
-    if (state.state == ControlState::ButtonState::PRESSED)
+    if (state.state != ControlState::ButtonState::PRESSED)
         return;
 
     if (using_)
@@ -299,7 +297,7 @@ CircleTool::CircleTool(const sf::Color *cur_color):
 
 void CircleTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
-    if (state.state == ControlState::ButtonState::PRESSED)
+    if (state.state != ControlState::ButtonState::PRESSED)
         return;
 
     if (using_)
@@ -353,7 +351,8 @@ BrushTool::BrushTool(const sf::Color *cur_color):
 
 void BrushTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
-    if (state.state == ControlState::ButtonState::PRESSED)
+     printf("%d\n", state.state);
+    if (state.state != ControlState::ButtonState::PRESSED)
         return;
 
     if (using_)
@@ -399,7 +398,7 @@ FillTool::FillTool(const sf::Color *cur_color):
 
 void FillTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
-    if (state.state == ControlState::ButtonState::PRESSED)
+    if (state.state != ControlState::ButtonState::PRESSED)
         return;
 
     if (using_)
@@ -558,7 +557,7 @@ PolyLineTool::PolyLineTool(const sf::Color *cur_color):
 
 void PolyLineTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
-    if (state.state == ControlState::ButtonState::PRESSED)
+    if (state.state != ControlState::ButtonState::PRESSED)
         return;
 
 

@@ -8,16 +8,17 @@
 class ToolPalette;
 class Tool;
 
+class FilterMask;
 
 class Canvas : public Widget
 {
 
     public:
         
-        Canvas (const double width, const double hieght, ToolPalette *tool_palette,  
+        Canvas (const size_t width, const size_t height, ToolPalette *tool_palette,  
                  const Dot &offset, const Vector &scale);
         
-        virtual ~Canvas(){}
+        virtual ~Canvas() = default;
 
         virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
         virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);
@@ -39,15 +40,17 @@ class Canvas : public Widget
 
         sf::RenderTexture background_;
         
-    private:
+    protected:
         void GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const;
         Dot  GetCanvaseCoord(double x, double y, const Transform &transform) const;
         
         Transform transform_;
-        double width_, hieght_;        
+        size_t width_, height_;        
 
         ToolPalette &tool_palette_;
         Dot real_pos_;
+        
+        FilterMask &filter_mask_;
 };
 
 class ScrollCanvas : public Action

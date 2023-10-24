@@ -53,6 +53,12 @@ class Widget
         virtual void Draw               (sf::RenderTarget &target, Container<Transform> &stack_transform) = 0;  
 
         virtual void PassTime           (const time_t delta_time) = 0;
+
+
+        bool isFocused() const {return is_focused_;}
+    
+    protected:
+        bool is_focused_ = false;
 };
 
 class WidgetContainer: public Widget

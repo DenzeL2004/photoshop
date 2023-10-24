@@ -2,17 +2,20 @@
 #include "canvas_config.h"
 
 #include "tools/tools.h"
+#include "filters/filter.h"
 
 
-Canvas::Canvas  (const double width, const double hieght, ToolPalette *tool_palette, 
+Canvas::Canvas  (const size_t width, const size_t height, ToolPalette *tool_palette, 
                 const Dot &offset, const Vector &scale):
                 transform_({offset, scale}),
-                width_(width), hieght_(hieght), tool_palette_(*tool_palette),
-                background_(), real_pos_(0, 0) 
+                width_(width), height_(height), 
+                tool_palette_(*tool_palette),
+                background_(), real_pos_(0, 0), 
+                filter_mask_(*(new FilterMask(width, height)))
 {
-    background_.create((int)width, (int)hieght);
+    background_.create(width, height);
 
-    sf::RectangleShape rec(sf::Vector2f((float)width, (float)hieght));
+    sf::RectangleShape rec(sf::Vector2f((float)width, (float)height));
     rec.setPosition(0, 0);
     rec.setFillColor(sf::Color::White);
 
@@ -54,10 +57,10 @@ void Canvas::GetNewSize(sf::VertexArray &vertex_array, const Transform &transfor
     float new_width  = fabs(vertex_array[1].position.x - vertex_array[0].position.x);
     float new_hieght = fabs(vertex_array[2].position.y - vertex_array[1].position.y);
 
-    vertex_array[3].texCoords = sf::Vector2f((float)real_pos_.x,  hieght_ - (float)real_pos_.y - new_hieght);
-    vertex_array[2].texCoords = sf::Vector2f((float)real_pos_.x + (float)new_width - 1, hieght_ - (float)real_pos_.y - new_hieght);
-    vertex_array[1].texCoords = sf::Vector2f((float)real_pos_.x + (float)new_width - 1, hieght_ - (float)real_pos_.y - 1);
-    vertex_array[0].texCoords = sf::Vector2f((float)real_pos_.x, hieght_ - (float)real_pos_.y - 1);
+    vertex_array[3].texCoords = sf::Vector2f((float)real_pos_.x,  height_ - (float)real_pos_.y - new_hieght);
+    vertex_array[2].texCoords = sf::Vector2f((float)real_pos_.x + (float)new_width - 1, height_ - (float)real_pos_.y - new_hieght);
+    vertex_array[1].texCoords = sf::Vector2f((float)real_pos_.x + (float)new_width - 1, height_ - (float)real_pos_.y - 1);
+    vertex_array[0].texCoords = sf::Vector2f((float)real_pos_.x, height_ - (float)real_pos_.y - 1);
 }
 
 //================================================================================
@@ -98,6 +101,8 @@ bool Canvas::OnMousePressed(const double x, const double y, const MouseKey key, 
     }
 
     stack_transform.PopBack();
+
+    is_focused_ = flag;
 
     return flag;
 }
@@ -163,7 +168,7 @@ void Canvas::PassTime(const time_t delta_time)
 
 Dot Canvas::GetSize() const
 {
-    return Dot(width_, hieght_);
+    return Dot((double)width_, (double)height_);
 }
 
 void Canvas::Move(const Dot &offset)
@@ -203,8 +208,8 @@ void Canvas::CorrectRealCoord(const Transform &transform)
     if (real_pos_.x + transform.scale.x  > width_ - Eps)
         real_pos_.x =  width_ - Eps - transform.scale.x;
 
-    if (real_pos_.y + transform.scale.y > hieght_ - Eps)
-        real_pos_.y = hieght_ - Eps - transform.scale.y;    
+    if (real_pos_.y + transform.scale.y > height_ - Eps)
+        real_pos_.y = height_ - Eps - transform.scale.y;    
 }
 
 //=======================================================================================
