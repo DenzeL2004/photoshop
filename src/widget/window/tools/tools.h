@@ -56,6 +56,8 @@ class ToolPalette
         void SetActiveTool  (const ToolType tool_type);
         void SetActiveColor (const sf::Color &color);
 
+        sf::Color GetActiveColor () const;
+
         Tool* GetActiveTool () const;
 
     private:

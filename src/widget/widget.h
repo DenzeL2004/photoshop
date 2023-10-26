@@ -55,8 +55,10 @@ class Widget
         virtual void PassTime           (const time_t delta_time) = 0;
 
 
-        bool isFocused() const {return is_focused_;}
+        bool GetFocuse() const; 
     
+        void SetFocus(bool value);
+
     protected:
         bool is_focused_ = false;
 };

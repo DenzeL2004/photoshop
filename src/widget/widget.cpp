@@ -36,6 +36,16 @@ bool CheckIn(const Dot &mouse_pos)
     return horizontal & vertical;
 }
 
+bool Widget::GetFocuse() const 
+{
+    return is_focused_;
+}
+
+void Widget::SetFocus(bool value)
+{
+    is_focused_ = value;
+}
+
 //================================================================================
 void WidgetContainer::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
@@ -111,7 +121,13 @@ bool WidgetContainer::OnMouseReleased(const double x, const double y, const Mous
 
 bool WidgetContainer::OnKeyboardPressed(const KeyboardKey key)
 {
-    printf("WidgetContainer: mouse keyboard kye pressed\n");
+    size_t size = widgets_.GetSize();
+    for (size_t it = 0; it < size; it++)
+    {
+        if (widgets_[it]->OnKeyboardPressed(key))
+            return true;
+    }
+
     return false;
 }
 

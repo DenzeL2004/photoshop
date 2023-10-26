@@ -22,6 +22,9 @@ enum class KeyboardKey
     NOTHING,
     ENTER,
     ESC, 
+    CTRL, 
+    L, 
+    F, 
 };
 
 void EventAdapter (Widget &widget, int mouse_x, int mouse_y, sf::Event &event, Container<Transform> &stack_transform);

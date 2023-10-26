@@ -5,24 +5,26 @@
 #include "../widget/window/canvas.h"
 #include "../widget/button/button.h"
 #include "../widget/window/tools/tools.h"
+#include "../widget/window/filters/filter.h"
 
 #include "config.h"
 
 class AddCanvase : public Action
 {
     public:
-        AddCanvase(CanvaseManager *canvase_manager, ToolPalette *palette): 
-                   canvase_manager_(canvase_manager), palette_(*palette){};
+        AddCanvase(CanvasManager *canvase_manager, ToolPalette *palette, FilterPalette *filter_palette): 
+                   canvase_manager_(canvase_manager), tool_palette_(*palette), filter_palette_(*filter_palette){};
         ~AddCanvase(){};
 
         void operator() () const
         {
-            canvase_manager_->CreateCanvase(&palette_);   
+            canvase_manager_->CreateCanvase(&tool_palette_, &filter_palette_);   
         }
 
     private:
-        CanvaseManager *canvase_manager_;
-        ToolPalette &palette_; 
+        CanvasManager *canvase_manager_;
+        ToolPalette &tool_palette_; 
+        FilterPalette &filter_palette_; 
 };
 
 class ChooseTool : public Action
@@ -87,12 +89,14 @@ class AppWindow: public Window
 
     protected:
         
-        CanvaseManager canvas_manager_;
+        CanvasManager canvas_manager_;
         Button *button_create_;
         WidgetContainer *tools_button_;
         ButtonList *colors_button_;
 
         ToolPalette tool_pallette_;
+
+        FilterPalette filter_pallette_;
 };
 
 

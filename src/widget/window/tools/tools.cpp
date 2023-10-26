@@ -3,7 +3,7 @@
 ToolPalette::ToolPalette():
         tools_(),
         active_tool_(ToolType::NOTHING), 
-        color_type_(FOREGROUND), foreground_color_(sf::Color::Transparent), background_color_(sf::Color::Transparent)
+        color_type_(FOREGROUND), foreground_color_(sf::Color::White), background_color_(sf::Color::Transparent)
 {
     tools_.PushBack(new LineTool(&foreground_color_));
     tools_.PushBack(new BrushTool(&foreground_color_));
@@ -65,6 +65,15 @@ void ToolPalette::SetActiveColor (const sf::Color &color)
 
     if (color_type_ == ToolPalette::ColorType::BACKGROUND)
         background_color_ = color;
+}
+
+sf::Color ToolPalette::GetActiveColor () const
+{
+    if (color_type_ == ToolPalette::ColorType::FOREGROUND)
+        return foreground_color_;
+
+    if (color_type_ == ToolPalette::ColorType::BACKGROUND)
+        return background_color_;
 }
 
 //================================================================================

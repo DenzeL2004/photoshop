@@ -5,19 +5,20 @@
 #include "filters/filter.h"
 
 
-Canvas::Canvas  (const size_t width, const size_t height, ToolPalette *tool_palette, 
+Canvas::Canvas  (const size_t width, const size_t height, ToolPalette *tool_palette, FilterPalette *filter_palette,
                 const Dot &offset, const Vector &scale):
                 transform_({offset, scale}),
                 width_(width), height_(height), 
                 tool_palette_(*tool_palette),
                 background_(), real_pos_(0, 0), 
-                filter_mask_(*(new FilterMask(width, height)))
+                filter_mask_(*(new FilterMask(width, height))),
+                filter_palette_(*filter_palette)
 {
     background_.create(width, height);
 
     sf::RectangleShape rec(sf::Vector2f((float)width, (float)height));
     rec.setPosition(0, 0);
-    rec.setFillColor(sf::Color::White);
+    rec.setFillColor(tool_palette->GetActiveColor());
 
     background_.draw(rec);
 }
@@ -35,14 +36,14 @@ void Canvas::Draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
 
     target.draw(vertex_array, &(background_.getTexture()));
 
+
     Tool *active_tool = tool_palette_.GetActiveTool(); 
     if (active_tool) 
     {
         Widget *preview = active_tool->GetWidget();
         if (preview) preview->Draw(target, stack_transform);
     }
-
-
+    
     stack_transform.PopBack();
 }
 
@@ -102,8 +103,6 @@ bool Canvas::OnMousePressed(const double x, const double y, const MouseKey key, 
 
     stack_transform.PopBack();
 
-    is_focused_ = flag;
-
     return flag;
 }
 
@@ -130,7 +129,28 @@ bool Canvas::OnMouseReleased(const double x, const double y, const MouseKey key,
 
 bool Canvas::OnKeyboardPressed(const KeyboardKey key)
 {
-    printf("Canvas: mouse keyboard kye pressed\n");
+   
+    if (filter_palette_.getActive())
+    {
+        filter_mask_.fill(true);
+
+        Filter *filter = nullptr;
+        if (key == KeyboardKey::L)
+        {
+            filter  = filter_palette_.getFilter(FilterPalette::FilterType::LIGHT);
+            filter_palette_.setLastFilter(FilterPalette::FilterType::LIGHT);
+        }
+
+        if (key == KeyboardKey::F)
+            filter  = filter_palette_.getLastFilter();
+        
+        if (filter)
+        {
+            filter->applyFilter(*this, filter_mask_);
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -196,7 +216,6 @@ Dot Canvas::GetCanvaseCoord(double x, double y, const Transform &transform) cons
     return Dot(x - transform.offset.x, y - transform.offset.y);
 }
 
-
 void Canvas::CorrectRealCoord(const Transform &transform)
 {
     if (real_pos_.x < Eps)
@@ -215,13 +234,14 @@ void Canvas::CorrectRealCoord(const Transform &transform)
 //=======================================================================================
 // //CONTAINER WINDOW
 
-void CanvaseManager::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
+void CanvasManager::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
     Window::Draw(target, stack_transform);
 
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
 
     size_t size = canvases_.GetSize();
+
     for (size_t it = 0; it < size; it++)
         canvases_[it]->Draw(target, stack_transform);
 
@@ -232,7 +252,7 @@ void CanvaseManager::Draw(sf::RenderTarget &target, Container<Transform> &stack_
 
 //=======================================================================================
 
-bool CanvaseManager::OnMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
+bool CanvasManager::OnMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
 {
     size_t size = canvases_.GetSize();
     if (size == 0) return false;
@@ -251,7 +271,7 @@ bool CanvaseManager::OnMouseMoved(const double x, const double y, Container<Tran
 
 //================================================================================
 
-bool CanvaseManager::OnMousePressed(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
+bool CanvasManager::OnMousePressed(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
@@ -269,9 +289,9 @@ bool CanvaseManager::OnMousePressed(const double x, const double y, const MouseK
             if (canvases_[it]->OnMousePressed(x, y, key, stack_transform))
             {
                 canvases_.Drown(it);
+                
                 if (delte_canvase_)
                     canvases_.PopBack();
-
                 break;
             }
         }
@@ -284,7 +304,7 @@ bool CanvaseManager::OnMousePressed(const double x, const double y, const MouseK
 
 //================================================================================
 
-bool CanvaseManager::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
+bool CanvasManager::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
 {
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
@@ -302,15 +322,19 @@ bool CanvaseManager::OnMouseReleased(const double x, const double y, const Mouse
 
 //================================================================================
 
-bool CanvaseManager::OnKeyboardPressed(const KeyboardKey key)
+bool CanvasManager::OnKeyboardPressed(const KeyboardKey key)
 {
-    printf("CanvaseManager: mouse keyboard kye released\n");
-    return false;
+
+    size_t size = canvases_.GetSize();
+    if (size == 0)
+        return false;
+
+    return canvases_[size - 1]->OnKeyboardPressed(key);
 }
 
 //================================================================================
 
-bool CanvaseManager::OnKeyboardReleased(const KeyboardKey key)
+bool CanvasManager::OnKeyboardReleased(const KeyboardKey key)
 {
     size_t size = canvases_.GetSize();
     if (size == 0)
@@ -320,9 +344,10 @@ bool CanvaseManager::OnKeyboardReleased(const KeyboardKey key)
 }
 //================================================================================
 
-void CanvaseManager::CreateCanvase(ToolPalette *palette)
+void CanvasManager::CreateCanvase(ToolPalette *tool_palette, FilterPalette *filter_palette)
 {
-    assert(palette != nullptr && "palette is nullptr");
+    assert(tool_palette != nullptr && "tool_palette is nullptr");
+    assert(filter_palette != nullptr && "filter_palette is nullptr");
 
     char *buf = (char*)calloc(BUFSIZ, sizeof(char));
     if (!buf)
@@ -339,7 +364,8 @@ void CanvaseManager::CreateCanvase(ToolPalette *palette)
                                       new Click(&delte_canvase_), 
                                       Cross_Button_Offset, Cross_Button_Scale);
 
-    Canvas *new_canvase = new Canvas(Width_Canvase, Hieght_Canvase, palette, Canvase_Offset, Canvase_Scale);
+    Canvas *new_canvase = new Canvas(Width_Canvase, Hieght_Canvase, tool_palette, filter_palette, 
+                                    Canvase_Offset, Canvase_Scale);
 
     WidgetContainer *scrolls = new WidgetContainer(Dot(0.02, 0.05), Vector(0.95, 0.87));
     
@@ -558,7 +584,6 @@ bool Scrollbar::OnMouseReleased(const double x, const double y, const MouseKey k
 
 bool Scrollbar::OnKeyboardPressed(const KeyboardKey key)
 {
-    printf("Scrollbar: mouse keyboard kye pressed\n");
     return false;
 }
 

@@ -30,6 +30,9 @@ void EventAdapter(Widget &widget, int mouse_x, int mouse_y, sf::Event &event, Co
     if (event.type == sf::Event::KeyReleased)
         widget.OnKeyboardReleased(keyboard_key);
 
+    if (event.type == sf::Event::KeyPressed)
+        widget.OnKeyboardPressed(keyboard_key);
+
     return;
 }
 
@@ -53,11 +56,27 @@ static MouseKey GetMouseKey(sf::Event &event)
 
 static KeyboardKey GetKeyboard(sf::Event &event)
 {
-    if (event.key.code == sf::Keyboard::Enter)
-            return KeyboardKey::ENTER;
 
-    if (event.key.code == sf::Keyboard::Escape)
+    switch (event.key.code)
+    {
+        case sf::Keyboard::Enter:
+            return KeyboardKey::ENTER;
+        
+        case sf::Keyboard::Escape:
             return KeyboardKey::ESC;
+
+        case sf::Keyboard::LControl: case sf::Keyboard::RControl:
+            return KeyboardKey::CTRL;
+
+        case sf::Keyboard::F:
+            return KeyboardKey::F;
+
+        case sf::Keyboard::L:
+            return KeyboardKey::L;
+
+        default:
+            break;
+    }
 
     return KeyboardKey::NOTHING;
 }

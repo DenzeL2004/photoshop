@@ -9,14 +9,19 @@ class ToolPalette;
 class Tool;
 
 class FilterMask;
+class FilterPalette;
+class Filter;
+
+
+
 
 class Canvas : public Widget
 {
 
     public:
         
-        Canvas (const size_t width, const size_t height, ToolPalette *tool_palette,  
-                 const Dot &offset, const Vector &scale);
+        Canvas (const size_t width, const size_t height, ToolPalette *tool_palette, FilterPalette *filter_palette,
+                const Dot &offset, const Vector &scale);
         
         virtual ~Canvas() = default;
 
@@ -51,6 +56,8 @@ class Canvas : public Widget
         Dot real_pos_;
         
         FilterMask &filter_mask_;
+
+        FilterPalette &filter_palette_;
 };
 
 class ScrollCanvas : public Action
@@ -72,15 +79,15 @@ class ScrollCanvas : public Action
         Canvas *canvas_;
 };
 
-class CanvaseManager : public Window
+class CanvasManager : public Window
 {
 
     public:
 
-        CanvaseManager (const char *path_texture,
+        CanvasManager (const char *path_texture,
                         const Dot offset, const Vector scale):Window(path_texture, offset, scale), 
                         canvases_(), delte_canvase_(false), cnt_(0){}
-        ~CanvaseManager()
+        ~CanvasManager()
         {
             size_t size = canvases_.GetSize();
             for (size_t it = 0; it < size; it++)
@@ -96,8 +103,8 @@ class CanvaseManager : public Window
 
         virtual void Draw               (sf::RenderTarget &target, Container<Transform> &stack_transform);
 
+        void CreateCanvase              (ToolPalette *tool_palette, FilterPalette *filter_palette);
 
-        void CreateCanvase(ToolPalette *palette);
     private:
         Container<Widget*> canvases_;
         bool delte_canvase_;

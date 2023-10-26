@@ -5,11 +5,11 @@ const double HIEGHT = 900.0;
 
 AppWindow::AppWindow(const char *path_texture, const Dot &offset, const Vector &scale):
            Window(path_texture, offset, scale), canvas_manager_(Empty_texture, Canvase_Manager_Offset, Canvase_Manager_Scale),
-           tool_pallette_()
+           tool_pallette_(), filter_pallette_()
 {
     button_create_ = new Button("src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
                                 "src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
-                                new AddCanvase(&canvas_manager_, &tool_pallette_), 
+                                new AddCanvase(&canvas_manager_, &tool_pallette_, &filter_pallette_), 
                                 Button_Create_Offset, Button_Create_Scale);
     {
         tools_button_ = new WidgetContainer(Button_Tools_Offset, Button_Tools_Scale);
@@ -156,14 +156,25 @@ bool AppWindow::OnMouseReleased(const double x, const double y, const MouseKey k
 
 bool AppWindow::OnKeyboardPressed(const KeyboardKey key)
 {
-    printf("AppWindow: mouse keyboard kye pressed\n");
-    return false;
+    if (key == KeyboardKey::CTRL)
+    {
+        filter_pallette_.setActive(true);
+        return true;
+    }
+
+    return canvas_manager_.OnKeyboardPressed(key);
 }
 
 //================================================================================
 
 bool AppWindow::OnKeyboardReleased(const KeyboardKey key)
 {
+    if (key == KeyboardKey::CTRL)
+    {
+        filter_pallette_.setActive(false);
+        return true;
+    }
+
     bool flag = canvas_manager_.OnKeyboardReleased(key);
     return flag;
 }

@@ -43,6 +43,7 @@ void FilterMask::invert()
 
 void FilterLight::applyFilter(Canvas &canvas, const FilterMask &mask)
 {
+    
     sf::Image image = canvas.background_.getTexture().copyToImage();
 
     size_t width  = mask.getWidth();
@@ -52,17 +53,23 @@ void FilterLight::applyFilter(Canvas &canvas, const FilterMask &mask)
     {
         for (size_t jt = 0; jt < height; jt++)
         {
-            sf::Color color = image.getPixel(it, jt);
-            color.a += alpha_;
-            image.setPixel(it, jt, color);
+
+            if (mask.getPixel(it, jt))
+            {
+                sf::Color color = image.getPixel(it, jt);
+                color.a = (sf::Uint8)((char)color.a + alpha_);
+                image.setPixel(it, jt, color);
+            }
         }
     }
 
     sf::Texture texture;
     texture.loadFromImage(image);
+    
     sf::Sprite sprite(texture);
-    sprite.scale(1.f, -1.f);
-
+    sprite.setTextureRect(sf::IntRect(0, height, width, -height));
+    
+    canvas.background_.clear();
     canvas.background_.draw(sprite);
 }
 
@@ -70,9 +77,10 @@ void FilterLight::applyFilter(Canvas &canvas, const FilterMask &mask)
 
 FilterPalette::FilterPalette():
         filters_(),
-        last_filter_(FilterType::NOTHING)
+        last_filter_(FilterType::NOTHING),
+        is_active_(false)
 {
-    filters_.PushBack(new FilterLight(-10));
+    filters_.PushBack(new FilterLight(-40));
     
 }
 
