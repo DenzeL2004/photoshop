@@ -251,3 +251,8 @@ void Frame::PassTime(const time_t delta_time)
 }
 
 //================================================================================
+
+void Frame::SetFocus(bool value)
+{
+    decarable_->SetFocus(value);
+}

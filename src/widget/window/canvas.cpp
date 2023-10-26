@@ -18,7 +18,7 @@ Canvas::Canvas  (const size_t width, const size_t height, ToolPalette *tool_pale
 
     sf::RectangleShape rec(sf::Vector2f((float)width, (float)height));
     rec.setPosition(0, 0);
-    rec.setFillColor(tool_palette->GetActiveColor());
+    rec.setFillColor(sf::Color::White);
 
     background_.draw(rec);
 }
@@ -36,12 +36,14 @@ void Canvas::Draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
 
     target.draw(vertex_array, &(background_.getTexture()));
 
-
-    Tool *active_tool = tool_palette_.GetActiveTool(); 
-    if (active_tool) 
+    if (is_focused_)
     {
-        Widget *preview = active_tool->GetWidget();
-        if (preview) preview->Draw(target, stack_transform);
+        Tool *active_tool = tool_palette_.GetActiveTool(); 
+        if (active_tool) 
+        {
+            Widget *preview = active_tool->GetWidget();
+            if (preview) preview->Draw(target, stack_transform);
+        }
     }
     
     stack_transform.PopBack();
@@ -54,7 +56,6 @@ void Canvas::GetNewSize(sf::VertexArray &vertex_array, const Transform &transfor
     vertex_array[2].position = transform.RollbackTransform({1, 1});
     vertex_array[3].position = transform.RollbackTransform({0, 1});
 
-   
     float new_width  = fabs(vertex_array[1].position.x - vertex_array[0].position.x);
     float new_hieght = fabs(vertex_array[2].position.y - vertex_array[1].position.y);
 
@@ -100,6 +101,8 @@ bool Canvas::OnMousePressed(const double x, const double y, const MouseKey key, 
         Tool *active_tool = tool_palette_.GetActiveTool(); 
         if (active_tool) active_tool->OnMainButton({ControlState::ButtonState::PRESSED}, GetCanvaseCoord(x, y, last_trf), *this);
     }
+    
+    is_focused_ = flag;
 
     stack_transform.PopBack();
 
@@ -278,24 +281,26 @@ bool CanvasManager::OnMousePressed(const double x, const double y, const MouseKe
     
     Dot new_coord = last_trf.ApplyTransform({x, y});
 
-    bool flag = CheckIn(new_coord);
+    bool flag = false;
+    
 
-    if (flag)
+    int size = (int)canvases_.GetSize();
+    for (int it = size - 1; it >= 0; it--)
+        canvases_[it]->SetFocus(false);
+
+    for (int it = size - 1; it >= 0; it--)
     {
-        int size = (int)canvases_.GetSize();
-        for (int it = size - 1; it >= 0; it--)
+        delte_canvase_ = false;
+        if (canvases_[it]->OnMousePressed(x, y, key, stack_transform))
         {
-            delte_canvase_ = false;
-            if (canvases_[it]->OnMousePressed(x, y, key, stack_transform))
-            {
-                canvases_.Drown(it);
-                
-                if (delte_canvase_)
-                    canvases_.PopBack();
-                break;
-            }
+            canvases_.Drown(it);
+            
+            if (delte_canvase_)
+                canvases_.PopBack();
+            break;
         }
     }
+    
 
     stack_transform.PopBack();
 
@@ -399,7 +404,6 @@ void CanvasManager::CreateCanvase(ToolPalette *tool_palette, FilterPalette *filt
 
     Scrollbar *scroll_ver = new Scrollbar(up_btn, down_btn, ver_btn, new_canvase, 
                                      Scrollbar::ScrollType::VERTICAL, Dot(0.96, 0.05), Vector(1.0, 1.0));
-   
 
     scrolls->AddWidget(new_canvase);
     scrolls->AddWidget(scroll_hor);

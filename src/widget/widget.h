@@ -57,7 +57,7 @@ class Widget
 
         bool GetFocuse() const; 
     
-        void SetFocus(bool value);
+        virtual void SetFocus(bool value);
 
     protected:
         bool is_focused_ = false;
@@ -88,9 +88,9 @@ class WidgetContainer: public Widget
 
         virtual void PassTime           (const time_t delta_time);
 
-        void AddWidget(Widget *ptr);
+        void AddWidget                  (Widget *ptr);
+        virtual void SetFocus           (bool value);
        
-
     private:
 
         Container<Widget*> widgets_;

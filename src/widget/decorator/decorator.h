@@ -66,6 +66,8 @@ class Frame: public Widget
 
         virtual void PassTime           (const time_t delta_time);
         
+        virtual void SetFocus           (bool value);
+
         Transform GetTransform() const {return transform_;}
 
     private:

@@ -159,3 +159,12 @@ void WidgetContainer::AddWidget(Widget *ptr)
 {
     widgets_.PushBack(ptr);
 }
+
+//================================================================================
+
+void WidgetContainer::SetFocus(bool value)
+{
+    size_t size = widgets_.GetSize();
+    for (size_t it = 0; it < size; it++)
+        widgets_[it]->SetFocus(value);
+}
