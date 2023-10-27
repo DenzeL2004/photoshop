@@ -38,16 +38,18 @@ class Filter
         virtual void applyFilter(Canvas &canvas, const FilterMask &mask) {};
 };
 
-class FilterLight : public Filter
+class FilterBrightness : public Filter
 {
     public:
-        FilterLight (const char alpha):alpha_(alpha){}
-        ~FilterLight() = default;
+        FilterBrightness (const float delta):delta_(delta){}
+        ~FilterBrightness() = default;
 
         virtual void applyFilter(Canvas &canvas, const FilterMask &mask);
 
+        void setDelta(const float delta);
+
     private:
-        char alpha_;
+        float delta_;
 };
 
 class FilterPalette
@@ -64,14 +66,16 @@ class FilterPalette
         ~FilterPalette ();
 
         Filter* getLastFilter();
-        void    setLastFilter(size_t filter_id);
+        void    setLastFilter   (size_t filter_id);
 
-        Filter* getFilter(size_t filter_id);
+        Filter* getFilter       (size_t filter_id);
         
         size_t  getFilterCount() const {return filters_.GetSize();}
 
         bool  getActive() const {return is_active_;}
         void  setActive(bool flag)  {is_active_ = flag;}
+
+        void addFilter      (Filter *ptr);
 
     private:
         Container<Filter*>  filters_;

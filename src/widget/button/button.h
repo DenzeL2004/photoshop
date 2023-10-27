@@ -78,9 +78,8 @@ class Button : public Widget
         double width_, hieght_;
         
         time_t covering_time_;
-
-
 };
+
 
 class ButtonList : public Button
 {
@@ -118,12 +117,16 @@ class ButtonList : public Button
         
         virtual void PassTime           (const time_t delta_time);
 
+        void AddButton                  (Button *button);
+
         Transform GetTransform() const {return transform_;}
 
         const Action *action_;
         Container<Button*> buttons_;
-
+        
     protected:
+
+        
         
 };
 

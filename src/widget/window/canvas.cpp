@@ -20,6 +20,8 @@ Canvas::Canvas  (const size_t width, const size_t height, ToolPalette *tool_pale
     rec.setPosition(0, 0);
     rec.setFillColor(sf::Color::White);
 
+    filter_mask_.fill(true);
+
     background_.draw(rec);
 }
 
@@ -135,8 +137,6 @@ bool Canvas::OnKeyboardPressed(const KeyboardKey key)
    
     if (filter_palette_.getActive())
     {
-        filter_mask_.fill(true);
-
         Filter *filter = nullptr;
         if (key == KeyboardKey::L)
         {
@@ -234,6 +234,11 @@ void Canvas::CorrectRealCoord(const Transform &transform)
         real_pos_.y = height_ - Eps - transform.scale.y;    
 }
 
+FilterMask& Canvas::GetFilterMask ()
+{
+    return filter_mask_;
+}
+
 //=======================================================================================
 // //CONTAINER WINDOW
 
@@ -243,10 +248,10 @@ void CanvasManager::Draw(sf::RenderTarget &target, Container<Transform> &stack_t
 
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
 
-    size_t size = canvases_.GetSize();
+    size_t size = widgets_.GetSize();
 
     for (size_t it = 0; it < size; it++)
-        canvases_[it]->Draw(target, stack_transform);
+        widgets_[it]->Draw(target, stack_transform);
 
     stack_transform.PopBack();
 
@@ -257,7 +262,7 @@ void CanvasManager::Draw(sf::RenderTarget &target, Container<Transform> &stack_t
 
 bool CanvasManager::OnMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
 {
-    size_t size = canvases_.GetSize();
+    size_t size = widgets_.GetSize();
     if (size == 0) return false;
     
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
@@ -265,7 +270,7 @@ bool CanvasManager::OnMouseMoved(const double x, const double y, Container<Trans
     
     Dot new_coord = last_trf.ApplyTransform({x, y});
 
-    canvases_[size - 1]->OnMouseMoved(x, y, stack_transform);
+    widgets_[size - 1]->OnMouseMoved(x, y, stack_transform);
     
     stack_transform.PopBack();
 
@@ -284,23 +289,27 @@ bool CanvasManager::OnMousePressed(const double x, const double y, const MouseKe
     bool flag = false;
     
 
-    int size = (int)canvases_.GetSize();
+    int size = (int)widgets_.GetSize();
     for (int it = size - 1; it >= 0; it--)
-        canvases_[it]->SetFocus(false);
+        widgets_[it]->SetFocus(false);
 
     for (int it = size - 1; it >= 0; it--)
     {
-        delte_canvase_ = false;
-        if (canvases_[it]->OnMousePressed(x, y, key, stack_transform))
+        delete_canvase_ = false;
+        if (widgets_[it]->OnMousePressed(x, y, key, stack_transform))
         {
+            widgets_.Drown(it);
             canvases_.Drown(it);
             
-            if (delte_canvase_)
+            if (delete_canvase_)
+            {
+                widgets_.PopBack();
                 canvases_.PopBack();
+            }
+
             break;
         }
     }
-    
 
     stack_transform.PopBack();
 
@@ -314,10 +323,10 @@ bool CanvasManager::OnMouseReleased(const double x, const double y, const MouseK
     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
     Transform last_trf = stack_transform.GetBack();
 
-    int size = (int)canvases_.GetSize();
+    int size = (int)widgets_.GetSize();
     for (int it = size - 1; it >= 0; it--)
     {
-        canvases_[it]->OnMouseReleased(x, y, key, stack_transform);
+        widgets_[it]->OnMouseReleased(x, y, key, stack_transform);
     }
 
     stack_transform.PopBack();
@@ -330,22 +339,22 @@ bool CanvasManager::OnMouseReleased(const double x, const double y, const MouseK
 bool CanvasManager::OnKeyboardPressed(const KeyboardKey key)
 {
 
-    size_t size = canvases_.GetSize();
+    size_t size = widgets_.GetSize();
     if (size == 0)
         return false;
 
-    return canvases_[size - 1]->OnKeyboardPressed(key);
+    return widgets_[size - 1]->OnKeyboardPressed(key);
 }
 
 //================================================================================
 
 bool CanvasManager::OnKeyboardReleased(const KeyboardKey key)
 {
-    size_t size = canvases_.GetSize();
+    size_t size = widgets_.GetSize();
     if (size == 0)
         return false;
 
-    return canvases_[size - 1]->OnKeyboardReleased(key);
+    return widgets_[size - 1]->OnKeyboardReleased(key);
 }
 //================================================================================
 
@@ -366,57 +375,69 @@ void CanvasManager::CreateCanvase(ToolPalette *tool_palette, FilterPalette *filt
 
     Button *close_btn = new Button(Cross_Button_Release, Cross_Button_Covered, 
                                       Cross_Button_Release, Cross_Button_Covered, 
-                                      new Click(&delte_canvase_), 
+                                      new Click(&delete_canvase_), 
                                       Cross_Button_Offset, Cross_Button_Scale);
 
-    Canvas *new_canvase = new Canvas(Width_Canvase, Hieght_Canvase, tool_palette, filter_palette, 
+    Canvas *new_canvas = new Canvas(Width_Canvase, Hieght_Canvase, tool_palette, filter_palette, 
                                     Canvase_Offset, Canvase_Scale);
+
+    canvases_.PushBack(new_canvas);
 
     WidgetContainer *scrolls = new WidgetContainer(Dot(0.02, 0.05), Vector(0.95, 0.87));
     
 
     Button *left_btn = new Button(  Left_Scl_Rel, Left_Scl_Prs, Left_Scl_Rel, Left_Scl_Prs,
-                                    new ScrollCanvas(Dot(-0.05, 0), new_canvase), 
+                                    new ScrollCanvas(Dot(-0.05, 0), new_canvas), 
                                     Dot(0.0, 0.0), Vector(0.03, 0.03));
 
     Button *right_btn = new Button( Right_Scl_Rel, Right_Scl_Prs, Right_Scl_Rel, Right_Scl_Prs, 
-                                    new ScrollCanvas(Vector(0.05, 0), new_canvase), 
+                                    new ScrollCanvas(Vector(0.05, 0), new_canvas), 
                                     Dot(0.92, 0), Vector(0.03, 0.03));
 
     Button *hor_btn = new Button(   Hor_Scl, Hor_Scl, Hor_Scl, Hor_Scl, 
-                                    new ScrollCanvas(Dot(0, 0), new_canvase), 
+                                    new ScrollCanvas(Dot(0, 0), new_canvas), 
                                     Dot(0.03, 0.0), Vector(1.0, 0.03));
 
-    Scrollbar *scroll_hor = new Scrollbar(left_btn, right_btn, hor_btn, new_canvase, 
+    Scrollbar *scroll_hor = new Scrollbar(left_btn, right_btn, hor_btn, new_canvas, 
                                      Scrollbar::ScrollType::HORIZONTAL, Dot(0.00, 0.00), Vector(1.0, 1.0));
 
     Button *up_btn = new Button(Up_Scl_Rel, Up_Scl_Prs, Up_Scl_Rel, Up_Scl_Prs, 
-                                new ScrollCanvas(Dot(0.0, -0.05), new_canvase), 
+                                new ScrollCanvas(Dot(0.0, -0.05), new_canvas), 
                                 Dot(0.0, 0.0), Vector(0.03, 0.03));
 
     Button *down_btn = new Button(Down_Scl_Rel, Down_Scl_Prs, Down_Scl_Rel, Down_Scl_Prs, 
-                                  new ScrollCanvas(Vector(0.0, 0.05), new_canvase), 
+                                  new ScrollCanvas(Vector(0.0, 0.05), new_canvas), 
                                   Dot(0, 0.92), Vector(0.03, 0.03));
 
     Button *ver_btn = new Button(Ver_Scl, Ver_Scl, Ver_Scl, Ver_Scl, 
-                                new ScrollCanvas(Dot(0, 0), new_canvase), 
+                                new ScrollCanvas(Dot(0, 0), new_canvas), 
                                 Dot(0.0, 0.03), Vector(0.03, 1.0));
 
-    Scrollbar *scroll_ver = new Scrollbar(up_btn, down_btn, ver_btn, new_canvase, 
+    Scrollbar *scroll_ver = new Scrollbar(up_btn, down_btn, ver_btn, new_canvas, 
                                      Scrollbar::ScrollType::VERTICAL, Dot(0.96, 0.05), Vector(1.0, 1.0));
 
-    scrolls->AddWidget(new_canvase);
+    scrolls->AddWidget(new_canvas);
     scrolls->AddWidget(scroll_hor);
     scrolls->AddWidget(scroll_ver);
 
     Widget *new_frame = new Frame(Frame_Texture, close_btn, {buf, sf::Color::Black}, 
                                   scrolls, Canvase_Frame_Offset, Canvase_Frame_Scale);
 
-    canvases_.PushBack(new_frame);
+    widgets_.PushBack(new_frame);
 }
 
 //================================================================================
 
+Canvas* CanvasManager::GetActiveCanvas()
+{
+    size_t size = canvases_.GetSize();
+    if (size == 0)
+        return nullptr;
+
+    return canvases_[size - 1];
+}
+
+//================================================================================
 
 void Scrollbar::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
@@ -497,7 +518,6 @@ void Scrollbar::MoveCenter(Dot &prev_pos)
 
     Transform top_trf    = top_button_->GetTransform();
     Transform bottom_trf = bottom_button_->GetTransform();
-
 
     Dot offset(0.0, 0.0);
     if (type_ == Scrollbar::ScrollType::HORIZONTAL)

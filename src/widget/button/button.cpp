@@ -356,3 +356,10 @@ void ButtonList::PassTime(const time_t delta_time)
 {
     covering_time_ += delta_time;
 }
+
+//================================================================================
+
+void ButtonList::AddButton(Button *button)
+{
+    buttons_.PushBack(button);
+}

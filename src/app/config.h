@@ -24,45 +24,61 @@ static Dot    Canvase_Manager_Offset = Dot(0.0, 0.1);
 static Vector Canvase_Manager_Scale  = Vector(1, 0.9);
 
 static Dot    Button_Create_Offset = Dot(0.0, 0.0);
-static Vector Button_Create_Scale  = Vector(0.1, 0.1);
+static Vector Button_Create_Scale  = Vector(0.04, 0.05);
 
+static Vector Menu_Button_Scale = Vector(0.04, 0.05);
 
 //Tools
-static Dot    Button_Tools_Offset = Dot(0.1, 0.0);
-static Vector Button_Tools_Scale  = Vector(0.1, 0.1);
+static Dot    Button_Tools_Offset = Dot(0.04, 0.0);
+static Vector Button_Tools_Scale  = Menu_Button_Scale;
 
-static Dot    Button_Brush_Offset = Dot(0.0, 0.0);
-static Vector Button_Brush_Scale  = Vector(0.3, 0.5);
+static Dot    Button_Brush_Offset = Dot(0.04, 0.05);
+static Vector Button_Brush_Scale  = Menu_Button_Scale;
 
-static Dot    Button_Circle_Offset = Dot(0.3, 0.0);
-static Vector Button_Circle_Scale  = Vector(0.3, 0.5);
+static Dot    Button_Circle_Offset = Dot(0.08, 0.05);
+static Vector Button_Circle_Scale  = Menu_Button_Scale;
 
-static Dot    Button_Square_Offset = Dot(0.6, 0.0);
-static Vector Button_Square_Scale  = Vector(0.3, 0.5);
+static Dot    Button_Square_Offset = Dot(0.12, 0.05);
+static Vector Button_Square_Scale  = Menu_Button_Scale;
 
 
-static Dot    Button_Line_Offset = Dot(0.0, 0.5);
-static Vector Button_Line_Scale  = Vector(0.3, 0.5);
+static Dot    Button_Line_Offset = Dot(0.04, 0.1);
+static Vector Button_Line_Scale  = Menu_Button_Scale;
 
-static Dot    Button_Polyline_Offset = Dot(0.3, 0.5);
-static Vector Button_Polyline_Scale  = Vector(0.3, 0.5);
+static Dot    Button_Polyline_Offset = Dot(0.08, 0.1);
+static Vector Button_Polyline_Scale  = Menu_Button_Scale;
 
-static Dot    Button_Eraser_Offset = Dot(0.6, 0.5);
-static Vector Button_Eraser_Scale  = Vector(0.3, 0.5);
+static Dot    Button_Eraser_Offset = Dot(0.12, 0.1);
+static Vector Button_Eraser_Scale  = Menu_Button_Scale;
 
 
 //Colors
-static Dot    Button_Colors_Offset = Dot(0.2, 0.0);
-static Vector Button_Colors_Scale  = Vector(0.1, 0.1);
+static Dot    Button_Colors_Offset = Dot(0.08, 0.0);
+static Vector Button_Colors_Scale  = Menu_Button_Scale;
 
-static Dot    Button_Red_Offset = Dot(0.2, 0.1);
-static Vector Button_Red_Scale  = Vector(0.1, 0.1);
+static Dot    Button_Red_Offset = Dot(0.08, 0.05);
+static Vector Button_Red_Scale  = Menu_Button_Scale;
 
-static Dot    Button_Blue_Offset = Dot(0.2, 0.2);
-static Vector Button_Blue_Scale  = Vector(0.1, 0.1);
+static Dot    Button_Blue_Offset = Dot(0.12, 0.05);
+static Vector Button_Blue_Scale  = Menu_Button_Scale;
 
-static Dot    Button_Green_Offset = Dot(0.2, 0.3);
-static Vector Button_Green_Scale  = Vector(0.1, 0.1);
+static Dot    Button_Green_Offset = Dot(0.16, 0.05);
+static Vector Button_Green_Scale  = Menu_Button_Scale;
+
+static Dot    Button_Yellow_Offset = Dot(0.08, 0.1);
+static Vector Button_Yellow_Scale  = Menu_Button_Scale;
+
+//Filters
+
+static Dot    Button_Filter_Offset = Dot(0.12, 0.0);
+static Vector Button_Filter_Scale  = Menu_Button_Scale;
+
+static Dot    Button_Inclight_Offset = Dot(0.12, 0.05);
+static Vector Button_Inclight_Scale  = Menu_Button_Scale;
+
+static Dot    Button_Declight_Offset = Dot(0.12, 0.1);
+static Vector Button_Declight_Scale  = Menu_Button_Scale;
+
 
 
 #endif

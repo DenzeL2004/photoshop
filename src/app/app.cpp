@@ -12,66 +12,100 @@ AppWindow::AppWindow(const char *path_texture, const Dot &offset, const Vector &
                                 new AddCanvase(&canvas_manager_, &tool_pallette_, &filter_pallette_), 
                                 Button_Create_Offset, Button_Create_Scale);
     {
-        tools_button_ = new WidgetContainer(Button_Tools_Offset, Button_Tools_Scale);
+        tools_button_ = new ButtonList("src/img/ToolsReleased.png", "src/img/ToolsPressed.png", 
+                                       "src/img/ToolsPressed.png", "src/img/ToolsPressed.png", 
+                                        nullptr, Button_Tools_Offset, Button_Tools_Scale);
+
+        tools_button_->action_ = new ShowButtonList(&(tools_button_->buttons_)); 
                 
-        tools_button_->AddWidget(new Button("src/img/LineReleased.png", "src/img/LinePressed.png", 
+        tools_button_->AddButton(new Button("src/img/LineReleased.png", "src/img/LinePressed.png", 
                                             "src/img/LinePressed.png",  "src/img/LinePressed.png", 
                                             new ChooseTool(ToolPalette::LINE, &tool_pallette_), 
                                             Button_Line_Offset, Button_Line_Scale));
         
-        tools_button_->AddWidget(new Button("src/img/BrushReleased.png", "src/img/BrushPressed.png", 
+        tools_button_->AddButton(new Button("src/img/BrushReleased.png", "src/img/BrushPressed.png", 
                                             "src/img/BrushPressed.png",  "src/img/BrushPressed.png", 
                                             new ChooseTool(ToolPalette::BRUSH, &tool_pallette_), 
                                             Button_Brush_Offset, Button_Brush_Scale));
         
-        tools_button_->AddWidget(new Button("src/img/SquareReleased.png", "src/img/SquarePressed.png", 
+        tools_button_->AddButton(new Button("src/img/SquareReleased.png", "src/img/SquarePressed.png", 
                                             "src/img/SquarePressed.png",  "src/img/SquarePressed.png", 
                                             new ChooseTool(ToolPalette::SQUARE, &tool_pallette_), 
                                             Button_Square_Offset, Button_Square_Scale));
 
-        tools_button_->AddWidget(new Button("src/img/CircleReleased.png", "src/img/CirclePressed.png", 
+        tools_button_->AddButton(new Button("src/img/CircleReleased.png", "src/img/CirclePressed.png", 
                                             "src/img/CirclePressed.png",  "src/img/CirclePressed.png", 
                                             new ChooseTool(ToolPalette::CIRCLE, &tool_pallette_), 
                                             Button_Circle_Offset, Button_Circle_Scale));
         
-        tools_button_->AddWidget(new Button("src/img/PolylineReleased.png", "src/img/PolylinePressed.png", 
+        tools_button_->AddButton(new Button("src/img/PolylineReleased.png", "src/img/PolylinePressed.png", 
                                             "src/img/PolylinePressed.png",  "src/img/PolylinePressed.png", 
                                             new ChooseTool(ToolPalette::POLYLINE, &tool_pallette_), 
                                             Button_Polyline_Offset, Button_Polyline_Scale));
 
-        tools_button_->AddWidget(new Button("src/img/EraserReleased.png", "src/img/EraserPressed.png", 
+        tools_button_->AddButton(new Button("src/img/EraserReleased.png", "src/img/EraserPressed.png", 
                                             "src/img/EraserPressed.png",  "src/img/EraserPressed.png", 
                                             new ChooseTool(ToolPalette::ERASER, &tool_pallette_), 
                                             Button_Eraser_Offset, Button_Eraser_Scale));
     }
 
     {
-        colors_button_ = new ButtonList("src/img/ColorsReleased.png", "src/img/ColorsCovered.png", 
-                                       "src/img/ColorsCovered.png",   "src/img/ColorsCovered.png", 
+        colors_button_ = new ButtonList("src/img/ColorReleased.png", "src/img/ColorPressed.png", 
+                                        "src/img/ColorPressed.png",  "src/img/ColorPressed.png", 
                                         nullptr, Button_Colors_Offset, Button_Colors_Scale);
         
         colors_button_->action_ = new ShowButtonList(&(colors_button_->buttons_)); 
 
         
-        colors_button_->buttons_.PushBack(new Button("src/img/RedReleased.png", "src/img/RedCovered.png", 
-                                                    "src/img/RedCovered.png",  "src/img/RedCovered.png", 
-                                                    new ChooseColor(sf::Color::Red, &tool_pallette_), 
-                                                    Button_Red_Offset, Button_Red_Scale));
+        colors_button_->AddButton(new Button("src/img/RedReleased.png", "src/img/RedPressed.png", 
+                                            "src/img/RedPressed.png",   "src/img/RedPressed.png", 
+                                            new ChooseColor(sf::Color::Red, &tool_pallette_), 
+                                            Button_Red_Offset, Button_Red_Scale));
 
-        colors_button_->buttons_.PushBack(new Button("src/img/BlueReleased.png", "src/img/BlueCovered.png", 
-                                                    "src/img/BlueCovered.png",  "src/img/BlueCovered.png", 
-                                                    new ChooseColor(sf::Color::Blue, &tool_pallette_), 
-                                                    Button_Blue_Offset, Button_Blue_Scale));
+        colors_button_->AddButton(new Button("src/img/BlueReleased.png", "src/img/BluePressed.png", 
+                                            "src/img/BluePressed.png",   "src/img/BluePressed.png", 
+                                            new ChooseColor(sf::Color::Blue, &tool_pallette_), 
+                                            Button_Blue_Offset, Button_Blue_Scale));
 
-        colors_button_->buttons_.PushBack(new Button("src/img/GreenReleased.png", "src/img/GreenCovered.png", 
-                                                    "src/img/GreenCovered.png",  "src/img/GreenCovered.png", 
-                                                    new ChooseColor(sf::Color::Green, &tool_pallette_), 
-                                                    Button_Green_Offset, Button_Green_Scale));
+        colors_button_->AddButton(new Button("src/img/GreenReleased.png", "src/img/GreenPressed.png", 
+                                            "src/img/GreenPressed.png",   "src/img/GreenPressed.png", 
+                                            new ChooseColor(sf::Color::Green, &tool_pallette_), 
+                                            Button_Green_Offset, Button_Green_Scale));
+
+        colors_button_->AddButton(new Button("src/img/YellowReleased.png", "src/img/YellowPressed.png", 
+                                            "src/img/YellowPressed.png",   "src/img/YellowPressed.png", 
+                                            new ChooseColor(sf::Color::Yellow, &tool_pallette_), 
+                                            Button_Yellow_Offset, Button_Yellow_Scale));
         
         
         size_t size = colors_button_->buttons_.GetSize();
         for (size_t it = 0; it < size; it++)
             colors_button_->buttons_[it]->state_ = Button::ButtonState::DISABLED;
+    }
+
+    {
+        filters_button_ = new ButtonList("src/img/FilterReleased.png", "src/img/FilterPressed.png", 
+                                         "src/img/FilterPressed.png", "src/img/FilterPressed.png", 
+                                          nullptr, Button_Filter_Offset, Button_Filter_Scale);
+        
+        filters_button_->action_ = new ShowButtonList(&(filters_button_->buttons_)); 
+
+        
+        filters_button_->AddButton(new Button("src/img/IncBrightReleased.png", "src/img/IncBrightPressed.png", 
+                                              "src/img/IncBrightPressed.png",  "src/img/IncBrightPressed.png", 
+                                              new ChangeBrightness(&filter_pallette_, &canvas_manager_, 0.05), 
+                                              Button_Inclight_Offset, Button_Inclight_Scale));
+
+        filters_button_->AddButton(new Button("src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
+                                              "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
+                                              new ChangeBrightness(&filter_pallette_, &canvas_manager_, -0.05),
+                                              Button_Declight_Offset, Button_Declight_Scale));
+
+        
+        
+        size_t size = filters_button_->buttons_.GetSize();
+        for (size_t it = 0; it < size; it++)
+            filters_button_->buttons_[it]->state_ = Button::ButtonState::DISABLED;
     }
 
 } 
@@ -87,6 +121,7 @@ void AppWindow::Draw(sf::RenderTarget &target, Container<Transform> &stack_trans
     button_create_->Draw(target, stack_transform);
     colors_button_->Draw(target, stack_transform);
     tools_button_->Draw(target, stack_transform);
+    filters_button_->Draw(target, stack_transform);
     
     stack_transform.PopBack();
 
@@ -106,6 +141,7 @@ bool AppWindow::OnMouseMoved(const double x, const double y, Container<Transform
     tools_button_->OnMouseMoved(x, y, stack_transform);
     colors_button_->OnMouseMoved(x, y, stack_transform);
     canvas_manager_.OnMouseMoved(x, y, stack_transform);
+    filters_button_->OnMouseMoved(x, y, stack_transform);
     
     stack_transform.PopBack();
 
@@ -128,6 +164,7 @@ bool AppWindow::OnMousePressed(const double x, const double y, const MouseKey ke
         flag |= button_create_->OnMousePressed(x, y, key, stack_transform);
         flag |= tools_button_->OnMousePressed(x, y, key, stack_transform);
         flag |= colors_button_->OnMousePressed(x, y, key, stack_transform);
+        flag |= filters_button_->OnMousePressed(x, y, key, stack_transform);
         if (!flag) flag |= canvas_manager_.OnMousePressed(x, y, key, stack_transform);
         
     }
@@ -146,6 +183,7 @@ bool AppWindow::OnMouseReleased(const double x, const double y, const MouseKey k
     button_create_->OnMouseReleased(x, y, key, stack_transform);
     tools_button_->OnMouseReleased(x, y, key, stack_transform);
     colors_button_->OnMouseReleased(x, y, key, stack_transform);
+    filters_button_->OnMouseReleased(x, y, key, stack_transform);
     canvas_manager_.OnMouseReleased(x, y, key, stack_transform);
 
     stack_transform.PopBack();

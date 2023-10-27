@@ -43,6 +43,8 @@ class Canvas : public Widget
         void Move               (const Dot &offset);
         void CorrectRealCoord   (const Transform &transform);
 
+        FilterMask& GetFilterMask ();
+
         sf::RenderTexture background_;
         
     protected:
@@ -86,12 +88,12 @@ class CanvasManager : public Window
 
         CanvasManager (const char *path_texture,
                         const Dot offset, const Vector scale):Window(path_texture, offset, scale), 
-                        canvases_(), delte_canvase_(false), cnt_(0){}
+                        widgets_(), delete_canvase_(false), cnt_(0){}
         ~CanvasManager()
         {
-            size_t size = canvases_.GetSize();
+            size_t size = widgets_.GetSize();
             for (size_t it = 0; it < size; it++)
-                delete canvases_[it];
+                delete widgets_[it];
         };
 
         virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
@@ -105,9 +107,13 @@ class CanvasManager : public Window
 
         void CreateCanvase              (ToolPalette *tool_palette, FilterPalette *filter_palette);
 
+        Canvas* GetActiveCanvas         ();
+
     private:
-        Container<Widget*> canvases_;
-        bool delte_canvase_;
+        Container<Widget*> widgets_;
+        bool delete_canvase_;
+
+        Container<Canvas*> canvases_;
 
         size_t cnt_;
 }; 

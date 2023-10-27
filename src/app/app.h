@@ -58,7 +58,34 @@ class ChooseColor : public Action
 
     private:
         ToolPalette &palette_;
-        sf::Color color_;
+        sf::Color color_;    
+};
+
+class ChangeBrightness : public Action
+{
+    public:
+        ChangeBrightness(FilterPalette *filter_palette, CanvasManager *manager, const float delta): 
+                    filter_palette_(*filter_palette), canvas_manager_(*manager), delta_(delta) {};
+        ~ChangeBrightness(){};
+
+        void operator() () const
+        {
+            FilterBrightness *filter  = (FilterBrightness*)filter_palette_.getFilter(FilterPalette::FilterType::LIGHT);
+            filter_palette_.setLastFilter(FilterPalette::FilterType::LIGHT);
+
+            filter->setDelta(delta_);
+
+            Canvas *active_canvas = canvas_manager_.GetActiveCanvas();
+            filter->applyFilter(*active_canvas, active_canvas->GetFilterMask());
+
+        }
+
+
+    private:
+        FilterPalette &filter_palette_;
+        CanvasManager &canvas_manager_;
+       
+        float delta_;
         
 };
 
@@ -91,11 +118,13 @@ class AppWindow: public Window
         
         CanvasManager canvas_manager_;
         Button *button_create_;
-        WidgetContainer *tools_button_;
+
+        ButtonList *tools_button_;
         ButtonList *colors_button_;
 
         ToolPalette tool_pallette_;
 
+        ButtonList *filters_button_;
         FilterPalette filter_pallette_;
 };
 
