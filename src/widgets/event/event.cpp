@@ -1,42 +1,44 @@
 #include "event.h"
 
-#include "../widget.h"
+#include "../widget/widget.h"
 
-static MouseKey     GetMouseKey     (sf::Event &event);
-static KeyboardKey  GetKeyboard     (sf::Event &event);
+static MouseKey     getMouseKey     (sf::Event &event);
+static KeyboardKey  getKeyboard     (sf::Event &event);
 
-void EventAdapter(Widget &widget, int mouse_x, int mouse_y, sf::Event &event, Container<Transform> &stack_transform)
+void eventAdapter(Widget &widget, int mouse_x, int mouse_y, sf::Event &event, Container<Transform> &stack_transform)
 {
+    Vector mouse_pos((double)mouse_x, (double)mouse_y);
+
     if (event.type == sf::Event::MouseMoved)
     {
-        widget.OnMouseMoved((double)mouse_x, (double)mouse_y, stack_transform);
+        widget.onMouseMoved(mouse_pos, stack_transform);
     }
     else
     {
         if (event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased)
         {
             
-            MouseKey mouse_key = GetMouseKey(event);
+            MouseKey mouse_key = getMouseKey(event);
             if (event.type == sf::Event::MouseButtonPressed)
-                widget.OnMousePressed((double)mouse_x, (double)mouse_y, mouse_key, stack_transform);
+                widget.onMousePressed(mouse_pos, mouse_key, stack_transform);
             
             if (event.type == sf::Event::MouseButtonReleased)
-                widget.OnMouseReleased((double)mouse_x, (double)mouse_y, mouse_key, stack_transform);
+                widget.onMouseReleased(mouse_pos, mouse_key, stack_transform);
         }
     }
 
-    KeyboardKey keyboard_key = GetKeyboard(event);
+    KeyboardKey keyboard_key = getKeyboard(event);
 
     if (event.type == sf::Event::KeyReleased)
-        widget.OnKeyboardReleased(keyboard_key);
+        widget.onKeyboardReleased(keyboard_key);
 
     if (event.type == sf::Event::KeyPressed)
-        widget.OnKeyboardPressed(keyboard_key);
+        widget.onKeyboardPressed(keyboard_key);
 
     return;
 }
 
-static MouseKey GetMouseKey(sf::Event &event)
+static MouseKey getMouseKey(sf::Event &event)
 {
     switch (event.mouseButton.button)
     {
@@ -54,7 +56,7 @@ static MouseKey GetMouseKey(sf::Event &event)
 }
 
 
-static KeyboardKey GetKeyboard(sf::Event &event)
+static KeyboardKey getKeyboard(sf::Event &event)
 {
 
     switch (event.key.code)

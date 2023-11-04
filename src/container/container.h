@@ -39,10 +39,10 @@ class Container
 
         void operator= ( const Container& ) = delete;
 
-        bool   IsEmpty () const {return size_ == 0;}
-        size_t GetSize () const {return size_;};
+        bool   isEmpty () const {return size_ == 0;}
+        size_t getSize () const {return size_;};
 
-        void PushBack (const ItemType &value)
+        void pushBack (const ItemType &value)
         {
             if (size_ >= capacity_) 
                 this->AddMemory();
@@ -54,7 +54,7 @@ class Container
             return;
         }
 
-        void PopBack  ()
+        void popBack  ()
         {
             if (size_ != 0) size_--;
 
@@ -63,7 +63,7 @@ class Container
             return;
         }
 
-        void Ascent (size_t pos)
+        void ascent (size_t pos)
         {
             if (pos >= size_)
                 return;
@@ -78,7 +78,7 @@ class Container
 
         }
 
-        void Drown (size_t pos)
+        void drown (size_t pos)
         {
             if (pos >= size_)
                 return;
@@ -93,7 +93,7 @@ class Container
 
         }
 
-        ItemType& GetBack() const
+        ItemType& getBack() const
         {
             return data_[size_ - 1];
         }

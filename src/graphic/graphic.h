@@ -55,21 +55,21 @@ private :
     sf::Vector2f m_radius;
 };
 
-void    DrawLine        (sf::RenderTarget &window, 
+void    drawLine        (sf::RenderTarget &window, 
                          const Dot &dot_begin, const Dot &dot_end, const sf::Color color = sf::Color::White);
 
-void    DrawLine        (sf::RenderTarget &window, 
+void    drawLine        (sf::RenderTarget &window, 
                             const sf::Vector2f &dot_begin, const sf::Vector2f &dot_end, const sf::Color color = sf::Color::White);
 
-void    DrawCircle      (sf::RenderTarget &window, const Dot &pos, 
+void    drawCircle      (sf::RenderTarget &window, const Dot &pos, 
                          const float radius, const sf::Color color = sf::Color::White);
 
-void    DrawRectangle   (sf::RenderTarget &window, 
+void    drawRectangle   (sf::RenderTarget &window, 
                          const Dot &left_up, const Dot &right_down, const sf::Color color = sf::Color::White);
 
-void    DrawPixel       (sf::RenderTarget &window, const Dot &pos, const sf::Color color = sf::Color::White);
+void    drawPixel       (sf::RenderTarget &window, const Dot &pos, const sf::Color color = sf::Color::White);
 
-void    WriteText       (sf::RenderTarget &window, const Dot &pos, 
+void    writeText       (sf::RenderTarget &window, const Dot &pos, 
                          const char *text, const char *font_path, const uint32_t text_size = 30u,
                          const sf::Color color = sf::Color::White);
 

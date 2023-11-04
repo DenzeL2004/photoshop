@@ -10,11 +10,11 @@ FLAGS = -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equa
 SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 
-run:		obj/vector.o obj/graphic.o obj/event.o obj/window.o obj/filter.o obj/canvas.o obj/tools.o obj/log_errors.o obj/generals.o obj/widget.o obj/button.o obj/decorator.o obj/app.o obj/main.o
-	g++   	obj/vector.o obj/graphic.o obj/event.o obj/window.o obj/filter.o obj/canvas.o obj/tools.o obj/log_errors.o obj/generals.o obj/widget.o obj/button.o obj/decorator.o obj/app.o obj/main.o -o run  $(SFML_FLAGS)
+run:		obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/widget.o obj/transform.o obj/layout.o obj/main.o
+	g++   	obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/widget.o obj/transform.o obj/layout.o obj/main.o -o run  $(SFML_FLAGS)
 
 
-obj/main.o: main.cpp src/app/config.h
+obj/main.o: main.cpp
 		g++ main.cpp -c -o obj/main.o $(FLAGS)
 
 
@@ -53,13 +53,20 @@ obj/button.o:  	src/widget/button/button.cpp src/widget/button/button.h
 		g++		src/widget/button/button.cpp -c -o obj/button.o $(FLAGS)
 
 obj/decorator.o:  	src/widget/decorator/decorator.cpp src/widget/decorator/decorator.h
-		g++		src/widget/decorator/decorator.cpp -c -o obj/decorator.o $(FLAGS)
+		g++			src/widget/decorator/decorator.cpp -c -o obj/decorator.o $(FLAGS)
 
-obj/widget.o:  	src/widget/widget.cpp src/widget/widget.h
-		g++		src/widget/widget.cpp -c -o obj/widget.o $(FLAGS)
 
-obj/event.o:  	src/widget/event/event.cpp src/widget/event/event.h
-		g++		src/widget/event/event.cpp -c -o obj/event.o $(FLAGS)
+obj/layout.o:	src/widgets/widget/layoutbox/layoutbox.cpp src/widgets/widget/layoutbox/layoutbox.h
+		g++ 	src/widgets/widget/layoutbox/layoutbox.cpp -c -o obj/layout.o $(FLAGS)
+
+obj/transform.o: 	src/widgets/widget/transform/transform.cpp src/widgets/widget/transform/transform.h
+		g++    		src/widgets/widget/transform/transform.cpp -c -o obj/transform.o $(FLAGS)
+
+obj/widget.o:  	src/widgets/widget/widget.cpp src/widgets/widget/widget.h
+		g++		src/widgets/widget/widget.cpp -c -o obj/widget.o $(FLAGS)
+
+obj/event.o:  	src/widgets/event/event.cpp src/widgets/event/event.h
+		g++		src/widgets/event/event.cpp -c -o obj/event.o $(FLAGS)
 
 
 .PHONY: cleanup mkdirectory

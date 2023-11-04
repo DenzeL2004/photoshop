@@ -229,8 +229,6 @@ void UseApp()
 {
     sf::RenderWindow window(sf::VideoMode((uint32_t)WIDTH, (uint32_t)HIEGHT), "window manager");
 
-    
-
     bool close_window = false;
     Button *close_button = new Button(Cross_Button_Release, Cross_Button_Covered,
                                       Cross_Button_Release, Cross_Button_Covered, new Click(&close_window),

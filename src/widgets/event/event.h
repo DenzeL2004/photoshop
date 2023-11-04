@@ -27,7 +27,7 @@ enum class KeyboardKey
     F, 
 };
 
-void EventAdapter (Widget &widget, int mouse_x, int mouse_y, sf::Event &event, Container<Transform> &stack_transform);
+void eventAdapter (Widget &widget, int mouse_x, int mouse_y, sf::Event &event, Container<Transform> &stack_transform);
 
 
 #endif

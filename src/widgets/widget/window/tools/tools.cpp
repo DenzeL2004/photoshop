@@ -360,7 +360,6 @@ BrushTool::BrushTool(const sf::Color *cur_color):
 
 void BrushTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
-     printf("%d\n", state.state);
     if (state.state != ControlState::ButtonState::PRESSED)
         return;
 
