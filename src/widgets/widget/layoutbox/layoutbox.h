@@ -34,7 +34,7 @@ class BaseLayoutBox
 
         BaseLayoutBox(const Vector& pos, 
                       const Vector& size, const Vector& parent_size, 
-                      const bool resizeble_flag);
+                      const bool resize_flag, const bool save_lacals_flag);
         ~BaseLayoutBox() = default;
 
         virtual Vector      getPosition() const;
@@ -56,6 +56,7 @@ class BaseLayoutBox
         Vector parent_size_;
 
         bool resizable_;
+        bool save_locals_;
 };
 
 

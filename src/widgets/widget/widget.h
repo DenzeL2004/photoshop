@@ -17,26 +17,37 @@
 
 const sf::Color Debug_color = sf::Color(255, 20, 147);
 
+const double Default_width  = 720.0;
+const double Default_height = 480.0;
+
 enum WidgetErr
 {
     LOAD_TEXTURE_ERR,
 };
 
 
+bool checkIn(const Dot &mouse_pos, const Vector& size);
+
 class Widget
 {
     public:
 
+        Widget():
+        layout_box_((LayoutBox*) new BaseLayoutBox(Dot(0.0, 0.0), {Default_width, Default_height}, {Default_width, Default_height}, true, false)),
+        origin_(Dot(0.0, 0.0)), scale_(Dot(1.0, 1.0)), focused_(false){}
+
         Widget( const Vector& size, const Vector& parent_size,
                 const Vector& pos, const Vector& origin = Vector(0.0, 0.0), 
                 const Vector& scale = Vector(1.0, 1.0)):
-                layout_box_((LayoutBox*) new BaseLayoutBox(pos, size, parent_size, true)),
+                layout_box_((LayoutBox*) new BaseLayoutBox(pos, size, parent_size, true, false)),
                 origin_(origin), scale_(scale), focused_(false){}
 
         ~Widget()
         {
             delete layout_box_;
         }
+
+        Widget& operator=(const Widget&) = delete;
 
         virtual bool onMousePressed     (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
         virtual bool onMouseMoved       (const Vector& pos, Container<Transform> &stack_transform);
@@ -50,8 +61,6 @@ class Widget
         virtual void draw               (sf::RenderTarget &target, Container<Transform> &stack_transform);  
 
         virtual void onUpdate           (const LayoutBox& parent_layout);
-
-        bool CheckIn    (const Dot &mouse_pos);
 
         bool getFocus   () const;     
         void setFocus   (bool flag);

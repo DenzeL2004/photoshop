@@ -11,7 +11,7 @@ bool Widget::onMousePressed(const Vector& pos, const MouseKey key, Container<Tra
     
     Dot new_coord = last_trf.applyTransform(pos);
 
-    bool flag = CheckIn(new_coord);
+    bool flag = checkIn(new_coord, layout_box_->getPosition());
 
     stack_transform.popBack();
 
@@ -24,7 +24,7 @@ bool Widget::onMouseReleased(const Vector& pos, const MouseKey key, Container<Tr
 {
     bool flag = false;
 
-    //fprintf(stderr, "Widget: onMouseReleased\n");
+    fprintf(stderr, "Widget: onMouseReleased\n");
 
     return flag;
 }
@@ -35,7 +35,7 @@ bool Widget::onMouseMoved(const Vector& pos, Container<Transform> &stack_transfo
 {
     bool flag = false;
 
-    //fprintf(stderr, "Widget: onMouseMove\n");
+    fprintf(stderr, "Widget: onMouseMove\n");
 
     return flag;
 }
@@ -89,20 +89,7 @@ void Widget::draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
 
 void Widget::onUpdate(const LayoutBox& parent_layout)
 {
-    fprintf(stderr, "Widget: onUpdate\n");
-}
-
-//================================================================================
-
-
-bool Widget::CheckIn(const Dot &mouse_pos)
-{
-    Vector size = layout_box_->getSize();
-
-    bool horizontal = (Eps < mouse_pos.x && size.x - Eps > mouse_pos.x);
-    bool vertical   = (Eps < mouse_pos.y && size.y - Eps > mouse_pos.y);
-   
-    return horizontal & vertical;
+    layout_box_->onParentUpdate(parent_layout);
 }
 
 //================================================================================
@@ -139,6 +126,14 @@ void Widget::setLayoutBox(const LayoutBox& layout_box)
 {
     delete layout_box_;
     layout_box_ = layout_box.clone();
+}
+
+bool checkIn(const Dot &mouse_pos, const Vector& size)
+{
+    bool horizontal = (Eps < mouse_pos.x && size.x - Eps > mouse_pos.x);
+    bool vertical   = (Eps < mouse_pos.y && size.y - Eps > mouse_pos.y);
+   
+    return horizontal & vertical;
 }
 
 //================================================================================
@@ -181,7 +176,7 @@ void Widget::setLayoutBox(const LayoutBox& layout_box)
 //     Transform last_trf = stack_transform.GetBack();
 //     Dot new_coord = last_trf.applyTransform({x, y});
     
-//     bool flag = CheckIn(new_coord);
+//     bool flag = checkIn(new_coord);
 
 //     if (flag)
 //     {
