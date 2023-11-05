@@ -28,13 +28,13 @@ class LayoutBox
 
 
 
-class BaseLayoutBox
+class BaseLayoutBox : public LayoutBox
 {
     public:
 
         BaseLayoutBox(const Vector& pos, 
                       const Vector& size, const Vector& parent_size, 
-                      const bool resize_flag, const bool save_lacals_flag);
+                      const bool resize_flag, const bool save_locals_flag);
         ~BaseLayoutBox() = default;
 
         virtual Vector      getPosition() const;

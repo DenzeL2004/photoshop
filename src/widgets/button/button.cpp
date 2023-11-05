@@ -4,17 +4,17 @@
 Button::Button (const char *released_texture_file, const char *covered_texture_file, 
                 const char *pressed_texture_file,  const char *disabled_texture_file,
                 const Action *action, 
-                const Vector& size, const Vector& parent_size,
-                const Vector& pos, const Vector& origin, 
-                const Vector& scale):
+                const Vector &size, const Vector &parent_size,
+                const Vector &pos, const Widget *parent, 
+                const Vector &origin, const Vector &scale):
                 action_(action), 
                 state_(ButtonState::RELEASED), prev_state_(ButtonState::RELEASED),
                 released_texture_(), covered_texture_(), 
                 pressed_texture_(), disabled_texture_(), 
-                layout_box_((LayoutBox*) new BaseLayoutBox(pos, size, parent_size, false, true)),
-                origin_(origin), scale_(scale), focused_(false),
+                Widget(size, parent_size, pos, parent, origin, scale),
                 covering_time_(0)
 {
+    setLayoutBox(*(new BaseLayoutBox(pos, size, parent_size, false, true)));   
 
     if (!released_texture_.loadFromFile(released_texture_file))   
     {
@@ -48,7 +48,7 @@ Button::Button (const char *released_texture_file, const char *covered_texture_f
 
 void Button::draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
-    Transform trf(layout_box_->getPosition(), scale_);
+    Transform trf(getLayoutBox().getPosition(), scale_);
 
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();    
@@ -75,8 +75,10 @@ void Button::getDrawFormat(sf::VertexArray &vertex_array, const Transform &trf) 
     
     sf::Vector2f pos = trf.rollbackTransform(Dot(0, 0));
 
-    float abs_width  = (float)(trf.scale.x * layout_box_->getSize().x);
-    float abs_height = (float)(trf.scale.y * layout_box_->getSize().y);
+    const LayoutBox* layout_box = &getLayoutBox();
+
+    float abs_width  = (float)(trf.scale.x * layout_box->getSize().x);
+    float abs_height = (float)(trf.scale.y * layout_box->getSize().y);
 
     vertex_array[0].position = pos;
     vertex_array[1].position = sf::Vector2f(pos.x + abs_width, pos.y);
@@ -108,19 +110,19 @@ const sf::Texture* Button::defineTexture() const
 }
 
 
-bool Button::onMouseMoved(const Vector& pos, Container<Transform> &stack_transform)
+bool Button::onMouseMoved(const Vector &pos, Container<Transform> &stack_transform)
 {
     if (state_ ==  Button::ButtonState::DISABLED)
         return false;
 
-    Transform trf(layout_box_->getPosition(), scale_);
+    Transform trf(getLayoutBox().getPosition(), scale_);
 
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();
     
     Dot new_pos = last_trf.applyTransform(pos);
 
-    bool flag = checkIn(new_pos, layout_box_->getSize());
+    bool flag = checkIn(new_pos, getLayoutBox().getSize());
 
     stack_transform.popBack();
 
@@ -144,19 +146,19 @@ bool Button::onMouseMoved(const Vector& pos, Container<Transform> &stack_transfo
 
 //================================================================================
 
-bool Button::onMousePressed(const Vector& pos, const MouseKey key, Container<Transform> &stack_transform)
+bool Button::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     if (state_ == Button::ButtonState::DISABLED)
         return false;
 
-    Transform trf(layout_box_->getPosition(), scale_);
+    Transform trf(getLayoutBox().getPosition(), scale_);
 
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();
     
     Dot new_pos = last_trf.applyTransform(pos);
 
-    bool flag = checkIn(new_pos, layout_box_->getSize());
+    bool flag = checkIn(new_pos, getLayoutBox().getSize());
 
     stack_transform.popBack();
     
@@ -179,7 +181,7 @@ bool Button::onMousePressed(const Vector& pos, const MouseKey key, Container<Tra
 
 //================================================================================
 
-bool Button::onMouseReleased(const Vector& pos, const MouseKey key, Container<Transform> &stack_transform)
+bool Button::onMouseReleased(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     if (state_ == Button::ButtonState::DISABLED)
         return false;
@@ -300,7 +302,7 @@ bool Button::onTick(const time_t delta_time)
 //             buttons_[it]->state_ = Button::ButtonState::DISABLED;
 //         }
 
-//         if (!flag && last_presed != -1)
+//         if (!flag & &last_presed != -1)
 //             buttons_[last_presed]->prev_state_ = Button::ButtonState::PRESSED;
 
 
@@ -319,7 +321,7 @@ bool Button::onTick(const time_t delta_time)
 //     flag = checkIn(new_pos);
 //     stack_transform.PopBack();
 
-//     if (flag && state_ != Button::ButtonState::PRESSED)
+//     if (flag & &state_ != Button::ButtonState::PRESSED)
 //     {
 //         if (key == MouseKey::LEFT)
 //         {

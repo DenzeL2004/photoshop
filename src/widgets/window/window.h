@@ -8,30 +8,24 @@ class Window : public Widget
     public:
 
         Window( const char *path_texture,
-                const Vector& size, const Vector& parent_size,
-                const Vector& pos, const Vector& origin = Vector(0.0, 0.0), 
-                const Vector& scale = Vector(1.0, 1.0));
+                const Vector &size, const Vector &parent_size,
+                const Vector &pos, const Widget *parent,  
+                const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
                 
 
-        ~Window()
-        {
-            delete layout_box_;
-        }
+        Window(const Window &other) = delete;
+        Window& operator= (const Window &other) = delete;
+
+        virtual ~Window(){}
         
         virtual void draw               (sf::RenderTarget &target, Container<Transform> &stack_transform);  
 
-    private:
-
+    protected:
         void getDrawFormat(sf::VertexArray &vertex_array, const Transform &transform) const;
-        
-        LayoutBox* layout_box_;
+        sf::Texture texture_; 
 
-        Vector origin_;
-        Vector scale_; 
-
-        bool focused_;
-
-        sf::Texture texture_;        
+    private:
+               
 };
 
 

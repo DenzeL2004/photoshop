@@ -1,22 +1,17 @@
 #ifndef _DECORATOR_H_
 #define _DECORATOR_H_
 
-#include "../widget.h"
 #include "../button/button.h"
+#include "../window/window.h"
 
-enum Decorator_State
+enum DecoratorState
 {
-    Default, 
-    Hold,
+    DEFAULT = 0, 
+    HOLD,
 };
 
-static const Transform Left_Border    = Transform({0, 0.05}, {0.015, 1});
-static const Transform Top_Border     = Transform({0, 0}, {1, 0.015});
 
-static const Transform Right_Border   = Transform({0.982, 0.05}, {0.02, 1});
-static const Transform Bottom_Border  = Transform({0, 0.975}, {1, 0.2});
-
-static const Vector Scale_Limit = Vector(0.4, 0.4);
+static const Vector Size_min_limit = Vector(400, 400);
 
 
 //=================================================================================================
@@ -24,74 +19,32 @@ static const Vector Scale_Limit = Vector(0.4, 0.4);
 struct Title
 {
     Title():
-    msg_(""),  len_msg_(0), color_(sf::Color::Black){}
+            pos_(Dot(0.0, 0.0)), 
+            msg_(""),  len_msg_(0), 
+            color_(sf::Color::Black){}
 
-    Title(const char *msg, const sf::Color &color):
-    msg_(msg), len_msg_(strlen(msg)), color_(color){}
+    Title(  const Vector &pos, const char *msg, const sf::Color &color):
+            pos_(pos),
+            msg_(msg), 
+            len_msg_(strlen(msg)), 
+            color_(color){}
 
     ~Title(){} 
 
     Title(const Title &other) = default;
+    Title &operator= (const Title &other) = default;
 
-    Title& operator= (const Title &other) = default;
+    Vector pos_;
 
     const char* msg_;
     size_t len_msg_;
     const sf::Color color_;
-
 };
 
-class Frame: public Widget
+class Frame: public Window
 {
 
     public:
-        Frame  (const char *path_texture, Button* close_button,
-                 const Title &title, Widget *decarable,
-                 const Dot &offset, const Vector &scale);
-
-        virtual ~Frame()
-        {
-            delete close_button_;
-            delete decarable_;
-        }
-
-        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);
-        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
-
-        virtual bool OnKeyboardPressed  (const KeyboardKey);
-        virtual bool OnKeyboardReleased (const KeyboardKey);
-
-        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;  
-
-        virtual void PassTime           (const time_t delta_time);
-        
-        virtual void SetFocus           (bool value);
-
-        Transform GetTransform() const {return transform_;}
-
-    private:
-        void GetNewSize (sf::VertexArray &vertex_array, const Transform &transform) const;
-
-        void DrawTitle  (sf::RenderTarget &target, const Transform &border_trf) const;
-
-        void Move       (const Dot &new_coord);
-        
-        uint8_t ClickOnBorder   (double x, double y, const Transform &Last_transform) const;
-        void Scale              (const Dot &new_coord, uint8_t mask);
-
-        Transform transform_;
-        double width_, hieght_;
-        
-        sf::Texture background_;
-
-        Button* close_button_;
-        const Title title_;
-
-        Widget *decarable_;
-
-        Decorator_State state_;
-        Dot hold_pos_;
 
         enum Borders
         {
@@ -101,7 +54,51 @@ class Frame: public Widget
             BOTTOM  = 1 << 4,
         };
 
-        Transform left_border_, top_border_, right_border_, bottom_border_;
+        Frame(  const char *path_texture,
+                const Title &title,
+                const Vector &size, const Vector &parent_size,
+                const Vector &pos, const Widget *parent, 
+                const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
+
+        virtual ~Frame()
+        {
+            size_t cnt = widgets_.getSize();
+            for (size_t it = 0; it < cnt; it++)
+                delete widgets_[it];
+        }
+
+        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform);
+        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
+        
+        virtual bool onKeyboardPressed  (const KeyboardKey);
+        virtual bool onKeyboardReleased (const KeyboardKey);
+
+        virtual bool onTick             (const time_t delta_time);
+        virtual void onUpdate           (const LayoutBox &parent_layout);
+
+        virtual void draw               (sf::RenderTarget &target, Container<Transform> &stack_transform);  
+
+        virtual void setFocus (const bool flag); 
+
+        void addWidget(Widget* widget);
+
+
+    private:
+        
+        void clickOnBorder();
+
+        void resizeFrame        (const Dot &new_coord);
+        void moveFrame          (const Dot &new_coord);
+
+        const Title title_;
+
+        Container<Widget*> widgets_;
+
+        size_t state_;
+
+        Dot hold_pos_;
+        Dot prev_pos_;
 };
 
 #endif

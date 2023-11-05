@@ -2,7 +2,7 @@
 #include "../../graphic/graphic.h"
 
 
-bool Widget::onMousePressed(const Vector& pos, const MouseKey key, Container<Transform> &stack_transform)
+bool Widget::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(layout_box_->getPosition(), scale_);
 
@@ -20,7 +20,7 @@ bool Widget::onMousePressed(const Vector& pos, const MouseKey key, Container<Tra
 
 //================================================================================
 
-bool Widget::onMouseReleased(const Vector& pos, const MouseKey key, Container<Transform> &stack_transform)
+bool Widget::onMouseReleased(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     bool flag = false;
 
@@ -31,7 +31,7 @@ bool Widget::onMouseReleased(const Vector& pos, const MouseKey key, Container<Tr
 
 //================================================================================
 
-bool Widget::onMouseMoved(const Vector& pos, Container<Transform> &stack_transform)
+bool Widget::onMouseMoved(const Vector &pos, Container<Transform> &stack_transform)
 {
     bool flag = false;
 
@@ -87,7 +87,7 @@ void Widget::draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
 
 //================================================================================
 
-void Widget::onUpdate(const LayoutBox& parent_layout)
+void Widget::onUpdate(const LayoutBox &parent_layout)
 {
     layout_box_->onParentUpdate(parent_layout);
 }
@@ -108,7 +108,7 @@ void Widget::setFocus(bool value)
 
 //================================================================================
 
-LayoutBox&  Widget::getLayoutBox()
+LayoutBox& Widget::getLayoutBox()
 {
     return *layout_box_;
 }
@@ -122,18 +122,18 @@ const LayoutBox& Widget::getLayoutBox() const
 
 //================================================================================
 
-void Widget::setLayoutBox(const LayoutBox& layout_box)
+void Widget::setLayoutBox(const LayoutBox &layout_box)
 {
     delete layout_box_;
     layout_box_ = layout_box.clone();
 }
 
-bool checkIn(const Dot &mouse_pos, const Vector& size)
+bool checkIn(const Dot &mouse_pos, const Vector &size)
 {
     bool horizontal = (Eps < mouse_pos.x && size.x - Eps > mouse_pos.x);
     bool vertical   = (Eps < mouse_pos.y && size.y - Eps > mouse_pos.y);
    
-    return horizontal & vertical;
+    return horizontal  &vertical;
 }
 
 //================================================================================

@@ -1,258 +1,290 @@
 #include "decorator.h"
 
 const Dot Offset_Title = Dot(0.45, 0.0);
-const double Scale_Title  = 0.02;
+const double Tittle_size  = 10u;
 
-
-void Frame::GetNewSize(sf::VertexArray &vertex_array, const Transform &transform) const
-{
-    vertex_array[0].texCoords = sf::Vector2f(0, 0);
-    vertex_array[1].texCoords = sf::Vector2f((float)width_ - 1, 0);
-    vertex_array[2].texCoords = sf::Vector2f((float)width_ - 1, (float)hieght_ - 1);
-    vertex_array[3].texCoords = sf::Vector2f(0, (float)hieght_ - 1);
-    
-    vertex_array[0].position = transform.RollbackTransform({0, 0});
-    vertex_array[1].position = transform.RollbackTransform({1, 0});
-    vertex_array[2].position = transform.RollbackTransform({1, 1});
-    vertex_array[3].position = transform.RollbackTransform({0, 1});
-
-    return;
-}
+const double Border_width = 10;
 
 //=================================================================================================
 
-Frame::Frame( const char *path_texture, Button* close_button,
-                const Title &title, Widget *decarable,
-                const Dot &offset, const Vector &scale):
-                transform_({offset, scale}),
-                width_(0), hieght_(0), background_(), 
-                title_(title), close_button_(close_button), decarable_(decarable), 
-                state_(Default), hold_pos_({0.0, 0.0}),
-                left_border_(Left_Border),   top_border_(Top_Border),
-                right_border_(Right_Border), bottom_border_(Bottom_Border)
+Frame::Frame(   const char *path_texture,
+                const Title &title,
+                const Vector &size, const Vector &parent_size,
+                const Vector &pos, const Widget *parent, 
+                const Vector &origin, const Vector &scale):
+                Window(path_texture, size, parent_size, pos, parent),  
+                title_(title), widgets_(),
+                state_(DEFAULT), hold_pos_({0.0, 0.0}), prev_pos_({0.0, 0.0}){}
+
+void Frame::draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
-    assert(close_button != nullptr && "close button is nullptr");
-    assert(decarable    != nullptr && "decarable is nullptr");
- 
-    if (!background_.loadFromFile(path_texture))   
-    {
-        PROCESS_ERROR(LOAD_TEXTURE_ERR, "failed load tetxure from %s\n", path_texture);
-        return;
-    }
+    Transform trf(getLayoutBox().getPosition(), scale_);
 
-    width_  = background_.getSize().x;
-    hieght_ = background_.getSize().y;
+    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    Transform last_trf = stack_transform.getBack();    
 
-    return;
-}
-
-void Frame::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
-{
-    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
-    Transform last_trf = stack_transform.GetBack();
-    
     sf::VertexArray vertex_array(sf::Quads, 4);
 
-    GetNewSize(vertex_array, last_trf);
-    
-    target.draw(vertex_array, &background_);
+    getDrawFormat(vertex_array, last_trf);
 
-    DrawTitle(target, last_trf);
-    close_button_->Draw(target, stack_transform);
+    target.draw(vertex_array, &texture_);
 
-    decarable_->Draw(target, stack_transform);
-    stack_transform.PopBack();
+    sf::Vector2f abs_pos = last_trf.rollbackTransform(Dot(0.0, 0.0));
 
-    return;
-}
+    writeText(target, Dot(abs_pos.x + title_.pos_.x, abs_pos.y + title_.pos_.y), 
+              title_.msg_, Oldtimer_font_path, Tittle_size, title_.color_);
 
-//================================================================================
-
-void Frame::DrawTitle(sf::RenderTarget &target, const Transform &border_trf) const
-{
-    sf::Vector2f new_coord =  border_trf.RollbackTransform(Offset_Title);
-    WriteText(target, Dot(new_coord.x - title_.len_msg_, new_coord.y), title_.msg_, 
-              Oldtimer_font_path, (uint32_t)(border_trf.scale.y * Scale_Title), title_.color_);
-
-    return;
-}
-
-//================================================================================
-
-bool Frame::OnMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
-{
-    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
-    Transform last_trf = stack_transform.GetBack();
-
-    close_button_->OnMouseMoved(x, y, stack_transform);
-
-    Dot new_coord = last_trf.ApplyTransform({x, y});
-    
-    if(state_ == Hold)
+    size_t cnt = widgets_.getSize();
+    for (size_t it = 0; it < cnt; it++)
     {
-        uint8_t mask = ClickOnBorder(x, y, last_trf);
-        if (mask)
-            Scale(new_coord, mask);
-        else
-            Move(new_coord);        
-    }  
+       widgets_[it]->draw(target, stack_transform);
+    }
 
-    decarable_->OnMouseMoved(x, y, stack_transform);
+    stack_transform.popBack();
+}
+
+//================================================================================
+
+bool Frame::onMouseMoved(const Vector &pos, Container<Transform> &stack_transform)
+{
+    Transform trf(getLayoutBox().getPosition(), scale_);
+
+    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    Transform last_trf = stack_transform.getBack();    
+
+    Dot new_coord = last_trf.applyTransform(pos);
     
-    stack_transform.PopBack();
+    if(state_)
+    {
+        if (state_ == Borders::TOP)
+            moveFrame(new_coord);
+        else
+            resizeFrame(new_coord);
+    }  
+    else
+    {
+        size_t cnt = widgets_.getSize();
+        for (size_t it = 0; it < cnt; it++)
+        {
+            widgets_[it]->onMouseMoved(pos, stack_transform);
+        }
+    }
+
+    stack_transform.popBack();
 
     return true;
 }
 
 //================================================================================
-uint8_t Frame::ClickOnBorder(double x, double y, const Transform &Last_transform) const
+void Frame::clickOnBorder()
 {
-    uint8_t mask = 0;
+    Vector size = getLayoutBox().getSize();
 
-    Transform tmp = left_border_.ApplyPrev(Last_transform);
-    Dot new_coord = tmp.ApplyTransform({x, y});
-    if (CheckIn(new_coord)) mask |= Frame::Borders::LEFT;
+    state_ = 0;
 
-    tmp = right_border_.ApplyPrev(Last_transform);
-    new_coord = tmp.ApplyTransform({x, y});
-    if (CheckIn(new_coord)) mask |= Frame::Borders::RIGHT;
+    if (hold_pos_.x > Eps && hold_pos_.x < Border_width - Eps)
+        state_ |= Frame::Borders::LEFT;
 
-    tmp = bottom_border_.ApplyPrev(Last_transform);
-    new_coord = tmp.ApplyTransform({x, y});
-    if (CheckIn(new_coord)) mask |= Frame::Borders::BOTTOM;
-    
-    return mask;
+    if (hold_pos_.x > size.x - Border_width + Eps && hold_pos_.x < size.x - Eps)
+        state_ |= Frame::Borders::RIGHT;
+
+    if (hold_pos_.y > size.y - Border_width + Eps && hold_pos_.y < size.y - Eps)
+        state_ |= Frame::Borders::BOTTOM;
 }
 
 
-void Frame::Scale(const Dot &new_coord, uint8_t mask)
+void Frame::resizeFrame(const Dot &new_coord)
 {
+    LayoutBox* layout_box = &getLayoutBox();
 
-    if (transform_.scale.x <= Scale_Limit.x + Eps || transform_.scale.y <= Scale_Limit.y + Eps)
-        return;
-    Vector delta = new_coord - hold_pos_;
-    
-    delta.x *= transform_.scale.x;
-    delta.y *= transform_.scale.y;
-    
-    Dot cur = transform_.offset;
-    
-    if (mask & Frame::Borders::LEFT || mask & Frame::Borders::RIGHT)
+    Vector size = layout_box->getSize();
+
+    Vector pos = layout_box->getPosition();
+
+    Vector delta = new_coord - prev_pos_;
+   
+    if (state_ & Frame::Borders::LEFT) 
     {
-        if (mask & Frame::Borders::LEFT) 
+        if (size.x <= Size_min_limit.x + Eps) return;
+        moveFrame(Dot(new_coord.x, hold_pos_.y));
+        
+        delta.x = pos.x - layout_box->getPosition().x;
+    }    
+
+    Vector new_size = size;
+
+    if (state_ & Frame::Borders::LEFT || state_ & Frame::Borders::RIGHT)
+        new_size += Vector(delta.x, 0.0);
+
+    if (state_ & Frame::Borders::BOTTOM)
+        new_size += Vector(0.0, delta.y);
+
+    if (new_size.x >= Size_min_limit.x + Eps && new_size.y >= Size_min_limit.y + Eps)
+    {
+        if (parent_ != nullptr)
         {
-            Move({new_coord.x, hold_pos_.y});
-            if (transform_.offset == cur) return;   
-                delta.x *= -1.0;
+            Vector parent_size = parent_->getLayoutBox().getSize();
+            Vector new_pos = layout_box->getPosition();
+            if (new_pos.x + new_size.x <= parent_size.x - Eps &&
+                new_pos.y + new_size.y <= parent_size.y - Eps)
+            {
+                layout_box->setSize(new_size);
+            }
         }
+        else
+            layout_box->setSize(new_size);
 
-        if (transform_.offset.x + transform_.scale.x + delta.x < 1 - Eps && 
-            transform_.scale.x + delta.x > Scale_Limit.x + Eps)
-            transform_.scale.x += delta.x;
+        prev_pos_ = new_coord;
     }
+    else
+        layout_box->setPosition(pos);
 
-    if (mask & Frame::Borders::BOTTOM)
+
+    size_t cnt = widgets_.getSize();
+    for (size_t it = 0; it < cnt; it++)
     {
-        if (transform_.offset.y + transform_.scale.y + delta.y < 1 - Eps && 
-            transform_.scale.y + delta.y > Scale_Limit.y + Eps)
-            transform_.scale.y += delta.y;
+       widgets_[it]->onUpdate(*layout_box);
     }
-
-    return;
 }
 
 
-void Frame::Move(const Dot &new_coord)
+void Frame::moveFrame(const Dot &new_coord)
 {
+    LayoutBox* layout_box = &getLayoutBox();
+
     Vector delta = new_coord - hold_pos_;
         
-    delta.x *= transform_.scale.x;
-    delta.y *= transform_.scale.y;
-
-    transform_.offset += delta;
-    if (transform_.offset.x < Eps                           || transform_.offset.y < Eps ||
-        transform_.offset.x + transform_.scale.x > 1 - Eps  || transform_.offset.y + transform_.scale.y > 1 - Eps)
-        transform_.offset -= delta;
-
-    return;
+    Vector new_pos = getLayoutBox().getPosition() + delta;
+    
+    if (parent_ != nullptr)
+    {
+        Vector parent_size = parent_->getLayoutBox().getSize();
+        Vector size = layout_box->getSize();
+        if (new_pos.x > Eps && new_pos.x + size.x <= parent_size.x && 
+            new_pos.y > Eps && new_pos.y + size.y <= parent_size.y)
+        {
+            layout_box->setPosition(new_pos);
+        }
+    }
+    else    
+        layout_box->setPosition(new_pos);
 }
 
 
 //================================================================================
 
-bool Frame::OnMousePressed(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
+bool Frame::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
-    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
-    Transform last_trf = stack_transform.GetBack();
+    Transform trf(getLayoutBox().getPosition(), scale_);
+    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
 
-    bool flag  = close_button_->OnMousePressed(x, y, key, stack_transform);
-         flag |= decarable_->OnMousePressed(x, y, key, stack_transform);
+    Transform last_trf = stack_transform.getBack();    
+
+    bool flag = false;
+
+    size_t cnt = widgets_.getSize();
+    for (size_t it = 0; it < cnt; it++)
+    {
+        if (!flag) flag = widgets_[it]->onMousePressed(pos, key, stack_transform);
+    }
 
     if (!flag)
     {
-        Dot new_coord = last_trf.ApplyTransform({x, y});
-        flag = CheckIn(new_coord);    
+        Dot new_coord = last_trf.applyTransform(pos);
+        flag = checkIn(new_coord, getLayoutBox().getSize());    
 
         if (flag)
         {
             if (key == MouseKey::LEFT)
             {
-                state_ = Hold;
-                hold_pos_ = new_coord;
+                hold_pos_ = prev_pos_ = new_coord;
+                clickOnBorder();
+
+                if (!state_) state_ = Borders::TOP;
 
                 flag = true;
             }
         }
     }
 
-    stack_transform.PopBack();
+    stack_transform.popBack();
 
     return flag;
 }
 
 //================================================================================
 
-bool Frame::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
+bool Frame::onMouseReleased(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
-    stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
+    Transform trf(getLayoutBox().getPosition(), scale_);
+    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
 
-    close_button_->OnMouseReleased(x, y, key, stack_transform);
-    decarable_->OnMouseReleased(x, y, key, stack_transform);
+    size_t cnt = widgets_.getSize();
+    for (size_t it = 0; it < cnt; it++)
+        widgets_[it]->onMouseReleased(pos, key, stack_transform);
 
-    state_ = Default;
+    state_ = DecoratorState::DEFAULT;
 
-    stack_transform.PopBack();
+    stack_transform.popBack();
 
     return false;
 }
 
 //================================================================================
 
-bool Frame::OnKeyboardPressed(const KeyboardKey key)
+bool Frame::onKeyboardPressed(const KeyboardKey key)
 {
-    return decarable_->OnKeyboardPressed(key);
+    size_t cnt = widgets_.getSize();
+    for (size_t it = 0; it < cnt; it++)
+        widgets_[it]->onKeyboardReleased(key);
 }
 
 //================================================================================
 
-bool Frame::OnKeyboardReleased(const KeyboardKey key)
+bool Frame::onKeyboardReleased(const KeyboardKey key)
 {
-    bool flag = decarable_->OnKeyboardReleased(key);
-
-    return flag;
+    size_t cnt = widgets_.getSize();
+    for (size_t it = 0; it < cnt; it++)
+        widgets_[it]->onKeyboardReleased(key);
 }
 
 //================================================================================
 
-void Frame::PassTime(const time_t delta_time)
+bool Frame::onTick(const time_t delta_time)
 {
-    printf("Frame: mouse keyboard kye released\n");
-    return;
+    size_t cnt = widgets_.getSize();
+    for (size_t it = 0; it < cnt; it++)
+        widgets_[it]->onTick(delta_time);
+
+
+    return false;
+} 
+
+//================================================================================
+
+void Frame::onUpdate (const LayoutBox &parent_layout)
+{
+    getLayoutBox().onParentUpdate(parent_layout);
+    
+    size_t cnt = widgets_.getSize();
+    for (size_t it = 0; it < cnt; it++)
+        widgets_[it]->onUpdate(getLayoutBox());
 }
 
 //================================================================================
 
-void Frame::SetFocus(bool value)
+void Frame::setFocus (const bool flag)
 {
-    decarable_->SetFocus(value);
+    focused_ = flag;
+
+    size_t cnt = widgets_.getSize();
+    for (size_t it = 0; it < cnt; it++)
+        widgets_[it]->setFocus(flag);
+}
+
+//================================================================================
+
+void Frame::addWidget(Widget* widget_ptr)
+{
+    widgets_.pushBack(widget_ptr);
 }

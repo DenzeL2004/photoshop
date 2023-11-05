@@ -10,8 +10,8 @@ FLAGS = -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equa
 SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 
-run:		obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o obj/window.o obj/button.o obj/main.o
-	g++   	obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o obj/window.o obj/button.o obj/main.o -o run  $(SFML_FLAGS)
+run:		obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o obj/window.o obj/button.o obj/decorator.o obj/main.o
+	g++   	obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o obj/window.o obj/button.o obj/decorator.o obj/main.o -o run  $(SFML_FLAGS)
 
 
 obj/main.o: main.cpp
@@ -48,8 +48,6 @@ obj/filter.o:  	src/widget/window/filters/filter.cpp src/widget/window/filters/f
 obj/app.o:  	src/app/app.cpp src/app/app.h
 		g++		src/app/app.cpp -c -o obj/app.o $(FLAGS)
 
-obj/decorator.o:  	src/widget/decorator/decorator.cpp src/widget/decorator/decorator.h
-		g++			src/widget/decorator/decorator.cpp -c -o obj/decorator.o $(FLAGS)
 
 
 
@@ -70,6 +68,9 @@ obj/window.o:  	src/widgets/window/window.cpp src/widgets/window/window.h
 
 obj/button.o:  	src/widgets/button/button.cpp src/widgets/button/button.h
 		g++		src/widgets/button/button.cpp -c -o obj/button.o $(FLAGS)
+
+obj/decorator.o:  	src/widgets/decorator/decorator.cpp src/widgets/decorator/decorator.h
+		g++			src/widgets/decorator/decorator.cpp -c -o obj/decorator.o $(FLAGS)
 
 
 

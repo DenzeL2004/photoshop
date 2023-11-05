@@ -26,9 +26,9 @@ class Button : public Widget
         Button( const char *released_texture_file, const char *covered_texture_file, 
                 const char *pressed_texture_file,  const char *disabled_texture_file,
                 const Action *action, 
-                const Vector& size, const Vector& parent_size,
-                const Vector& pos, const Vector& origin = Vector(0.0, 0.0), 
-                const Vector& scale = Vector(1.0, 1.0));
+                const Vector &size, const Vector &parent_size,
+                const Vector &pos, const Widget *parent, 
+                const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
 
         virtual ~Button()
         {
@@ -37,12 +37,11 @@ class Button : public Widget
 
 
         Button(const Button &other) = delete;
-
         Button& operator= (const Button &other) = delete;
 
-        virtual bool onMousePressed     (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool onMouseMoved       (const Vector& pos, Container<Transform> &stack_transform);
-        virtual bool onMouseReleased    (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform);
+        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
 
         virtual bool onKeyboardPressed  (const KeyboardKey);
         virtual bool onKeyboardReleased (const KeyboardKey);
@@ -64,20 +63,13 @@ class Button : public Widget
         ButtonState state_;
         ButtonState prev_state_;
 
-    protected:
+    private:
 
         const sf::Texture* defineTexture() const;
         void getDrawFormat(sf::VertexArray &vertex_array, const Transform &transform) const;
 
         sf::Texture released_texture_, covered_texture_, 
                     pressed_texture_, disabled_texture_;
-                    
-        LayoutBox* layout_box_;
-
-        Vector origin_;
-        Vector scale_; 
-
-        bool focused_;
         
         time_t covering_time_;
 };
@@ -106,7 +98,7 @@ class Button : public Widget
 
 //         ButtonList(const ButtonList &other) = delete;
 
-//         virtual ButtonList& operator= (const ButtonList &other) = delete;
+//         virtual ButtonList &operator= (const ButtonList &other) = delete;
 
 //         virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
 //         virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);

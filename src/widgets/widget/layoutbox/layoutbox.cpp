@@ -15,7 +15,6 @@ Vector BaseLayoutBox::getPosition() const
 bool BaseLayoutBox::setPosition(const Vector& new_pos)
 {
     pos_ = new_pos;
-
     return true;
 }
 
@@ -26,34 +25,35 @@ Vector BaseLayoutBox::getSize() const
 
 bool BaseLayoutBox::setSize(const Vector& new_size)
 {
-    if (!resizable_) return false;
-
-    pos_ = new_size;
-
+    size_ = new_size;
     return true;
 }
 
 void BaseLayoutBox::onParentUpdate(const LayoutBox& parent_layout)
 {
-    Vector cur_parent_size = parent_layout.getSize();
-
-    double cf__resize_w = cur_parent_size.x / parent_size_.x;
-    double cf__resize_h = cur_parent_size.y / parent_size_.y;
-
-    double cf_offset_x = pos_.x / parent_size_.x;
-    double cf_offset_y = pos_.y / parent_size_.y;
-
-    parent_size_ = cur_parent_size;
+    Vector new_parent_size = parent_layout.getSize();
 
     if (resizable_)
     {
-        size_ = Vector(size_.x * cf__resize_w, size_.y * cf__resize_h);
+        double new_w = new_parent_size.x - (parent_size_.x - size_.x);
+        double new_h = new_parent_size.y - (parent_size_.y - size_.y);
+
+        size_ = Vector(new_w, new_h);
     }
 
     if (save_locals_)
     {
-        pos_ = Vector(cur_parent_size.x * cf_offset_x, cur_parent_size.y * cur_parent_size.y);
+        double offset_x = std::min(pos_.x, parent_size_.x - pos_.x);
+        double offset_y = std::min(pos_.y, parent_size_.y - pos_.y);
+
+        if (parent_size_.x / 2 <= pos_.x)
+            pos_.x = new_parent_size.x - offset_x;
+
+        if (parent_size_.y / 2 <= pos_.y)
+            pos_.y = new_parent_size.y - offset_y;
     }
+
+    parent_size_ = new_parent_size;
 
     return;
 }

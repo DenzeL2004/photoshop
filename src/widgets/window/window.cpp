@@ -1,24 +1,25 @@
 #include "window.h"
 
 Window::Window( const char *path_texture,
-                const Vector& size, const Vector& parent_size,
-                const Vector& pos, const Vector& origin, 
-                const Vector& scale):
-                layout_box_((LayoutBox*) new BaseLayoutBox(pos, size, parent_size, true, false)),
-                origin_(origin), scale_(scale), focused_(false), texture_()
+                const Vector &size, const Vector &parent_size,
+                const Vector &pos, const Widget *parent,  
+                const Vector &origin, const Vector& scale):
+                Widget(size, parent_size, pos, parent, origin, scale),
+                texture_()
 {
     if (!texture_.loadFromFile(path_texture))   
     {
         PROCESS_ERROR(LOAD_TEXTURE_ERR, "failed load tetxure from %s\n", path_texture);
         return;
     }
+
 }
 
 //================================================================================
 
 void Window::draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
-    Transform trf(layout_box_->getPosition(), scale_);
+    Transform trf(getLayoutBox().getPosition(), scale_);
 
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();    
@@ -43,8 +44,10 @@ void Window::getDrawFormat(sf::VertexArray &vertex_array, const Transform &trf) 
     
     sf::Vector2f pos = trf.rollbackTransform(Dot(0, 0));
 
-    float abs_width  = (float)(trf.scale.x * layout_box_->getSize().x);
-    float abs_height = (float)(trf.scale.y * layout_box_->getSize().y);
+    const LayoutBox* layout_box = &getLayoutBox();
+
+    float abs_width  = (float)(trf.scale.x * layout_box->getSize().x);
+    float abs_height = (float)(trf.scale.y * layout_box->getSize().y);
 
     vertex_array[0].position = pos;
     vertex_array[1].position = sf::Vector2f(pos.x + abs_width, pos.y);
