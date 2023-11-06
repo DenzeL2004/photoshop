@@ -9,10 +9,10 @@ const double Border_width = 10;
 
 Frame::Frame(   const char *path_texture,
                 const Title &title,
-                const Vector &size, const Vector &parent_size,
-                const Vector &pos, const Widget *parent, 
+                const Vector &size, const Vector &pos, 
+                const Widget *parent, const Vector &parent_size, 
                 const Vector &origin, const Vector &scale):
-                Window(path_texture, size, parent_size, pos, parent, origin, scale),  
+                Window(path_texture, size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale),  
                 title_(title), widgets_(),
                 state_(DEFAULT), hold_pos_({0.0, 0.0}), prev_pos_({0.0, 0.0}){}
 
@@ -264,11 +264,12 @@ bool Frame::onTick(const time_t delta_time)
 
 void Frame::onUpdate (const LayoutBox &parent_layout)
 {
-    getLayoutBox().onParentUpdate(parent_layout);
+    LayoutBox *layout_box =  &getLayoutBox();
+    layout_box->onParentUpdate(parent_layout);
     
     size_t cnt = widgets_.getSize();
     for (size_t it = 0; it < cnt; it++)
-        widgets_[it]->onUpdate(getLayoutBox());
+        widgets_[it]->onUpdate(*layout_box);
 }
 
 //================================================================================

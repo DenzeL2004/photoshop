@@ -21,29 +21,68 @@ int main()
 
     bool ans = 0;
 
-    // Window* win = new Window("src/img/frame.png", 
-    //                          {1600, 900.0}, {WIDTH, HEIGHT}, {0.0, 0.0}, nullptr);
+    BaseLayoutBox base({0.0, 00.0}, {WIDTH, HEIGHT}, {WIDTH, HEIGHT} , false, false);
 
-    // Frame* frame = new Frame("src/img/frame.png", Title({10, 5}, "window", sf::Color::Black), 
-    //                         {720, 540.0}, {WIDTH, HEIGHT}, {10.0, 10.0}, nullptr);
-
-    // Window* win = new Window("src/img/YellowReleased.png", 
-    //                         {680, 500.0}, {720, 540}, {10.0, 30.0}, nullptr);
-
-    // Button *button = new Button("src/img/closePressed.png", "src/img/closeReleased.png", 
-    //                             "src/img/closeReleased.png", "src/img/closeReleased.png", 
-    //                             new Click(&ans), {25, 25}, {720, 540.0}, {695, 0.0}, frame); 
-
-    // frame->addWidget(button);
-    // frame->addWidget(win);
+    Frame* frame = new Frame("src/img/frame.png", Title({10, 5}, "window", sf::Color::Black), 
+                            {730, 540.0}, {10.0, 10.0}, nullptr, {WIDTH, HEIGHT});
 
     Tool tools(Tool::Brash, sf::Color::Cyan, 15);
 
-    Canvas *canvas = new Canvas(&tools, {1600, 800.0}, {680, 500.0}, {720, 540}, {10.0, 30.0}, nullptr);
+    Button *button = new Button("src/img/closePressed.png", "src/img/closeReleased.png", 
+                                "src/img/closeReleased.png", "src/img/closeReleased.png", 
+                                new Click(&ans), {25, 25}, {705, 0.0}, frame); 
 
+
+    Canvas *canvas = new Canvas(&tools, {2000, 2000.0}, {680, 470.0}, {10.0, 60.0}, frame);
+
+    Scrollbar *scroll_ver = new Scrollbar(canvas, Scrollbar::Type::VERTICAL, 
+                                         {20, 470.0}, {695.0, 60.0}, frame);
+   
+    Button *up_btn = new Button("src/img/arrowUpReleased.png", "src/img/arrowUpPressed.png", 
+                                "src/img/arrowUpReleased.png", "src/img/arrowUpPressed.png", 
+                                new ScrollCanvas(Dot(0.0, -5.0), canvas), 
+                                {20, 20.0}, {0.0, 0.0}, scroll_ver);
+
+    Button *down_btn = new Button("src/img/arrowUpReleased.png", "src/img/arrowUpPressed.png", 
+                                  "src/img/arrowUpReleased.png", "src/img/arrowUpPressed.png", 
+                                  new ScrollCanvas(Dot(0.0, 5.0), canvas), 
+                                  {20, 20.0}, {0.0, 450.0}, scroll_ver);
+
+    Button *ver_btn = new Button("src/img/arrowUpReleased.png", "src/img/arrowUpPressed.png", 
+                                  "src/img/arrowUpReleased.png", "src/img/arrowUpPressed.png", 
+                                  new ScrollCanvas(Dot(0.0, 1.0), canvas), 
+                                  {20, 20.0}, {0.0, 210.0}, scroll_ver);
+
+    Scrollbar *scroll_hor = new Scrollbar(canvas, Scrollbar::Type::HORIZONTAL, 
+                                         {680, 20.0}, {10, 30.0}, frame);
+   
+    Button *left_btn = new Button("src/img/arrowUpReleased.png", "src/img/arrowUpPressed.png", 
+                                "src/img/arrowUpReleased.png", "src/img/arrowUpPressed.png", 
+                                new ScrollCanvas(Dot(-5.0, 0.0), canvas), 
+                                {20, 20.0}, {0.0, 0.0}, scroll_hor);
+
+    Button *right_btn = new Button("src/img/arrowUpReleased.png", "src/img/arrowUpPressed.png", 
+                                  "src/img/arrowUpReleased.png", "src/img/arrowUpPressed.png", 
+                                  new ScrollCanvas(Dot(5.0, 0.0), canvas), 
+                                  {20, 20.0}, {660.0, 0.0}, scroll_hor);
+
+    Button *hor_btn = new Button("src/img/arrowUpReleased.png", "src/img/arrowUpPressed.png", 
+                                  "src/img/arrowUpReleased.png", "src/img/arrowUpPressed.png", 
+                                  new ScrollCanvas(Dot(0.0, 1.0), canvas), 
+                                  {20, 20.0}, {0.0, 0.0}, scroll_hor);
+
+    scroll_hor->addButtons(left_btn, right_btn, hor_btn);
+    scroll_ver->addButtons(up_btn, down_btn, ver_btn);
+
+    frame->addWidget(button);
+    frame->addWidget(scroll_hor);
+    frame->addWidget(scroll_ver);
+    frame->addWidget(canvas);
 
     Container<Transform> stack;
     stack.pushBack(Transform({0.0, 0.0}, {1, 1}));
+
+    frame->onUpdate(base);
 
     while (window.isOpen())
     {   
@@ -56,13 +95,13 @@ int main()
                 window.close();
 
             sf::Mouse mouse;
-            eventAdapter(*canvas, mouse.getPosition(window).x, mouse.getPosition(window).y, event, stack);
+            eventAdapter(*frame, mouse.getPosition(window).x, mouse.getPosition(window).y, event, stack);
 
             if (ans)
                 window.close();
         }
 
-        canvas->draw(window, stack);
+        frame->draw(window, stack);
         ans = false;
     
         window.display();

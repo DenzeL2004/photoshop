@@ -56,8 +56,8 @@ class Frame: public Window
 
         Frame(  const char *path_texture,
                 const Title &title,
-                const Vector &size, const Vector &parent_size,
-                const Vector &pos, const Widget *parent, 
+                const Vector &size, const Vector &pos, 
+                const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),
                 const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
 
         virtual ~Frame()

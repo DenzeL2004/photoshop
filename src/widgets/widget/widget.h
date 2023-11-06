@@ -30,11 +30,11 @@ bool checkIn(const Dot &mouse_pos, const Vector &size);
 class Widget
 {
     public:
-        Widget( const Vector &size, const Vector &parent_size,
-                const Vector &pos, const Widget* parent, 
+        Widget( const Vector &size, const Vector &pos, 
+                const Widget* parent, const Vector &parent_size = Vector(1.0, 1.0), 
                 const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0)):
                 parent_(parent),
-                layout_box_(new BaseLayoutBox(pos, size, parent_size, true, false)),
+                layout_box_(new BaseLayoutBox(pos, size, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, true, false)),
                 origin_(origin), scale_(scale), focused_(false){}
 
         ~Widget()
@@ -78,41 +78,41 @@ class Widget
         
 };
 
-// class WidgetContainer: public Widget
-// {
+class WidgetContainer: public Widget
+{
 
-//     public:
-//         WidgetContainer(const Dot &offset, const Vector &scale):
-//                         widgets_(), transform_({offset, scale}){}
-//         ~WidgetContainer()
-//         {
-//             size_t size = widgets_.GetSize();
-//             for (size_t it = 0; it < size; it++)
-//                 delete widgets_[it];
-//         }
+    public:
+        WidgetContainer(const Vector &size, const Vector &pos, 
+                        const Widget* parent, const Vector &parent_size = Vector(1.0, 1.0), 
+                        const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0)):
+                        Widget(size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale),
+                        widgets_(){}
 
-//         virtual bool onMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
-//         virtual bool onMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);
-//         virtual bool onMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
 
-        
-//         virtual void draw               (sf::RenderTarget &target, Container<Transform> &stack_transform);  
+        ~WidgetContainer()
+        {
+            size_t size = widgets_.getSize();
+            for (size_t it = 0; it < size; it++)
+                delete widgets_[it];
+        }
 
-//         virtual bool onKeyboardPressed  (const KeyboardKey);
-//         virtual bool onKeyboardReleased (const KeyboardKey);
+        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform);
+        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform); 
 
-//         virtual bool onTick             (const time_t delta_time);
+        virtual bool onKeyboardPressed  (const KeyboardKey);
+        virtual bool onKeyboardReleased (const KeyboardKey);
 
-//         void AddWidget                  (Widget *ptr);
-//         virtual void SetFocus           (bool value);
+        virtual void draw               (sf::RenderTarget &target, Container<Transform> &stack_transform); 
+
+        virtual bool onTick             (const time_t delta_time);
+
+        void addWidget                  (Widget *ptr);
+        virtual void SetFocus           (bool value);
        
-//     private:
+    private:
 
-//         Container<Widget*> widgets_;
-
-//         Transform transform_;
-// };
-
-// 
+        Container<Widget*> widgets_;
+};
 
 #endif

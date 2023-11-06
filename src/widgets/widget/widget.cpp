@@ -137,124 +137,124 @@ bool checkIn(const Dot &mouse_pos, const Vector &size)
 }
 
 //================================================================================
-// void WidgetContainer::draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
-// {
-//     stack_transform.PushBack(transform_.applyRrev(stack_transform.GetBack()));
+void WidgetContainer::draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
+{
+    stack_transform.PushBack(transform_.applyRrev(stack_transform.GetBack()));
 
-//     size_t size = widgets_.GetSize();
-//     for (size_t it = 0; it < size; it++)
-//         widgets_[it]->draw(target, stack_transform);
+    size_t size = widgets_.getSize();
+    for (size_t it = 0; it < size; it++)
+        widgets_[it]->draw(target, stack_transform);
 
-//     stack_transform.PopBack();
+    stack_transform.PopBack();
 
-//     return;
-// }
+    return;
+}
 
 
-// //================================================================================
+//================================================================================
 
-// bool WidgetContainer::onMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
-// {
-//     stack_transform.PushBack(transform_.applyRrev(stack_transform.GetBack()));
+bool WidgetContainer::onMouseMoved(const Vector &pos, Container<Transform> &stack_transform)
+{
+    stack_transform.PushBack(transform_.applyRrev(stack_transform.GetBack()));
     
-//     size_t size = widgets_.GetSize();
-//     bool flag = false;
-//     for (size_t it = 0; it < size; it++)
-//         flag |= widgets_[it]->onMouseMoved(x, y, stack_transform);
+    size_t size = widgets_.GetSize();
+    bool flag = false;
+    for (size_t it = 0; it < size; it++)
+        flag |= widgets_[it]->onMouseMoved(x, y, stack_transform);
 
-//     stack_transform.PopBack();
+    stack_transform.PopBack();
 
-//     return flag;
-// }
+    return flag;
+}
 
-// //================================================================================
+//================================================================================
 
-// bool WidgetContainer::onMousePressed(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
-// {
-//     stack_transform.PushBack(transform_.applyRrev(stack_transform.GetBack()));
+bool WidgetContainer::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+{
+    stack_transform.PushBack(transform_.applyRrev(stack_transform.GetBack()));
     
-//     Transform last_trf = stack_transform.GetBack();
-//     Dot new_coord = last_trf.applyTransform({x, y});
+    Transform last_trf = stack_transform.GetBack();
+    Dot new_coord = last_trf.applyTransform({x, y});
     
-//     bool flag = checkIn(new_coord);
+    bool flag = checkIn(new_coord);
 
-//     if (flag)
-//     {
-//         size_t size = widgets_.GetSize();
+    if (flag)
+    {
+        size_t size = widgets_.GetSize();
     
-//         for (size_t it = 0; it < size; it++)
-//             flag |= widgets_[it]->onMousePressed(x, y, key, stack_transform);
-//     }
+        for (size_t it = 0; it < size; it++)
+            flag |= widgets_[it]->onMousePressed(x, y, key, stack_transform);
+    }
     
-//     stack_transform.PopBack();
+    stack_transform.PopBack();
 
-//     return flag;
-// }
+    return flag;
+}
 
-// //================================================================================
+//================================================================================
 
-// bool WidgetContainer::onMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
-// {
-//     stack_transform.PushBack(transform_.applyRrev(stack_transform.GetBack()));
+bool WidgetContainer::onMouseReleased(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+{
+    stack_transform.PushBack(transform_.applyRrev(stack_transform.GetBack()));
 
-//     size_t size = widgets_.GetSize();
-//     bool flag = false;
-//     for (size_t it = 0; it < size; it++)
-//         flag |= widgets_[it]->onMouseReleased(x, y, key, stack_transform);
+    size_t size = widgets_.GetSize();
+    bool flag = false;
+    for (size_t it = 0; it < size; it++)
+        flag |= widgets_[it]->onMouseReleased(x, y, key, stack_transform);
 
-//     stack_transform.PopBack();
+    stack_transform.PopBack();
 
-//     return false;
-// }
+    return false;
+}
 
-// //================================================================================
+//================================================================================
 
-// bool WidgetContainer::onKeyboardPressed(const KeyboardKey key)
-// {
-//     size_t size = widgets_.GetSize();
-//     for (size_t it = 0; it < size; it++)
-//     {
-//         if (widgets_[it]->onKeyboardPressed(key))
-//             return true;
-//     }
+bool WidgetContainer::onKeyboardPressed(const KeyboardKey key)
+{
+    size_t size = widgets_.GetSize();
+    for (size_t it = 0; it < size; it++)
+    {
+        if (widgets_[it]->onKeyboardPressed(key))
+            return true;
+    }
 
-//     return false;
-// }
+    return false;
+}
 
-// //================================================================================
+//================================================================================
 
-// bool WidgetContainer::onKeyboardReleased(const KeyboardKey key)
-// {
-//     size_t size = widgets_.GetSize();
-//     for (size_t it = 0; it < size; it++)
-//     {
-//         if (widgets_[it]->onKeyboardReleased(key))
-//             return true;
-//     }
+bool WidgetContainer::onKeyboardReleased(const KeyboardKey key)
+{
+    size_t size = widgets_.GetSize();
+    for (size_t it = 0; it < size; it++)
+    {
+        if (widgets_[it]->onKeyboardReleased(key))
+            return true;
+    }
 
-//     return false;
-// }
+    return false;
+}
 
-// //================================================================================
+//================================================================================
 
-// void WidgetContainer::onTick(const time_t delta_time)
-// {
-//     printf("WidgetContainer: mouse keyboard kye released\n");
-//     return;
-// }
+void WidgetContainer::onTick(const time_t delta_time)
+{
+    printf("WidgetContainer: mouse keyboard kye released\n");
+    return;
+}
 
-// //================================================================================
+//================================================================================
 
-// void WidgetContainer::AddWidget(Widget *ptr)
-// {
-//     widgets_.PushBack(ptr);
-// }
+void WidgetContainer::AddWidget(Widget *ptr)
+{
+    widgets_.PushBack(ptr);
+}
 
-// //================================================================================
+//================================================================================
 
-// void WidgetContainer::SetFocus(bool value)
-// {
-//     size_t size = widgets_.GetSize();
-//     for (size_t it = 0; it < size; it++)
-//         widgets_[it]->SetFocus(value);
-// }
+void WidgetContainer::SetFocus(bool value)
+{
+    size_t size = widgets_.GetSize();
+    for (size_t it = 0; it < size; it++)
+        widgets_[it]->SetFocus(value);
+}

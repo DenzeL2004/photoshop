@@ -2,6 +2,7 @@
 #define _CANVAS_H_
 
 #include "window.h"
+#include "../button/button.h"
 #include "../decorator/decorator.h"
 
 #include "../../app/config.h"
@@ -49,8 +50,8 @@ class Canvas : public Window
     public:
         
         Canvas( Tool *tool, const Vector &canvas_size,
-                const Vector &size, const Vector &parent_size,
-                const Vector &pos, const Widget *parent,  
+                const Vector &size, const Vector &pos, 
+                const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),  
                 const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
         
         virtual ~Canvas(){}
@@ -64,7 +65,12 @@ class Canvas : public Window
 
         virtual void draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform);  
 
-       
+        Vector  getRealPos      () const;
+        void    setRealPos      (const Vector &new_pos);   
+        Vector  getCanvasSize   () const;
+
+        void correctCanvasRealPos(const Vector &abs_size);
+        
     private:
         void getDrawFormat(sf::VertexArray &vertex_array, const Transform &trf) const;
         Dot getCanvaseCoord(const Vector &pos) const;
@@ -77,24 +83,22 @@ class Canvas : public Window
         Dot real_pos_;
 };
 
-// class ScrollCanvas : public Action
-// {
-//     public:
-//         ScrollCanvas(const Vector &delta, Canvas *ptr): 
-//                 delta_(delta), canvas_(ptr){};
-//         ~ScrollCanvas(){};
+class ScrollCanvas : public Action
+{
+    public:
+        ScrollCanvas(const Vector &delta, Canvas *ptr): 
+                delta_(delta), canvas_(ptr){};
+        ~ScrollCanvas(){};
 
-//         void operator() () const
-//         {
-//             Dot size = canvas_->GetSize();
-//             canvas_->Move(Dot(delta_.x * size.x, delta_.y * size.y));
-//             return;
-//         }
+        void operator() () const
+        {
+            canvas_->setRealPos(delta_ + canvas_->getRealPos());
+        }
 
-//     private:
-//         Dot delta_;
-//         Canvas *canvas_;
-// };
+    private:
+        Dot delta_;
+        Canvas *canvas_;
+};
 
 // class CanvaseManager : public Window
 // {
@@ -129,62 +133,54 @@ class Canvas : public Window
 //         size_t cnt_;
 // }; 
 
-// class Scrollbar: public Widget
-// {
+class Scrollbar: public Widget
+{
 
-//     public:
-//         enum Scroll_Type
-//         {
-//             Horizontal,
-//             Vertical,
-//         };
+    public:
+        enum Type
+        {
+            HORIZONTAL,
+            VERTICAL,
+        };
 
-//         Scrollbar(Button *top_button, Button *bottom_button, Button *center_button, 
-//                      Canvas *canvas, Scroll_Type type, const Dot &offset, const Vector &scale):
-//                      top_button_(top_button), bottom_button_(bottom_button), center_button_(center_button),
-//                      canvas_(canvas), transform_({offset, scale}), press_area_(), pos_press_(offset), type_(type)
-//         {
-//             press_area_ = top_button->GetTransform();
-//             if (type == Scrollbar::Scroll_Type::Horizontal)
-//                 press_area_.scale.x = 1.0;
+        Scrollbar(  Canvas *canvas, const Type type,
+                    const Vector &size, const Vector &pos, 
+                    const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),  
+                    const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
 
-//             if (type == Scrollbar::Scroll_Type::Vertical)
-//                 press_area_.scale.y = 1.0;
+        virtual ~Scrollbar()
+        {
+            delete top_button_;
+            delete bottom_button_;
+            delete center_button_;
+        }
 
-//         }
+        virtual bool onMousePressed     (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMouseMoved       (const Vector& pos, Container<Transform> &stack_transform);
+        virtual bool onMouseReleased    (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
 
-//         virtual ~Scrollbar()
-//         {
-//             delete top_button_;
-//             delete bottom_button_;
-//             delete center_button_;
-//         }
+        virtual void draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform);  
 
-//         virtual bool onMousePressed     (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
-//         virtual bool onMouseMoved       (const Vector& pos, Container<Transform> &stack_transform);
-//         virtual bool onMouseReleased    (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onKeyboardPressed  (const KeyboardKey);
+        virtual bool onKeyboardReleased (const KeyboardKey);
 
-//         virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;  
+        virtual void onUpdate           (const LayoutBox &parent_layout);
 
-//         virtual bool onKeyboardPressed  (const KeyboardKey);
-//         virtual bool onKeyboardReleased (const KeyboardKey);
+        void addButtons(Button *top_button, Button *bottom_button, Button *center_button);
 
-//         virtual void PassTime           (const time_t delta_time);
+    private:
 
-//     private:
+        void moveCenter();
+        void resizeCenter();
+        
 
-//         void MoveCenter         (Dot &new_coord);
-//         void ResizeCenterButton (const Transform &canvas_trf);
+        Button *top_button_, *bottom_button_, *center_button_;
+        Canvas *canvas_;
 
-//         Button *top_button_, *bottom_button_, *center_button_;
-//         Canvas *canvas_;
-
-//         Transform transform_;
-//         Transform press_area_;
-
-//         Vector pos_press_;
-
-//         Scroll_Type type_;
-// };
+        Vector hold_pos_;
+        Vector prev_canvas_real_pos_;
+        
+        Type type_;
+};
 
 #endif

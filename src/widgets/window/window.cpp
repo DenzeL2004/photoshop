@@ -1,10 +1,10 @@
 #include "window.h"
 
 Window::Window( const char *path_texture,
-                const Vector &size, const Vector &parent_size,
-                const Vector &pos, const Widget *parent,  
+                const Vector &size, const Vector &pos, 
+                const Widget *parent, const Vector &parent_size, 
                 const Vector &origin, const Vector& scale):
-                Widget(size, parent_size, pos, parent, origin, scale),
+                Widget(size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale),
                 texture_()
 {
     if (!texture_.loadFromFile(path_texture))   

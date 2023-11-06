@@ -26,8 +26,8 @@ class Button : public Widget
         Button( const char *released_texture_file, const char *covered_texture_file, 
                 const char *pressed_texture_file,  const char *disabled_texture_file,
                 const Action *action, 
-                const Vector &size, const Vector &parent_size,
-                const Vector &pos, const Widget *parent, 
+                const Vector &size, const Vector &pos, 
+                const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),
                 const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
 
         virtual ~Button()

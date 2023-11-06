@@ -4,17 +4,17 @@
 Button::Button (const char *released_texture_file, const char *covered_texture_file, 
                 const char *pressed_texture_file,  const char *disabled_texture_file,
                 const Action *action, 
-                const Vector &size, const Vector &parent_size,
-                const Vector &pos, const Widget *parent, 
+                const Vector &size, const Vector &pos, 
+                const Widget *parent, const Vector &parent_size, 
                 const Vector &origin, const Vector &scale):
                 action_(action), 
                 state_(ButtonState::RELEASED), prev_state_(ButtonState::RELEASED),
                 released_texture_(), covered_texture_(), 
                 pressed_texture_(), disabled_texture_(), 
-                Widget(size, parent_size, pos, parent, origin, scale),
+                Widget(size, pos, parent, parent_size, origin, scale),
                 covering_time_(0)
 {
-    setLayoutBox(*(new BaseLayoutBox(pos, size, parent_size, false, true)));   
+    setLayoutBox(*(new BaseLayoutBox(pos, size, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, false, true)));   
 
     if (!released_texture_.loadFromFile(released_texture_file))   
     {
