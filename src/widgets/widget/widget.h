@@ -14,7 +14,6 @@
 #include "../event/event.h"
 
 
-
 const sf::Color Debug_color = sf::Color(255, 20, 147);
 
 const double Default_width  = 720.0;

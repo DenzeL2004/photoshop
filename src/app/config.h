@@ -1,6 +1,8 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
+static const char* Debug_texture = "src/img/YellowReleased.png";
+
 static const char *Frame_Texture = "src/img/border.png";
 
 static const char *Cross_Button_Release = "src/img/closeReleased.png";

@@ -4,6 +4,7 @@
 #include "src/widgets/window/window.h"
 #include "src/widgets/button/button.h"
 #include "src/widgets/decorator/decorator.h"
+#include "src/widgets/window/canvas.h"
 
 
 const double WIDTH = 1600.0; 
@@ -23,18 +24,22 @@ int main()
     // Window* win = new Window("src/img/frame.png", 
     //                          {1600, 900.0}, {WIDTH, HEIGHT}, {0.0, 0.0}, nullptr);
 
-    Frame* frame = new Frame("src/img/frame.png", Title({10, 5}, "window", sf::Color::Black), 
-                            {720, 540.0}, {WIDTH, HEIGHT}, {10.0, 10.0}, nullptr);
+    // Frame* frame = new Frame("src/img/frame.png", Title({10, 5}, "window", sf::Color::Black), 
+    //                         {720, 540.0}, {WIDTH, HEIGHT}, {10.0, 10.0}, nullptr);
 
-    Window* win = new Window("src/img/YellowReleased.png", 
-                            {680, 500.0}, {720, 540}, {10.0, 30.0}, nullptr);
+    // Window* win = new Window("src/img/YellowReleased.png", 
+    //                         {680, 500.0}, {720, 540}, {10.0, 30.0}, nullptr);
 
-    Button *button = new Button("src/img/closePressed.png", "src/img/closeReleased.png", 
-                                "src/img/closeReleased.png", "src/img/closeReleased.png", 
-                                new Click(&ans), {25, 25}, {720, 540.0}, {695, 0.0}, frame); 
+    // Button *button = new Button("src/img/closePressed.png", "src/img/closeReleased.png", 
+    //                             "src/img/closeReleased.png", "src/img/closeReleased.png", 
+    //                             new Click(&ans), {25, 25}, {720, 540.0}, {695, 0.0}, frame); 
 
-    frame->addWidget(button);
-    frame->addWidget(win);
+    // frame->addWidget(button);
+    // frame->addWidget(win);
+
+    Tool tools(Tool::Brash, sf::Color::Cyan, 15);
+
+    Canvas *canvas = new Canvas(&tools, {1600, 800.0}, {680, 500.0}, {720, 540}, {10.0, 30.0}, nullptr);
 
 
     Container<Transform> stack;
@@ -51,13 +56,13 @@ int main()
                 window.close();
 
             sf::Mouse mouse;
-            eventAdapter(*frame, mouse.getPosition(window).x, mouse.getPosition(window).y, event, stack);
+            eventAdapter(*canvas, mouse.getPosition(window).x, mouse.getPosition(window).y, event, stack);
 
             if (ans)
                 window.close();
         }
 
-        frame->draw(window, stack);
+        canvas->draw(window, stack);
         ans = false;
     
         window.display();

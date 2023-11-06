@@ -10,8 +10,8 @@ FLAGS = -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equa
 SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 
-run:		obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o obj/window.o obj/button.o obj/decorator.o obj/main.o
-	g++   	obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o obj/window.o obj/button.o obj/decorator.o obj/main.o -o run  $(SFML_FLAGS)
+run:		obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/main.o
+	g++   	obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/main.o -o run  $(SFML_FLAGS)
 
 
 obj/main.o: main.cpp
@@ -34,10 +34,6 @@ obj/graphic.o: 	src/graphic/graphic.cpp src/graphic/graphic.h src/graphic/graphi
 		g++    	src/graphic/graphic.cpp -c -o obj/graphic.o $(FLAGS) $(SFML_FLAGS)
 
 
-
-
-obj/canvas.o:  	src/widget/window/canvas.cpp src/widget/window/canvas.h
-		g++		src/widget/window/canvas.cpp -c -o obj/canvas.o $(FLAGS)
 
 obj/tools.o:  	src/widget/window/tools/tools.cpp src/widget/window/tools/tools.h
 		g++		src/widget/window/tools/tools.cpp -c -o obj/tools.o $(FLAGS)
@@ -71,6 +67,10 @@ obj/button.o:  	src/widgets/button/button.cpp src/widgets/button/button.h
 
 obj/decorator.o:  	src/widgets/decorator/decorator.cpp src/widgets/decorator/decorator.h
 		g++			src/widgets/decorator/decorator.cpp -c -o obj/decorator.o $(FLAGS)
+
+
+obj/canvas.o:  	src/widgets/window/canvas.cpp src/widgets/window/canvas.h
+		g++		src/widgets/window/canvas.cpp -c -o obj/canvas.o $(FLAGS)
 
 
 
