@@ -7,49 +7,20 @@
 
 #include "../../app/config.h"
 
+class ToolPalette;
+class Tool;
 
-
-class Tool
-{
-    public:
-        enum Type
-        {
-            Pen, 
-            Brash,
-            Nothing,
-        };
-
-        enum State
-        {
-            Default,
-            Hold, 
-        };
-
-        Tool(const Tool::Type type, const sf::Color color, const float thickness):
-            type_(type), state_(Default), color_(color), thickness_(thickness), 
-            hold_pos_(0.0, 0.0){}
-
-        ~Tool(){}
-
-        void Draw(sf::RenderTarget &target, const Dot &pos);
-
-        Tool::Type type_;
-        Tool::State state_;
-
-        sf::Color color_;
-
-        float thickness_;
-
-        Dot hold_pos_;
-        
-};
+class FilterMask;
+class FilterPalette;
+class Filter;
 
 class Canvas : public Window
 {
 
     public:
         
-        Canvas( Tool *tool, const Vector &canvas_size,
+        Canvas( ToolPalette *tool_palette, FilterPalette *filter_palette, 
+                const Vector &canvas_size,
                 const Vector &size, const Vector &pos, 
                 const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),  
                 const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
@@ -71,17 +42,61 @@ class Canvas : public Window
 
         void correctCanvasRealPos(const Vector &abs_size);
         
+        sf::RenderTexture& getBackground();
+        FilterMask& getFilterMask();
+
     private:
         void getDrawFormat(sf::VertexArray &vertex_array, const Transform &trf) const;
         Dot getCanvaseCoord(const Vector &pos) const;
 
         sf::RenderTexture background_;
 
-        Tool *tool_;
+        ToolPalette &tool_palette_;
+        FilterMask &filter_mask_;
+
+        FilterPalette &filter_palette_;
 
         Vector canvas_size_;
         Dot real_pos_;
 };
+
+class CanvasManager : public Window
+{
+
+    public:
+
+        CanvasManager( const char *path_texture,
+                        const Vector &size, const Vector &pos, 
+                        const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),  
+                        const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
+    
+        ~CanvasManager()
+        {
+            size_t size = canvases_.getSize();
+            for (size_t it = 0; it < size; it++)
+                delete canvases_[it];
+        };
+
+        virtual bool onMousePressed     (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMouseMoved       (const Vector& pos, Container<Transform> &stack_transform);
+        virtual bool onMouseReleased    (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
+
+        virtual bool onKeyboardPressed  (const KeyboardKey);
+        virtual bool onKeyboardReleased (const KeyboardKey);
+
+        virtual void draw               (sf::RenderTarget &target, Container<Transform> &stack_transform);
+
+        void createCanvas(ToolPalette *tool_palette, FilterPalette *filter_palette);
+        
+        Canvas* getActiveCanvas();
+    private:
+         Container<Widget*> widgets_;
+        bool delete_canvas_;
+
+        Container<Canvas*> canvases_;
+
+        size_t cnt_;
+}; 
 
 class ScrollCanvas : public Action
 {
@@ -99,39 +114,6 @@ class ScrollCanvas : public Action
         Dot delta_;
         Canvas *canvas_;
 };
-
-// class CanvaseManager : public Window
-// {
-
-//     public:
-
-//         CanvaseManager (const char *path_texture,
-//                         const Dot offset, const Vector scale):Window(path_texture, offset, scale), 
-//                         canvases_(), delte_canvase_(false), cnt_(0){}
-//         ~CanvaseManager()
-//         {
-//             size_t size = canvases_.getSize();
-//             for (size_t it = 0; it < size; it++)
-//                 delete canvases_[it];
-//         };
-
-//         virtual bool onMousePressed     (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
-//         virtual bool onMouseMoved       (const Vector& pos, Container<Transform> &stack_transform);
-//         virtual bool onMouseReleased    (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
-
-//         virtual bool onKeyboardPressed  (const KeyboardKey);
-//         virtual bool onKeyboardReleased (const KeyboardKey);
-
-//         virtual void Draw               (sf::RenderTarget &target, Container<Transform> &stack_transform);
-
-
-//         void CreateCanvase(Tool *tool);
-//     private:
-//         Container<Widget*> canvases_;
-//         bool delte_canvase_;
-
-//         size_t cnt_;
-// }; 
 
 class Scrollbar: public Widget
 {

@@ -10,8 +10,8 @@ FLAGS = -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equa
 SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 
-run:		obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/main.o
-	g++   	obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/main.o -o run  $(SFML_FLAGS)
+run:		obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/filter.o obj/tools.o obj/app.o obj/main.o
+	g++   	obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/filter.o obj/tools.o obj/app.o obj/main.o -o run  $(SFML_FLAGS)
 
 
 obj/main.o: main.cpp
@@ -35,11 +35,6 @@ obj/graphic.o: 	src/graphic/graphic.cpp src/graphic/graphic.h src/graphic/graphi
 
 
 
-obj/tools.o:  	src/widget/window/tools/tools.cpp src/widget/window/tools/tools.h
-		g++		src/widget/window/tools/tools.cpp -c -o obj/tools.o $(FLAGS)
-
-obj/filter.o:  	src/widget/window/filters/filter.cpp src/widget/window/filters/filter.h
-		g++		src/widget/window/filters/filter.cpp -c -o obj/filter.o $(FLAGS)
 
 obj/app.o:  	src/app/app.cpp src/app/app.h
 		g++		src/app/app.cpp -c -o obj/app.o $(FLAGS)
@@ -73,6 +68,11 @@ obj/canvas.o:  	src/widgets/window/canvas.cpp src/widgets/window/canvas.h
 		g++		src/widgets/window/canvas.cpp -c -o obj/canvas.o $(FLAGS)
 
 
+obj/tools.o:  	src/widgets/window/tools/tools.cpp src/widgets/window/tools/tools.h
+		g++		src/widgets/window/tools/tools.cpp -c -o obj/tools.o $(FLAGS)
+
+obj/filter.o:  	src/widgets/window/filters/filter.cpp src/widgets/window/filters/filter.h
+		g++		src/widgets/window/filters/filter.cpp -c -o obj/filter.o $(FLAGS)
 
 .PHONY: cleanup mkdirectory
 

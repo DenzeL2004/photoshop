@@ -44,7 +44,7 @@ void FilterMask::invert()
 void FilterBrightness::applyFilter(Canvas &canvas, const FilterMask &mask)
 {
     
-    sf::Image image = canvas.background_.getTexture().copyToImage();
+    sf::Image image = canvas.getBackground().getTexture().copyToImage();
 
     size_t width  = mask.getWidth();
     size_t height = mask.getHeight();
@@ -143,8 +143,8 @@ void FilterBrightness::applyFilter(Canvas &canvas, const FilterMask &mask)
     sf::Sprite sprite(texture);
     sprite.setTextureRect(sf::IntRect(0, height, width, -height));
     
-    canvas.background_.clear();
-    canvas.background_.draw(sprite);
+    canvas.getBackground().clear();
+    canvas.getBackground().draw(sprite);
 }
 
 void FilterBrightness::setDelta(const float delta)
@@ -159,12 +159,12 @@ FilterPalette::FilterPalette():
         last_filter_(FilterType::NOTHING),
         is_active_(false)
 {
-    filters_.PushBack(new FilterBrightness(0.00));   
+    filters_.pushBack(new FilterBrightness(0.00));   
 }
 
 FilterPalette::~FilterPalette()
 {
-    size_t size = filters_.GetSize();
+    size_t size = filters_.getSize();
     for (size_t it = 0; it < size; it++)
         delete filters_[it];
 }
@@ -195,5 +195,5 @@ void FilterPalette::setLastFilter(size_t filter_id)
 
 void FilterPalette::addFilter(Filter *ptr)
 {
-    filters_.PushBack(ptr);
+    filters_.pushBack(ptr);
 }

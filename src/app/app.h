@@ -1,11 +1,15 @@
 #ifndef _APP_H_
 #define _APP_H_
 
+#include "../widgets/widget/widget.h"
+#include "../widgets/window/window.h"
+#include "../widgets/button/button.h"
+#include "../widgets/decorator/decorator.h"
 
-#include "../widget/window/canvas.h"
-#include "../widget/button/button.h"
-#include "../widget/window/tools/tools.h"
-#include "../widget/window/filters/filter.h"
+#include "../widgets/window/tools/tools.h"
+#include "../widgets/window/filters/filter.h"
+
+#include "../widgets/window/canvas.h"
 
 #include "config.h"
 
@@ -18,7 +22,7 @@ class AddCanvase : public Action
 
         void operator() () const
         {
-            canvase_manager_->CreateCanvase(&tool_palette_, &filter_palette_);   
+            canvase_manager_->createCanvas(&tool_palette_, &filter_palette_);   
         }
 
     private:
@@ -36,7 +40,7 @@ class ChooseTool : public Action
 
         void operator() () const
         {
-            palette_.SetActiveTool(type_);
+            palette_.setActiveTool(type_);
         }
 
     private:
@@ -53,7 +57,7 @@ class ChooseColor : public Action
 
         void operator() () const
         {
-            palette_.SetActiveColor(color_);   
+            palette_.setActiveColor(color_);   
         }
 
     private:
@@ -75,8 +79,8 @@ class ChangeBrightness : public Action
 
             filter->setDelta(delta_);
 
-            Canvas *active_canvas = canvas_manager_.GetActiveCanvas();
-            filter->applyFilter(*active_canvas, active_canvas->GetFilterMask());
+            Canvas *active_canvas = canvas_manager_.getActiveCanvas();
+            filter->applyFilter(*active_canvas, active_canvas->getFilterMask());
 
         }
 
@@ -93,8 +97,10 @@ class ChangeBrightness : public Action
 class AppWindow: public Window
 {
     public:
-        AppWindow (const char *path_texture,
-                   const Dot &offset, const Vector &scale);
+        AppWindow(  const char *path_texture,
+                    const Vector &size, const Vector &pos, 
+                    const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0), 
+                    const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
 
         virtual ~AppWindow()
         {
@@ -103,16 +109,16 @@ class AppWindow: public Window
             delete colors_button_;
         }
 
-        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);
-        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform);
+        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
 
-        virtual bool OnKeyboardPressed  (const KeyboardKey);
-        virtual bool OnKeyboardReleased (const KeyboardKey);
+        virtual bool onKeyboardPressed  (const KeyboardKey);
+        virtual bool onKeyboardReleased (const KeyboardKey);
 
-        virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;  
+        virtual void draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;  
 
-        virtual void PassTime           (const time_t delta_time);
+        virtual bool onTick             (const time_t delta_time);
 
     protected:
         
@@ -129,6 +135,6 @@ class AppWindow: public Window
 };
 
 
-void UseApp();
+void useApp();
 
 #endif

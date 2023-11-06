@@ -1,16 +1,25 @@
 #include "tools.h"
 
+
+static void correctPos(Vector &pos, const Canvas &canvas);
+
+static void correctPos(Vector &pos, const Canvas &canvas)
+{
+    pos += canvas.getRealPos();
+    pos.y = canvas.getCanvasSize().y - pos.y;
+}
+
 ToolPalette::ToolPalette():
         tools_(),
         active_tool_(ToolType::NOTHING), 
         color_type_(FOREGROUND), foreground_color_(sf::Color::White), background_color_(sf::Color::Transparent)
 {
-    tools_.PushBack(new LineTool(&foreground_color_));
-    tools_.PushBack(new BrushTool(&foreground_color_));
-    tools_.PushBack(new SquareTool(&foreground_color_));
-    tools_.PushBack(new CircleTool(&foreground_color_));
-    tools_.PushBack(new PolyLineTool(&foreground_color_));
-    tools_.PushBack(new BrushTool(&sf::Color::White));
+    tools_.pushBack(new LineTool(&foreground_color_));
+    tools_.pushBack(new BrushTool(&foreground_color_));
+    tools_.pushBack(new SquareTool(&foreground_color_));
+    tools_.pushBack(new CircleTool(&foreground_color_));
+    tools_.pushBack(new PolyLineTool(&foreground_color_));
+    tools_.pushBack(new BrushTool(&sf::Color::White));
 }
 
 
@@ -18,12 +27,12 @@ ToolPalette::ToolPalette():
 
 ToolPalette::~ToolPalette()
 {
-    size_t size = tools_.GetSize();
+    size_t size = tools_.getSize();
     for (size_t it = 0; it < size; it++)
         delete tools_[it];
 }   
 
-Tool* ToolPalette::GetActiveTool () const
+Tool* ToolPalette::getActiveTool () const
 {
     switch (active_tool_)
     {
@@ -58,7 +67,7 @@ Tool* ToolPalette::GetActiveTool () const
     }
 }
 
-void ToolPalette::SetActiveColor (const sf::Color &color) 
+void ToolPalette::setActiveColor (const sf::Color &color) 
 {
     if (color_type_ == ToolPalette::ColorType::FOREGROUND)
         foreground_color_ = color;
@@ -67,7 +76,7 @@ void ToolPalette::SetActiveColor (const sf::Color &color)
         background_color_ = color;
 }
 
-sf::Color ToolPalette::GetActiveColor () const
+sf::Color ToolPalette::getActiveColor () const
 {
     if (color_type_ == ToolPalette::ColorType::FOREGROUND)
         return foreground_color_;
@@ -78,7 +87,7 @@ sf::Color ToolPalette::GetActiveColor () const
 
 //================================================================================
 
-void ToolPalette::SetActiveTool(const ToolType tool_type)
+void ToolPalette::setActiveTool(const ToolType tool_type)
 {
     active_tool_ = tool_type;
 }
@@ -90,25 +99,26 @@ void ToolPalette::SetActiveTool(const ToolType tool_type)
 class LineWidget : public Widget
 {
     public:
-        LineWidget(const Dot *start_pos, const Dot *end_pos, const sf::Color *cur_color):
+        LineWidget( const Dot *start_pos, const Dot *end_pos, const sf::Color *cur_color):
+                    Widget(Vector(1.0, 1.0), Vector(0.0,  0.0), nullptr),
                     start_pos_(*start_pos), end_pos_(*end_pos), cur_color_(*cur_color){}
 
         ~LineWidget(){}
 
-        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform) {return true;};
-        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform) {return true;}
-        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform){return true;}
+        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform) {return true;};
+        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform) {return true;}
+        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform){return true;}
 
-        bool OnKeyboardPressed  (const KeyboardKey){return true;}
-        bool OnKeyboardReleased (const KeyboardKey){return true;}
+        virtual bool onKeyboardPressed  (const KeyboardKey){return true;}
+        virtual bool onKeyboardReleased (const KeyboardKey){return true;}
 
-        void PassTime           (const time_t delta_time){}
+        bool onTick             (const time_t delta_time){}
 
-        void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform)
+        void draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform)
         {
             
-            Transform last_trf = stack_transform.GetBack();
-            DrawLine(targert, start_pos_ + last_trf.offset, end_pos_ + last_trf.offset, cur_color_);
+            Transform last_trf = stack_transform.getBack();
+            drawLine(targert, start_pos_ + last_trf.offset, end_pos_ + last_trf.offset, cur_color_);
         }
     
         sf::Color GetColor() const {return cur_color_;}
@@ -125,7 +135,7 @@ LineTool::LineTool(const sf::Color *cur_color):
 
 
 //================================================================================
-void LineTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
+void LineTool::onMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
     
     if (state.state != ControlState::ButtonState::PRESSED)
@@ -139,7 +149,7 @@ void LineTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
     using_ = true;
 }
 
-void LineTool::OnMove(const Dot &pos, Canvas &canvas)
+void LineTool::onMove(const Dot &pos, Canvas &canvas)
 {
     if (!using_)
         return;
@@ -147,25 +157,27 @@ void LineTool::OnMove(const Dot &pos, Canvas &canvas)
     end_pos_ = pos; 
 }
 
-void LineTool::OnConfirm (Canvas &canvas)
+void LineTool::onConfirm (Canvas &canvas)
 {
     if (!using_)
         return;
 
-    Dot real_pos = canvas.GetRealPos();
-    DrawLine(canvas.background_, start_pos_ + real_pos, end_pos_ + real_pos, cur_color_);
+    correctPos(start_pos_, canvas);
+    correctPos(end_pos_, canvas);
+
+    drawLine(canvas.getBackground(), start_pos_, end_pos_, cur_color_);
     start_pos_  = end_pos_ = {0, 0};
 
     using_ = false;
 }
 
-void LineTool::OnCancel ()
+void LineTool::onCancel ()
 {
     start_pos_  = end_pos_ = {0, 0};
     using_ = false;
 }
 
-Widget* LineTool::GetWidget() const
+Widget* LineTool::getWidget() const
 {
     return preview_;
 }
@@ -176,24 +188,25 @@ Widget* LineTool::GetWidget() const
 class SquareWidget : public Widget
 {
     public:
-        SquareWidget(const Dot *start_pos, const Dot *end_pos, const sf::Color *cur_color):
-                    start_pos_(*start_pos), end_pos_(*end_pos), cur_color_(*cur_color){}
+        SquareWidget(   const Dot *start_pos, const Dot *end_pos, const sf::Color *cur_color):
+                        Widget(Vector(1.0, 1.0), Vector(0.0,  0.0), nullptr),
+                        start_pos_(*start_pos), end_pos_(*end_pos), cur_color_(*cur_color){}
 
         ~SquareWidget(){}
 
-        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform) {return true;};
-        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform) {return true;}
-        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform){return true;}
+        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform) {return true;};
+        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform) {return true;}
+        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform){return true;}
 
-        bool OnKeyboardPressed  (const KeyboardKey){return true;}
-        bool OnKeyboardReleased (const KeyboardKey){return true;}
+        virtual bool onKeyboardPressed  (const KeyboardKey){return true;}
+        virtual bool onKeyboardReleased (const KeyboardKey){return true;}
 
-        void PassTime           (const time_t delta_time){}
+        bool onTick             (const time_t delta_time){}
 
-        void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform)
+        void draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform)
         {
-            Transform last_trf = stack_transform.GetBack();
-            DrawRectangle(targert, start_pos_ + last_trf.offset, end_pos_ + last_trf.offset, cur_color_);     
+            Transform last_trf = stack_transform.getBack();
+            drawRectangle(targert, start_pos_ + last_trf.offset, end_pos_ + last_trf.offset, cur_color_);     
         }
     
         sf::Color GetColor() const {return cur_color_;}
@@ -210,7 +223,7 @@ SquareTool::SquareTool(const sf::Color *cur_color):
                   using_(false), start_pos_(), end_pos_(), 
                   preview_(new SquareWidget(&start_pos_, &end_pos_, cur_color)), cur_color_(*cur_color){}
 
-void SquareTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
+void SquareTool::onMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
     if (state.state != ControlState::ButtonState::PRESSED)
         return;
@@ -223,7 +236,7 @@ void SquareTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas
     using_ = true;
 }
 
-void SquareTool::OnMove(const Dot &pos, Canvas &canvas)
+void SquareTool::onMove(const Dot &pos, Canvas &canvas)
 {
     if (!using_)
         return;
@@ -231,27 +244,29 @@ void SquareTool::OnMove(const Dot &pos, Canvas &canvas)
     end_pos_ = pos; 
 }
 
-void SquareTool::OnConfirm (Canvas &canvas)
+void SquareTool::onConfirm (Canvas &canvas)
 {
     if (!using_)
         return;
     
-    Dot real_pos = canvas.GetRealPos();
-    DrawRectangle(canvas.background_, start_pos_ + real_pos, end_pos_ + real_pos, cur_color_);
+    correctPos(start_pos_, canvas);
+    correctPos(end_pos_, canvas);
+
+    drawRectangle(canvas.getBackground(), start_pos_, end_pos_, cur_color_);
     
     start_pos_  = end_pos_ = {0, 0};
 
     using_ = false;
 }
 
-void SquareTool::OnCancel ()
+void SquareTool::onCancel ()
 {
     start_pos_  = end_pos_ = {0, 0};
     using_ = false;
 }
 
 
-Widget* SquareTool::GetWidget() const
+Widget* SquareTool::getWidget() const
 {
     return preview_;
 }
@@ -263,31 +278,32 @@ Widget* SquareTool::GetWidget() const
 class CircleWidget : public Widget
 {
     public:
-        CircleWidget(const Dot *start_pos, const Dot *end_pos, const sf::Color *cur_color):
-                    start_pos_(*start_pos), end_pos_(*end_pos), cur_color_(*cur_color){}
+        CircleWidget(   const Dot *start_pos, const Dot *end_pos, const sf::Color *cur_color):
+                        Widget(Vector(1.0, 1.0), Vector(0.0,  0.0), nullptr),
+                        start_pos_(*start_pos), end_pos_(*end_pos), cur_color_(*cur_color){}
 
         ~CircleWidget(){}
 
-        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform) {return true;};
-        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform) {return true;}
-        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform){return true;}
+        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform) {return true;};
+        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform) {return true;}
+        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform){return true;}
 
-        bool OnKeyboardPressed  (const KeyboardKey){return true;}
-        bool OnKeyboardReleased (const KeyboardKey){return true;}
+        virtual bool onKeyboardPressed  (const KeyboardKey){return true;}
+        virtual bool onKeyboardReleased (const KeyboardKey){return true;}
 
-        void PassTime           (const time_t delta_time){}
+        bool onTick             (const time_t delta_time){}
 
-        void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform)
+        void draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform)
         {
             
-            Transform last_trf = stack_transform.GetBack();
+            Transform last_trf = stack_transform.getBack();
 
             Dot center = start_pos_ + last_trf.offset;
             Dot other  = end_pos_ + last_trf.offset;
 
             double rad = (center - other).Len();
 
-            DrawCircle(targert, center, (float)rad, cur_color_);
+            drawCircle(targert, center, (float)rad, cur_color_);
         }
     
         sf::Color GetColor() const {return cur_color_;}
@@ -304,7 +320,7 @@ CircleTool::CircleTool(const sf::Color *cur_color):
                   using_(false), start_pos_(), end_pos_(), 
                   preview_(new CircleWidget(&start_pos_, &end_pos_, cur_color)), cur_color_(*cur_color){}
 
-void CircleTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
+void CircleTool::onMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
     if (state.state != ControlState::ButtonState::PRESSED)
         return;
@@ -317,7 +333,7 @@ void CircleTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas
     using_ = true;
 }
 
-void CircleTool::OnMove(const Dot &pos, Canvas &canvas)
+void CircleTool::onMove(const Dot &pos, Canvas &canvas)
 {
     if (!using_)
         return;
@@ -325,28 +341,29 @@ void CircleTool::OnMove(const Dot &pos, Canvas &canvas)
     end_pos_ = pos; 
 }
 
-void CircleTool::OnConfirm (Canvas &canvas)
+void CircleTool::onConfirm (Canvas &canvas)
 {
     if (!using_)
         return;
 
     double rad = (start_pos_ - end_pos_).Len();
 
-    Dot real_pos = canvas.GetRealPos();
-    DrawCircle(canvas.background_, start_pos_ + real_pos, (float)rad, cur_color_);
+    correctPos(start_pos_, canvas);
+
+    drawCircle(canvas.getBackground(), start_pos_, (float)rad, cur_color_);
     start_pos_  = end_pos_ = {0, 0};
 
     using_ = false;
 }
 
-void CircleTool::OnCancel ()
+void CircleTool::onCancel ()
 {
     start_pos_  = end_pos_ = {0, 0};
 
     using_ = false;
 }
 
-Widget* CircleTool::GetWidget() const
+Widget* CircleTool::getWidget() const
 {
     return preview_;
 }
@@ -358,7 +375,7 @@ BrushTool::BrushTool(const sf::Color *cur_color):
                     using_(false), cur_color_(*cur_color){}
 
 
-void BrushTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
+void BrushTool::onMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
     if (state.state != ControlState::ButtonState::PRESSED)
         return;
@@ -368,18 +385,24 @@ void BrushTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 
     using_ = true;
 
-    DrawForm(pos + canvas.GetRealPos(), canvas);
+    Vector tmp_pos = pos;
+    correctPos(tmp_pos, canvas);
+
+    drawForm(tmp_pos, canvas);
 }
 
-void BrushTool::OnMove(const Dot &pos, Canvas &canvas)
+void BrushTool::onMove(const Dot &pos, Canvas &canvas)
 {
     if (!using_)
         return;
 
-    DrawForm(pos + canvas.GetRealPos(), canvas);
+    Vector tmp_pos = pos;
+    correctPos(tmp_pos, canvas);
+    
+    drawForm(tmp_pos, canvas);
 }
 
-void BrushTool::OnConfirm (Canvas &canvas)
+void BrushTool::onConfirm (Canvas &canvas)
 {
     if (!using_)
         return;
@@ -387,125 +410,125 @@ void BrushTool::OnConfirm (Canvas &canvas)
     using_ = false;
 }
 
-Widget* BrushTool::GetWidget() const
+Widget* BrushTool::getWidget() const
 {
     return nullptr;
 }
 
-void BrushTool::DrawForm (const Dot &pos, Canvas &canvas)
+void BrushTool::drawForm (const Dot &pos, Canvas &canvas)
 {
-    DrawCircle(canvas.background_, pos, 10, cur_color_);
+    drawCircle(canvas.getBackground(), pos, 10, cur_color_);
 }
 
 //================================================================================
 //Fill
 
-FillTool::FillTool(const sf::Color *cur_color):
-                    using_(false), cur_color_(*cur_color){}
+// FillTool::FillTool(const sf::Color *cur_color):
+//                     using_(false), cur_color_(*cur_color){}
 
 
-void FillTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
-{
-    if (state.state != ControlState::ButtonState::PRESSED)
-        return;
+// void FillTool::onMainButton(ControlState state, const Dot &pos, Canvas &canvas)
+// {
+//     if (state.state != ControlState::ButtonState::PRESSED)
+//         return;
 
-    if (using_)
-        return;
+//     if (using_)
+//         return;
 
-    using_ = true;
-    sf::Image image = canvas.background_.getTexture().copyToImage();
+//     using_ = true;
+//     sf::Image image = canvas.getBackground().getTexture().copyToImage();
     
-    sf::Color fill_color = image.getPixel(size_t(pos.x), canvas.GetSize().y - size_t(pos.y));
+//     sf::Color fill_color = image.getPixel(size_t(pos.x), canvas.getSize().y - size_t(pos.y));
    
-    for (size_t it = 10; it < 200; it++)
-    {
-        image.setPixel(130, 2000 - it, sf::Color::Cyan);
-        image.setPixel(131, 2000 - it, sf::Color::Cyan);
-        image.setPixel(132, 2000 - it, sf::Color::Cyan);
-        image.setPixel(133, 2000 - it, sf::Color::Cyan);
-    }
+//     for (size_t it = 10; it < 200; it++)
+//     {
+//         image.setPixel(130, 2000 - it, sf::Color::Cyan);
+//         image.setPixel(131, 2000 - it, sf::Color::Cyan);
+//         image.setPixel(132, 2000 - it, sf::Color::Cyan);
+//         image.setPixel(133, 2000 - it, sf::Color::Cyan);
+//     }
     
-    Fill(fill_color, {size_t(pos.x), canvas.GetSize().y - size_t(pos.y)}, canvas, &image);
+//     Fill(fill_color, {size_t(pos.x), canvas.getSize().y - size_t(pos.y)}, canvas, &image);
 
-    sf::Texture texture;
-    texture.loadFromImage(image);
-    sf::Sprite sprite(texture);
-    sprite.scale(1.f, -1.f);
+//     sf::Texture texture;
+//     texture.loadFromImage(image);
+//     sf::Sprite sprite(texture);
+//     sprite.scale(1.f, -1.f);
 
-    canvas.background_.draw(sprite);
+//     canvas.getBackground().draw(sprite);
 
-    OnConfirm(canvas);
-}
-
-
-void FillTool::OnConfirm (Canvas &canvas)
-{
-    if (!using_)
-        return;
-
-    using_ = false;
-}
-
-void FillTool::OnCancel ()
-{
-    using_ = false;
-}
+//     onConfirm(canvas);
+// }
 
 
-Widget* FillTool::GetWidget() const
-{
-    return nullptr;
-}
+// void FillTool::onConfirm (Canvas &canvas)
+// {
+//     if (!using_)
+//         return;
 
-void FillTool::Fill(sf::Color &fill_color, const Dot &start_pos, Canvas &canvas, sf::Image *image)
-{
-    Container<sf::Vector2u> dots_;
+//     using_ = false;
+// }
 
-    const size_t x_limit = canvas.GetSize().x;
-    const size_t y_limit = canvas.GetSize().y;
+// void FillTool::onCancel ()
+// {
+//     using_ = false;
+// }
 
-    dots_.PushBack(sf::Vector2u((size_t)start_pos.x, (size_t)start_pos.y));
+
+// Widget* FillTool::getWidget() const
+// {
+//     return nullptr;
+// }
+
+// void FillTool::Fill(sf::Color &fill_color, const Dot &start_pos, Canvas &canvas, sf::Image *image)
+// {
+//     Container<sf::Vector2u> dots_;
+
+//     const size_t x_limit = canvas.getSize().x;
+//     const size_t y_limit = canvas.getSize().y;
+
+//     dots_.pushBack(sf::Vector2u((size_t)start_pos.x, (size_t)start_pos.y));
 
     
 
-    while (!dots_.IsEmpty())
-    {
-        sf::Vector2u cur_dot = dots_.GetBack();
-        dots_.PopBack();
+//     while (!dots_.IsEmpty())
+//     {
+//         sf::Vector2u cur_dot = dots_.getBack();
+//         dots_.PopBack();
 
-        // printf("%u %u %u\n", fill_color.r, fill_color.b, fill_color.g);
-        // printf("%u %u %u\n", image.getPixel(cur_dot.x - 1, start_pos.y).r, image.getPixel(cur_dot.x - 1, start_pos.y).b, image.getPixel(cur_dot.x - 1, start_pos.y).g);
+//         // printf("%u %u %u\n", fill_color.r, fill_color.b, fill_color.g);
+//         // printf("%u %u %u\n", image.getPixel(cur_dot.x - 1, start_pos.y).r, image.getPixel(cur_dot.x - 1, start_pos.y).b, image.getPixel(cur_dot.x - 1, start_pos.y).g);
 
-        // printf("%u %u\n\n", cur_dot.x, cur_dot.y);
+//         // printf("%u %u\n\n", cur_dot.x, cur_dot.y);
 
-        // image.setPixel(cur_dot.x, cur_dot.y, cur_color_);
+//         // image.setPixel(cur_dot.x, cur_dot.y, cur_color_);
 
-        // if (cur_dot.x > 0 && image.getPixel(cur_dot.x - 1, start_pos.y) == fill_color) 
-        // {
-        //     image.setPixel(cur_dot.x - 1, cur_dot.y, cur_color_);
-        //     dots_.PushBack(sf::Vector2u(cur_dot.x - 1, cur_dot.y)); 
-        // }
+//         // if (cur_dot.x > 0 && image.getPixel(cur_dot.x - 1, start_pos.y) == fill_color) 
+//         // {
+//         //     image.setPixel(cur_dot.x - 1, cur_dot.y, cur_color_);
+//         //     dots_.pushBack(sf::Vector2u(cur_dot.x - 1, cur_dot.y)); 
+//         // }
 
-        // if (cur_dot.y > 0 && image.getPixel(cur_dot.x, start_pos.y - 1) == fill_color) 
-        // {
-        //     image.setPixel(cur_dot.x, cur_dot.y - 1, cur_color_);
-        //     dots_.PushBack(sf::Vector2u(cur_dot.x, cur_dot.y - 1));
-        // }
+//         // if (cur_dot.y > 0 && image.getPixel(cur_dot.x, start_pos.y - 1) == fill_color) 
+//         // {
+//         //     image.setPixel(cur_dot.x, cur_dot.y - 1, cur_color_);
+//         //     dots_.pushBack(sf::Vector2u(cur_dot.x, cur_dot.y - 1));
+//         // }
 
-        // if (cur_dot.x < x_limit && image.getPixel(cur_dot.x + 1, start_pos.y) == fill_color) 
-        // {
-        //     image.setPixel(cur_dot.x + 1, cur_dot.y, cur_color_);
-        //     dots_.PushBack(sf::Vector2u(cur_dot.x + 1, cur_dot.y));  
-        // }
+//         // if (cur_dot.x < x_limit && image.getPixel(cur_dot.x + 1, start_pos.y) == fill_color) 
+//         // {
+//         //     image.setPixel(cur_dot.x + 1, cur_dot.y, cur_color_);
+//         //     dots_.pushBack(sf::Vector2u(cur_dot.x + 1, cur_dot.y));  
+//         // }
 
-        // if (cur_dot.y + 1 < y_limit && image.getPixel(cur_dot.x, start_pos.y + 1) == fill_color) 
-        // {
-        //     image.setPixel(cur_dot.x, cur_dot.y + 1, cur_color_);
-        //     dots_.PushBack(sf::Vector2u(cur_dot.x, cur_dot.y + 1)); 
-        // }
-    }
+//         // if (cur_dot.y + 1 < y_limit && image.getPixel(cur_dot.x, start_pos.y + 1) == fill_color) 
+//         // {
+//         //     image.setPixel(cur_dot.x, cur_dot.y + 1, cur_color_);
+//         //     dots_.pushBack(sf::Vector2u(cur_dot.x, cur_dot.y + 1)); 
+//         // }
+//     }
     
-}
+// }
 
 
 //================================================================================
@@ -513,23 +536,24 @@ void FillTool::Fill(sf::Color &fill_color, const Dot &start_pos, Canvas &canvas,
 class PolyLineWidget : public Widget
 {
     public:
-        PolyLineWidget(const Dot *end_pos, const sf::Color *cur_color):
+        PolyLineWidget( const Dot *end_pos, const sf::Color *cur_color):
+                        Widget(Vector(1.0, 1.0), Vector(0.0,  0.0), nullptr),
                         end_pos_(*end_pos), cur_color_(*cur_color){}
 
         ~PolyLineWidget(){}
 
-        virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform) {return true;};
-        virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform) {return true;}
-        virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform){return true;}
+        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform) {return true;};
+        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform) {return true;}
+        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform){return true;}
 
-        bool OnKeyboardPressed  (const KeyboardKey){return true;}
-        bool OnKeyboardReleased (const KeyboardKey){return true;}
+        virtual bool onKeyboardPressed  (const KeyboardKey){return true;}
+        virtual bool onKeyboardReleased (const KeyboardKey){return true;}
 
-        void PassTime           (const time_t delta_time){}
+        bool onTick             (const time_t delta_time){}
 
-        void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform)
+        void draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform)
         {
-            Transform last_trf = stack_transform.GetBack();
+            Transform last_trf = stack_transform.getBack();
             size_t size = arr_.getVertexCount();
 
             if (size == 0)
@@ -542,16 +566,17 @@ class PolyLineWidget : public Widget
             {
                 cur  = Dot(arr_[it].position.x, arr_[it].position.y);
                 next = Dot(arr_[it + 1].position.x, arr_[it + 1].position.y);
-                DrawLine(targert, cur + last_trf.offset, next + last_trf.offset, cur_color_);
+                drawLine(targert, cur + last_trf.offset, next + last_trf.offset, cur_color_);
             }
 
-            DrawLine(targert, next + last_trf.offset,  end_pos_ + last_trf.offset, cur_color_);
+            drawLine(targert, next + last_trf.offset,  end_pos_ + last_trf.offset, cur_color_);
 
         }
     
         sf::Color GetColor() const {return cur_color_;}
 
         sf::VertexArray arr_;
+
     private:
         const Dot &end_pos_;
        
@@ -563,11 +588,10 @@ PolyLineTool::PolyLineTool(const sf::Color *cur_color):
                   using_(false), start_pos_(), end_pos_(), 
                   preview_(new PolyLineWidget(&end_pos_, cur_color)), cur_color_(*cur_color){}
 
-void PolyLineTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canvas)
+void PolyLineTool::onMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
     if (state.state != ControlState::ButtonState::PRESSED)
         return;
-
 
     start_pos_ = end_pos_ = pos;
     preview_->arr_.append(sf::Vector2f(start_pos_.x, start_pos_.y));
@@ -575,12 +599,12 @@ void PolyLineTool::OnMainButton(ControlState state, const Dot &pos, Canvas &canv
     using_ = true;
 }
 
-void PolyLineTool::OnMove (const Dot &pos, Canvas &canvas)
+void PolyLineTool::onMove (const Dot &pos, Canvas &canvas)
 {
     end_pos_ = pos; 
 }
 
-void PolyLineTool::OnConfirm (Canvas &canvas)
+void PolyLineTool::onConfirm (Canvas &canvas)
 {
     if (using_) 
     {
@@ -595,8 +619,6 @@ void PolyLineTool::OnConfirm (Canvas &canvas)
         using_ = false;
         return;
     }
-
-    Dot real_pos = canvas.GetRealPos();
     
     Dot cur(0.0, 0.0); Dot next = Dot(preview_->arr_[size - 1].position.x, preview_->arr_[size - 1].position.y);
 
@@ -604,14 +626,18 @@ void PolyLineTool::OnConfirm (Canvas &canvas)
     {
         cur  = Dot(preview_->arr_[it].position.x, preview_->arr_[it].position.y);
         next = Dot(preview_->arr_[it + 1].position.x, preview_->arr_[it + 1].position.y);
-        DrawLine(canvas.background_, cur + real_pos,  next + real_pos, cur_color_);
+        
+        correctPos(cur, canvas);
+        correctPos(next, canvas);
+        
+        drawLine(canvas.getBackground(), cur,  next, cur_color_);
     }
 
     start_pos_ = end_pos_ = {0, 0};
     preview_->arr_.clear();
 }
 
-void PolyLineTool::OnCancel ()
+void PolyLineTool::onCancel ()
 {
     using_ = false;
 
@@ -619,7 +645,7 @@ void PolyLineTool::OnCancel ()
     start_pos_ = end_pos_ = {0, 0};
 }
 
-Widget* PolyLineTool::GetWidget() const
+Widget* PolyLineTool::getWidget() const
 {
     return preview_;
 }

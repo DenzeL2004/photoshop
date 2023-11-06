@@ -66,63 +66,65 @@ class Button : public Widget
     private:
 
         const sf::Texture* defineTexture() const;
-        void getDrawFormat(sf::VertexArray &vertex_array, const Transform &transform) const;
+        void getdrawFormat(sf::VertexArray &vertex_array, const Transform &transform) const;
 
         sf::Texture released_texture_, covered_texture_, 
                     pressed_texture_, disabled_texture_;
-        
+    
+    protected:
         time_t covering_time_;
 };
 
 
-// class ButtonList : public Button
-// {
-//     public:
-//         ButtonList (const char *released_texture_file, const char *covered_texture_file, 
-//                     const char *pressed_texture_file,  const char *disabled_texture_file,
-//                     const Action *action, 
-//                     const Dot &offset, const Vector &scale):
-//                     Button(released_texture_file, covered_texture_file, 
-//                            pressed_texture_file, disabled_texture_file, 
-//                            action, offset, scale), buttons_(){}
+class ButtonList : public Button
+{
+    public:
+        ButtonList (const char *released_texture_file, const char *covered_texture_file, 
+                    const char *pressed_texture_file,  const char *disabled_texture_file,
+                    const Action *action, 
+                    const Vector &size, const Vector &pos, 
+                    const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),
+                    const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0)):
+                    Button(released_texture_file, covered_texture_file, 
+                           pressed_texture_file, disabled_texture_file, 
+                           action, size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale), buttons_(){}
 
-//         virtual ~ButtonList()
-//         {
-//             size_t size = buttons_.GetSize();
-//             for (size_t it = 0; it < size; it++)
-//                 delete buttons_[it];
+        virtual ~ButtonList()
+        {
+            size_t size = buttons_.getSize();
+            for (size_t it = 0; it < size; it++)
+                delete buttons_[it];
 
-//             delete action_;
-//         }
+            delete action_;
+        }
 
 
-//         ButtonList(const ButtonList &other) = delete;
+        ButtonList(const ButtonList &other) = delete;
 
-//         virtual ButtonList &operator= (const ButtonList &other) = delete;
+        virtual ButtonList &operator= (const ButtonList &other) = delete;
 
-//         virtual bool OnMousePressed     (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
-//         virtual bool OnMouseMoved       (const double x, const double y, Container<Transform> &stack_transform);
-//         virtual bool OnMouseReleased    (const double x, const double y, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform);
+        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
 
-//         virtual bool OnKeyboardPressed  (const KeyboardKey);
-//         virtual bool OnKeyboardReleased (const KeyboardKey);
+        virtual bool onKeyboardPressed  (const KeyboardKey);
+        virtual bool onKeyboardReleased (const KeyboardKey);
 
-//         virtual void Draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;    
+        virtual bool onTick             (const time_t delta_time);
+
+        virtual void draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;    
         
-//         virtual void PassTime           (const time_t delta_time);
+        void addButton                  (Button *button);
 
-//         void AddButton                  (Button *button);
 
-//         Transform GetTransform() const {return transform_;}
-
-//         const Action *action_;
-//         Container<Button*> buttons_;
+        const Action *action_;
+        Container<Button*> buttons_;
         
-//     protected:
+    protected:
 
         
         
-// };
+};
 
 //================================================================================
 
@@ -143,22 +145,22 @@ class Click : public Action
 
 //================================================================================
 
-// class ShowButtonList : public Action
-// {
-//     public:
-//         ShowButtonList(Container<Button*> *buttons): buttons_(buttons){};
-//         ~ShowButtonList(){};
+class ShowButtonList : public Action
+{
+    public:
+        ShowButtonList(Container<Button*> *buttons): buttons_(buttons){};
+        ~ShowButtonList(){};
 
-//         void operator() () const
-//         {
-//             size_t size = buttons_->GetSize();
-//             for (size_t it = 0; it < size; it++)
-//                 (*buttons_)[it]->state_ = (*buttons_)[it]->prev_state_;
-//         }
+        void operator() () const
+        {
+            size_t size = buttons_->getSize();
+            for (size_t it = 0; it < size; it++)
+                (*buttons_)[it]->state_ = (*buttons_)[it]->prev_state_;
+        }
 
-//     private:
-//         Container<Button*> *buttons_; 
-// };
+    private:
+        Container<Button*> *buttons_; 
+};
 
 //================================================================================
 

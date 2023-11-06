@@ -55,7 +55,7 @@ void Button::draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
 
     sf::VertexArray vertex_array(sf::Quads, 4);
 
-    getDrawFormat(vertex_array, last_trf);
+    getdrawFormat(vertex_array, last_trf);
 
     target.draw(vertex_array, defineTexture());
 
@@ -64,7 +64,7 @@ void Button::draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
     return;
 }
 
-void Button::getDrawFormat(sf::VertexArray &vertex_array, const Transform &trf) const
+void Button::getdrawFormat(sf::VertexArray &vertex_array, const Transform &trf) const
 {
     sf::Vector2u texture_size = defineTexture()->getSize();
 
@@ -116,13 +116,12 @@ bool Button::onMouseMoved(const Vector &pos, Container<Transform> &stack_transfo
         return false;
 
     Transform trf(getLayoutBox().getPosition(), scale_);
-
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
-    Transform last_trf = stack_transform.getBack();
     
-    Dot new_pos = last_trf.applyTransform(pos);
+    Transform last_trf = stack_transform.getBack();
+    Dot local_pos = last_trf.applyTransform(pos);
 
-    bool flag = checkIn(new_pos, getLayoutBox().getSize());
+    bool flag = checkIn(local_pos, getLayoutBox().getSize());
 
     stack_transform.popBack();
 
@@ -156,9 +155,9 @@ bool Button::onMousePressed(const Vector &pos, const MouseKey key, Container<Tra
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();
     
-    Dot new_pos = last_trf.applyTransform(pos);
+    Dot local_pos = last_trf.applyTransform(pos);
 
-    bool flag = checkIn(new_pos, getLayoutBox().getSize());
+    bool flag = checkIn(local_pos, getLayoutBox().getSize());
 
     stack_transform.popBack();
     
@@ -215,165 +214,170 @@ bool Button::onTick(const time_t delta_time)
     covering_time_ += delta_time;
 }
 
+//================================================================================
 
+void ButtonList::draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
+{
+    Button::draw(target, stack_transform);
+    
+    size_t size = buttons_.getSize();
+    for (size_t it = 0; it < size; it++)
+    {
+        if (buttons_[it]->state_ != Button::ButtonState::DISABLED)
+            buttons_[it]->draw(target, stack_transform); 
+    }
+}
 
 //================================================================================
 
-// void ButtonList::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
-// {
-//     Button::Draw(target, stack_transform);
+bool ButtonList::onMouseMoved(const Vector &pos, Container<Transform> &stack_transform)
+{
+    if (state_ ==  Button::ButtonState::DISABLED)
+        return false;
+
+    Transform trf(getLayoutBox().getPosition(), scale_);
+    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
     
-//     size_t size = buttons_.GetSize();
-//     for (size_t it = 0; it < size; it++)
-//     {
-//         if (buttons_[it]->state_ != Button::ButtonState::DISABLED)
-//             buttons_[it]->Draw(target, stack_transform); 
-//     }
-// }
+    Transform last_trf = stack_transform.getBack();
+    Dot local_pos = last_trf.applyTransform(pos);
 
-// //================================================================================
+    stack_transform.popBack();
 
-// bool ButtonList::OnMouseMoved(const double x, const double y, Container<Transform> &stack_transform)
-// {
-//     if (state_ ==  Button::ButtonState::DISABLED)
-//         return false;
+    bool flag = checkIn(local_pos, getLayoutBox().getSize());
 
-//     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
-//     Transform last_trf = stack_transform.GetBack();
+    if (!flag)
+    { 
+        covering_time_ = 0;
+        state_ = prev_state_;
+    }
+    else
+    {
+        if (state_ !=  Button::ButtonState::COVERED)
+        {
+            prev_state_ = state_;
+            state_ =  Button::ButtonState::COVERED;
+        }
+    }
+
+
+    size_t size = buttons_.getSize();
+    for (size_t it = 0; it < size; it++)
+    {
+        if (state_ == Button::ButtonState::COVERED || state_ == Button::ButtonState::PRESSED)
+        {
+            buttons_[it]->state_ = buttons_[it]->prev_state_;
+            buttons_[it]->onMouseMoved(pos, stack_transform);
+        }
+        else
+            buttons_[it]->state_ = Button::ButtonState::DISABLED;
+    }
     
-//     Dot new_pos = last_trf.ApplyTransform({x, y});
-//     stack_transform.PopBack();
+    return flag;
+}
 
-//     bool flag = checkIn(new_pos);
+//================================================================================
 
-//     if (!flag)
-//     { 
-//         covering_time_ = 0;
-//         state_ = prev_state_;
-//     }
-//     else
-//     {
-//         if (state_ !=  Button::ButtonState::COVERED)
-//         {
-//             prev_state_ = state_;
-//             state_ =  Button::ButtonState::COVERED;
-//         }
-//     }
-
-
-//     size_t size = buttons_.GetSize();
-//     for (size_t it = 0; it < size; it++)
-//     {
-//         if (state_ == Button::ButtonState::COVERED || state_ == Button::ButtonState::PRESSED)
-//         {
-//             buttons_[it]->state_ = buttons_[it]->prev_state_;
-//             buttons_[it]->OnMouseMoved(x, y, stack_transform);
-//         }
-//         else
-//             buttons_[it]->state_ = Button::ButtonState::DISABLED;
-
-            
-//     }
+bool ButtonList::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+{
+    if (state_ == Button::ButtonState::DISABLED)
+        return false;
     
-//     return flag;
-// }
-
-// //================================================================================
-
-// bool ButtonList::OnMousePressed(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
-// {
-//     if (state_ == Button::ButtonState::DISABLED)
-//         return false;
+    bool flag = false;
     
-//     bool flag = false;
-    
-//     if (state_ == Button::ButtonState::PRESSED)
-//     {
-//         size_t size = buttons_.GetSize();
+    if (state_ == Button::ButtonState::PRESSED)
+    {
+        size_t size = buttons_.getSize();
 
-//         int last_presed = -1;
-//         for (size_t it = 0; it < size; it++)
-//         {
-//             if (buttons_[it]->state_ == Button::ButtonState::PRESSED) last_presed = it;
-//             flag |= buttons_[it]->OnMousePressed(x, y, key, stack_transform);
+        int last_presed = -1;
+        for (size_t it = 0; it < size; it++)
+        {
+            if (buttons_[it]->state_ == Button::ButtonState::PRESSED) last_presed = it;
+            flag |= buttons_[it]->onMousePressed(pos, key, stack_transform);
             
 
-//             buttons_[it]->prev_state_ = buttons_[it]->state_;
-//             buttons_[it]->state_ = Button::ButtonState::DISABLED;
-//         }
+            buttons_[it]->prev_state_ = buttons_[it]->state_;
+            buttons_[it]->state_ = Button::ButtonState::DISABLED;
+        }
 
-//         if (!flag & &last_presed != -1)
-//             buttons_[last_presed]->prev_state_ = Button::ButtonState::PRESSED;
+        if (!flag && last_presed != -1)
+            buttons_[last_presed]->prev_state_ = Button::ButtonState::PRESSED;
 
 
-//         state_      = Button::ButtonState::RELEASED;
-//         prev_state_ = Button::ButtonState::RELEASED;
+        state_      = Button::ButtonState::RELEASED;
+        prev_state_ = Button::ButtonState::RELEASED;
         
-//     }
+    }
    
-//     if (flag) return true;
+    if (flag) return true;
 
-//     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
-//     Transform last_trf = stack_transform.GetBack();
+    Transform trf(getLayoutBox().getPosition(), scale_);
+    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
     
-//     Dot new_pos = last_trf.ApplyTransform({x, y});
+    Transform last_trf = stack_transform.getBack();
+    Dot local_pos = last_trf.applyTransform(pos);
 
-//     flag = checkIn(new_pos);
-//     stack_transform.PopBack();
+    flag = checkIn(local_pos, getLayoutBox().getSize());
+    stack_transform.popBack();
 
-//     if (flag & &state_ != Button::ButtonState::PRESSED)
-//     {
-//         if (key == MouseKey::LEFT)
-//         {
-//             if (action_ != nullptr) (*action_)();
-//             state_ =  Button::ButtonState::PRESSED;
-//         }
-//     }
-//     else
-//         state_ =  Button::ButtonState::RELEASED;
+    if (flag && state_ != Button::ButtonState::PRESSED)
+    {
+        if (key == MouseKey::LEFT)
+        {
+            if (action_ != nullptr) (*action_)();
+            state_ =  Button::ButtonState::PRESSED;
+        }
+    }
+    else
+        state_ =  Button::ButtonState::RELEASED;
     
-  
+    return flag;
+}
 
-//     return flag;
-// }
-
-// //================================================================================
+//================================================================================
 
 
-// bool ButtonList::OnMouseReleased(const double x, const double y, const MouseKey key, Container<Transform> &stack_transform)
-// {
-//     if (state_ == Button::ButtonState::DISABLED)
-//         return false;
+bool ButtonList::onMouseReleased(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+{
+    if (state_ == Button::ButtonState::DISABLED)
+        return false;
 
-//     return true;
-// }
+    return true;
+}
 
-// //================================================================================
+//================================================================================
 
-// bool ButtonList::OnKeyboardPressed(const KeyboardKey key)
-// {
-//     printf("ButtonList: mouse keyboard kye pressed\n");
-//     return false;
-// }
+bool ButtonList::onKeyboardPressed(const KeyboardKey key)
+{
+    printf("ButtonList: mouse keyboard kye pressed\n");
+    return false;
+}
 
-// //================================================================================
+//================================================================================
 
-// bool ButtonList::OnKeyboardReleased(const KeyboardKey key)
-// {
-//     printf("ButtonList: mouse keyboard kye released\n");
-//     return false;
-// }
+bool ButtonList::onKeyboardReleased(const KeyboardKey key)
+{
+    printf("ButtonList: mouse keyboard kye released\n");
+    return false;
+}
 
-// //================================================================================
+//================================================================================
 
-// void ButtonList::PassTime(const time_t delta_time)
-// {
-//     covering_time_ += delta_time;
-// }
+bool ButtonList::onTick(const time_t delta_time)
+{
+    covering_time_ += delta_time;
 
-// //================================================================================
+    size_t size = buttons_.getSize();
+    for (size_t it = 0; it < size; it++)
+    {
+        buttons_[it]->onTick(delta_time);
+    }
 
-// void ButtonList::AddButton(Button *button)
-// {
-//     buttons_.PushBack(button);
-// }
+    return false;
+}
+
+//================================================================================
+
+void ButtonList::addButton(Button *button)
+{
+    buttons_.pushBack(button);
+}

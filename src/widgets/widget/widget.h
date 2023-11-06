@@ -78,41 +78,4 @@ class Widget
         
 };
 
-class WidgetContainer: public Widget
-{
-
-    public:
-        WidgetContainer(const Vector &size, const Vector &pos, 
-                        const Widget* parent, const Vector &parent_size = Vector(1.0, 1.0), 
-                        const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0)):
-                        Widget(size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale),
-                        widgets_(){}
-
-
-        ~WidgetContainer()
-        {
-            size_t size = widgets_.getSize();
-            for (size_t it = 0; it < size; it++)
-                delete widgets_[it];
-        }
-
-        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform);
-        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform); 
-
-        virtual bool onKeyboardPressed  (const KeyboardKey);
-        virtual bool onKeyboardReleased (const KeyboardKey);
-
-        virtual void draw               (sf::RenderTarget &target, Container<Transform> &stack_transform); 
-
-        virtual bool onTick             (const time_t delta_time);
-
-        void addWidget                  (Widget *ptr);
-        virtual void SetFocus           (bool value);
-       
-    private:
-
-        Container<Widget*> widgets_;
-};
-
 #endif

@@ -9,7 +9,7 @@ class Window : public Widget
 
         Window( const char *path_texture,
                 const Vector &size, const Vector &pos, 
-                const Widget *parent, const Vector &parent_size, 
+                const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0), 
                 const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
                 
 

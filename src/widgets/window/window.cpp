@@ -20,8 +20,8 @@ Window::Window( const char *path_texture,
 void Window::draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
-
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    
     Transform last_trf = stack_transform.getBack();    
 
     sf::VertexArray vertex_array(sf::Quads, 4);

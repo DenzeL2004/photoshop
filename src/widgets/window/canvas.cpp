@@ -1,33 +1,21 @@
 #include "canvas.h"
+#include "canvas_config.h"
+#include "../../app/config.h"
+
+#include "tools/tools.h"
+#include "filters/filter.h"
 
 
-void Tool::Draw(sf::RenderTarget &target, const Dot &pos)
-{
-    switch (type_)
-    {
-        case Tool::Type::Pen:
-            drawPixel(target, pos, color_);
-            break;
-
-        case Tool::Type::Brash:
-            drawCircle(target, pos, thickness_, color_);
-            break;
-        
-        default:
-            break;
-    }
-}
-
-Canvas::Canvas( Tool *tool, const Vector &canvas_size,
+Canvas::Canvas( ToolPalette *tool_palette, FilterPalette *filter_palette,
+                const Vector &canvas_size,
                 const Vector &size, const Vector &pos, 
                 const Widget *parent, const Vector &parent_size, 
                 const Vector &origin, const Vector &scale):
                 Window(Debug_texture, size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale),
-                tool_(tool),
+                tool_palette_(*tool_palette), filter_palette_(*filter_palette), 
+                filter_mask_(*(new FilterMask(canvas_size.x, canvas_size.y))),
                 background_(), canvas_size_(canvas_size), real_pos_(0, 0) 
 {
-    assert(tool != nullptr && "tool is nullptr");
-
     background_.create((uint32_t)canvas_size.x, (uint32_t)canvas_size.y);
 
     sf::RectangleShape rec(sf::Vector2f((float)canvas_size.x, (float)canvas_size.y));
@@ -35,6 +23,8 @@ Canvas::Canvas( Tool *tool, const Vector &canvas_size,
     rec.setFillColor(sf::Color::White);
 
     background_.draw(rec);
+
+    filter_mask_.fill(true);
 }
 
 //=======================================================================================
@@ -42,8 +32,8 @@ Canvas::Canvas( Tool *tool, const Vector &canvas_size,
 void Canvas::draw(sf::RenderTarget &target, Container<Transform>& stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
-
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    
     Transform last_trf = stack_transform.getBack();    
 
     sf::VertexArray vertex_array(sf::Quads, 4);
@@ -51,6 +41,16 @@ void Canvas::draw(sf::RenderTarget &target, Container<Transform>& stack_transfor
     getDrawFormat(vertex_array, last_trf);
 
     target.draw(vertex_array, &(background_.getTexture()));
+
+    if (focused_)
+    {
+        Tool *active_tool = tool_palette_.getActiveTool(); 
+        if (active_tool) 
+        {
+            Widget *preview = active_tool->getWidget();
+            if (preview) preview->draw(target, stack_transform);
+        }
+    }
 
     stack_transform.popBack();
 }
@@ -76,7 +76,6 @@ void Canvas::getDrawFormat(sf::VertexArray &vertex_array, const Transform &trf) 
     
 }
 
-
 //================================================================================
 
 bool Canvas::onMouseMoved(const Vector& pos, Container<Transform> &stack_transform)
@@ -91,11 +90,8 @@ bool Canvas::onMouseMoved(const Vector& pos, Container<Transform> &stack_transfo
     bool flag = checkIn(local_pos, getLayoutBox().getSize());
     if (flag)
     {
-        if (tool_->state_ == Tool::State::Hold)
-        {
-            Vector canvas_pos = getCanvaseCoord(local_pos);
-            tool_->Draw(background_, canvas_pos);
-        }
+        Tool *active_tool = tool_palette_.getActiveTool(); 
+        if (active_tool) active_tool->onMove(local_pos, *this);
     }
 
     stack_transform.popBack();
@@ -108,18 +104,20 @@ bool Canvas::onMouseMoved(const Vector& pos, Container<Transform> &stack_transfo
 bool Canvas::onMousePressed(const Vector& pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
-
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    
     Transform last_trf = stack_transform.getBack();    
 
     Dot local_pos = last_trf.applyTransform(pos);
 
     bool flag = checkIn(local_pos, getLayoutBox().getSize());
-    if (flag)
+    if (flag && key == MouseKey::LEFT)
     {
-        tool_->state_ = Tool::State::Hold;
-        tool_->hold_pos_ = getCanvaseCoord(local_pos);
+        Tool *active_tool = tool_palette_.getActiveTool(); 
+        if (active_tool) active_tool->onMainButton({ControlState::ButtonState::PRESSED}, local_pos, *this);
     }
+    
+    focused_ = flag;
 
     stack_transform.popBack();
 
@@ -130,14 +128,17 @@ bool Canvas::onMousePressed(const Vector& pos, const MouseKey key, Container<Tra
 
 bool Canvas::onMouseReleased(const Vector& pos, const MouseKey key, Container<Transform> &stack_transform)
 {
-    tool_->state_ = Tool::State::Default;
+    if (key == MouseKey::LEFT)
+    {
+        Tool *active_tool = tool_palette_.getActiveTool(); 
+        if (active_tool) active_tool->onConfirm(*this);
+    }
 
     return true;
 }
 
 Dot Canvas::getCanvaseCoord(const Vector &local_pos) const
 {
-
     return Dot(real_pos_.x + local_pos.x, canvas_size_.y - (real_pos_.y + local_pos.y) );
 }
 
@@ -145,7 +146,27 @@ Dot Canvas::getCanvaseCoord(const Vector &local_pos) const
 
 bool Canvas::onKeyboardPressed(const KeyboardKey key)
 {
-    printf("Canvas: mouse keyboard kye pressed\n");
+    printf("asddsa\n");
+    if (filter_palette_.getActive())
+    {
+       
+        Filter *filter = nullptr;
+        if (key == KeyboardKey::L)
+        {
+            filter  = filter_palette_.getFilter(FilterPalette::FilterType::LIGHT);
+            filter_palette_.setLastFilter(FilterPalette::FilterType::LIGHT);
+        }
+
+        if (key == KeyboardKey::F)
+            filter  = filter_palette_.getLastFilter();
+        
+        if (filter)
+        {
+            filter->applyFilter(*this, filter_mask_);
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -153,7 +174,22 @@ bool Canvas::onKeyboardPressed(const KeyboardKey key)
 
 bool Canvas::onKeyboardReleased(const KeyboardKey key)
 {
-    printf("Canvas: mouse keyboard kye released\n");
+   if (key == KeyboardKey::ENTER)
+    {
+        Tool *active_tool = tool_palette_.getActiveTool(); 
+        if (active_tool) active_tool->onConfirm(*this);
+
+        return true;
+    }
+
+    if (key == KeyboardKey::ESC)
+    {
+        Tool *active_tool = tool_palette_.getActiveTool(); 
+        if (active_tool) active_tool->onCancel();
+
+        return true;
+    }
+
     return false;
 }
 
@@ -173,6 +209,11 @@ Vector Canvas::getCanvasSize () const
     return canvas_size_;
 }
 
+FilterMask& Canvas::getFilterMask ()
+{
+    return filter_mask_;
+}
+
 void Canvas::correctCanvasRealPos(const Vector &abs_size)
 {
     if (real_pos_.x < Eps)
@@ -188,180 +229,218 @@ void Canvas::correctCanvasRealPos(const Vector &abs_size)
         real_pos_.y = canvas_size_.y - abs_size.y;
 }
 
-//================================================================================
+sf::RenderTexture& Canvas::getBackground()
+{
+    return background_;
+}
 
 // //=======================================================================================
 // // //CONTAINER WINDOW
 
-// void CanvaseManager::Draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
-// {
-//     Window::Draw(target, stack_transform);
+CanvasManager::CanvasManager(   const char *path_texture,
+                                const Vector &size, const Vector &pos, 
+                                const Widget *parent, const Vector &parent_size,  
+                                const Vector &origin, const Vector &scale):
+                                Window(path_texture, size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale),
+                                canvases_(), delete_canvas_(false), cnt_(){}
 
-//     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
 
-//     size_t size = canvases_.GetSize();
-//     for (size_t it = 0; it < size; it++)
-//         canvases_[it]->Draw(target, stack_transform);
 
-//     stack_transform.PopBack();
+void CanvasManager::draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
+{
+    Window::draw(target, stack_transform);
 
-//     return;
-// }
+    Transform trf(getLayoutBox().getPosition(), scale_);
+    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
 
-// //=======================================================================================
+    size_t size = widgets_.getSize();
+    for (size_t it = 0; it < size; it++)
+        widgets_[it]->draw(target, stack_transform);
 
-// bool CanvaseManager::onMouseMoved(const Vector& pos, Container<Transform> &stack_transform)
-// {
-//     size_t size = canvases_.GetSize();
-//     if (size == 0) return false;
+    stack_transform.popBack();
+
+    return;
+}
+
+//=======================================================================================
+
+bool CanvasManager::onMouseMoved(const Vector &pos, Container<Transform> &stack_transform)
+{
+    size_t size = widgets_.getSize();
+    if (size == 0) return false;
     
-//     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
-//     Transform last_trf = stack_transform.GetBack();
+    Transform trf(getLayoutBox().getPosition(), scale_);
+    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+
+    widgets_[size - 1]->onMouseMoved(pos, stack_transform);
     
-//     Dot local_pos = last_trf.ApplyTransform({pos});
+    stack_transform.popBack();
 
-//     canvases_[size - 1]->onMouseMoved(pos, stack_transform);
+    return true;
+}
+
+//================================================================================
+
+bool CanvasManager::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+{
+    Transform trf(getLayoutBox().getPosition(), scale_);
+    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+
+    bool flag = false;
+
+    int size = (int)widgets_.getSize();
+    for (int it = size - 1; it >= 0; it--)
+        widgets_[it]->setFocus(false);
+
+    for (int it = size - 1; it >= 0; it--)
+    {
+        delete_canvas_ = false;
+        if (widgets_[it]->onMousePressed(pos, key, stack_transform))
+        {
+            widgets_.drown(it);
+            canvases_.drown(it);
+            
+            if (delete_canvas_)
+            {
+                widgets_.popBack();
+                canvases_.popBack();
+            }
+
+            break;
+        }
+    }
+
+    stack_transform.popBack();
+
+    return flag;
+}
+
+//================================================================================
+
+bool CanvasManager::onMouseReleased(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+{
+    Transform trf(getLayoutBox().getPosition(), scale_);
+    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+
+    int size = (int)widgets_.getSize();
+    for (int it = size - 1; it >= 0; it--)
+    {
+        widgets_[it]->onMouseReleased(pos, key, stack_transform);
+    }
+
+    stack_transform.popBack();
+
+    return true;
+}
+
+//================================================================================
+
+bool CanvasManager::onKeyboardPressed(const KeyboardKey key)
+{
+    size_t size = widgets_.getSize();
+    if (size == 0)
+        return false;
+
+    return widgets_[size - 1]->onKeyboardPressed(key);
+}
+
+//================================================================================
+
+bool CanvasManager::onKeyboardReleased(const KeyboardKey key)
+{
+    size_t size = widgets_.getSize();
+    if (size == 0)
+        return false;
+
+    return widgets_[size - 1]->onKeyboardReleased(key);
+}
+//================================================================================
+
+void CanvasManager::createCanvas(ToolPalette *tool_palette, FilterPalette *filter_palette)
+{
+    assert(tool_palette != nullptr && "tool_palette is nullptr");
+    assert(filter_palette != nullptr && "filter_palette is nullptr");
+
+    char *buf = (char*)calloc(BUFSIZ, sizeof(char));
+    if (!buf)
+    {
+        PROCESS_ERROR(ERR_MEMORY_ALLOC, "allocate memory to buf failed\n");
+        return;
+    }
+
+    cnt_++;
+    sprintf(buf, "canvas %lu", cnt_);
+
+    Frame *frame = new Frame(   "src/img/frame.png", Title(Title_offset, buf, sf::Color::Black), 
+                                Frame_size, Frame_pos, this);
+
+    Button *close_btn = new Button( Cross_Button_Release, Cross_Button_Covered, 
+                                    Cross_Button_Release, Cross_Button_Covered, 
+                                    new Click(&delete_canvas_), 
+                                    Close_button_size, Close_button_pos, frame);
+
+    Canvas *canvas = new Canvas(    tool_palette, filter_palette, Canvas_size,
+                                    Canvas_view_size, Canvas_pos, frame);
+
+    canvases_.pushBack(canvas);
+
     
-//     stack_transform.PopBack();
+    Scrollbar *scroll_hor = new Scrollbar(  canvas, Scrollbar::Type::HORIZONTAL, 
+                                            Scroll_hor_size, Scroll_hor_pos, frame);
 
-//     return true;
-// }
+    Button *left_btn = new Button(  Left_Scl_Rel, Left_Scl_Prs, Left_Scl_Rel, Left_Scl_Prs,
+                                    new ScrollCanvas(Dot(-5.0, 0.0), canvas), 
+                                    Buttons_scroll_size, Left_pos, scroll_hor);
 
-// //================================================================================
+    Button *right_btn = new Button( Right_Scl_Rel, Right_Scl_Prs, Right_Scl_Rel, Right_Scl_Prs, 
+                                    new ScrollCanvas(Vector(5.0, 0.0), canvas), 
+                                    Buttons_scroll_size, Right_pos, scroll_hor);
 
-// bool CanvaseManager::onMousePressed(const Vector& pos, const MouseKey key, Container<Transform> &stack_transform)
-// {
-//     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
-//     Transform last_trf = stack_transform.GetBack();
+    Button *hor_btn = new Button(   Hor_Scl, Hor_Scl, Hor_Scl, Hor_Scl, 
+                                    new ScrollCanvas(Dot(0, 0), canvas), 
+                                    Buttons_scroll_size, Vector(0.0, 0.0), scroll_hor);
     
-//     Dot local_pos = last_trf.ApplyTransform({pos});
+    Scrollbar *scroll_ver = new Scrollbar(  canvas, Scrollbar::Type::VERTICAL, 
+                                            Scroll_ver_size, Scroll_ver_pos, frame);
 
-//     bool flag = CheckIn(local_pos);
+    Button *up_btn = new Button(    Up_Scl_Rel, Up_Scl_Prs, Up_Scl_Rel, Up_Scl_Prs, 
+                                    new ScrollCanvas(Dot(0.0, -5.0), canvas), 
+                                    Buttons_scroll_size, Up_pos, scroll_ver);
 
-//     if (flag)
-//     {
-//         int size = (int)canvases_.GetSize();
-//         for (int it = size - 1; it >= 0; it--)
-//         {
-//             delte_canvase_ = false;
-//             if (canvases_[it]->onMousePressed(pos, key, stack_transform))
-//             {
-//                 canvases_.Drown(it);
-//                 if (delte_canvase_)
-//                     canvases_.PopBack();
+    Button *down_btn = new Button(  Down_Scl_Rel, Down_Scl_Prs, Down_Scl_Rel, Down_Scl_Prs, 
+                                    new ScrollCanvas(Vector(0.0, 5.0), canvas), 
+                                    Buttons_scroll_size, Down_pos, scroll_ver);
 
-//                 break;
-//             }
-//         }
-//     }
+    Button *ver_btn = new Button(   Ver_Scl, Ver_Scl, Ver_Scl, Ver_Scl, 
+                                    new ScrollCanvas(Dot(0, 0), canvas), 
+                                    Buttons_scroll_size, Vector(0.0, 0.0), scroll_ver);
 
-//     stack_transform.PopBack();
 
-//     return flag;
-// }
+    scroll_hor->addButtons(left_btn, right_btn, hor_btn);
+    scroll_ver->addButtons(up_btn, down_btn, ver_btn);
 
-// //================================================================================
-
-// bool CanvaseManager::onMouseReleased(const Vector& pos, const MouseKey key, Container<Transform> &stack_transform)
-// {
+    frame->addWidget(close_btn);
+    frame->addWidget(scroll_hor);
+    frame->addWidget(scroll_ver);
+    frame->addWidget(canvas);
     
-//     stack_transform.PushBack(transform_.ApplyPrev(stack_transform.GetBack()));
-//     Transform last_trf = stack_transform.GetBack();
-//     Dot local_pos = last_trf.ApplyTransform({pos});
+    frame->onUpdate(getLayoutBox());
 
-//     int size = (int)canvases_.GetSize();
-//     for (int it = size - 1; it >= 0; it--)
-//     {
-//         canvases_[it]->onMouseReleased(pos, key, stack_transform);
-//     }
+    widgets_.pushBack(frame);
+}
 
-//     stack_transform.PopBack();
+//================================================================================
 
-//     return true;
-// }
-//        Dot position_;
-// //================================================================================
+Canvas* CanvasManager::getActiveCanvas()
+{
+    size_t size = canvases_.getSize();
+    if (size == 0)
+        return nullptr;
 
-// bool CanvaseManager::onKeyboardPressed(const KeyboardKey key)
-// {
-//     return false;
-// }
+    return canvases_[size - 1];
+}
 
-// //================================================================================
-
-// bool CanvaseManager::onKeyboardReleased(const KeyboardKey key)
-// {
-//     printf("Window: mouse keyboard kye released\n");
-//     return false;
-// }
-// //================================================================================
-
-// void CanvaseManager::CreateCanvase(Tool *tool)
-// {
-//     assert(tool != nullptr && "tool is nullptr");
-
-//     char *buf = (char*)calloc(BUFSIZ, sizeof(char));
-//     if (!buf)
-//     {
-//         PROCESS_ERROR(ERR_MEMORY_ALLOC, "allocate memory to buf failed\n");
-//         return;
-//     }
-
-//     cnt_++;
-//     sprintf(buf, "canvas %lu", cnt_);
-
-//     Button *close_btn = new Button(Cross_Button_Release, Cross_Button_Covered, 
-//                                       Cross_Button_Release, Cross_Button_Covered, 
-//                                       new Click(&delte_canvase_), 
-//                                       Cross_Button_Offset, Cross_Button_Scale);
-
-//     Canvas *new_canvase = new Canvas(Width_Canvase, Hieght_Canvase, tool, Canvase_Offset, Canvase_Scale);
-
-//     WidgetContainer *scrolls = new WidgetContainer(Dot(0.02, 0.05), Vector(0.95, 0.87));
-    
-
-//     Button *left_btn = new Button(  Left_Scl, Left_Scl, Left_Scl, Left_Scl, 
-//                                     new ScrollCanvas(Dot(-0.05, 0), new_canvase), 
-//                                     Dot(0.0, 0.0), Vector(0.03, 0.03));
-
-//     Button *right_btn = new Button( Right_Scl, Right_Scl, Right_Scl, Right_Scl, 
-//                                     new ScrollCanvas(Vector(0.05, 0), new_canvase), 
-//                                     Dot(0.92, 0), Vector(0.03, 0.03));
-
-//     Button *hor_btn = new Button(   Hor_Scl, Hor_Scl, Hor_Scl, Hor_Scl, 
-//                                     new ScrollCanvas(Dot(0, 0), new_canvase), 
-//                                     Dot(0.03, 0.0), Vector(1.0, 0.03));
-
-//     Scrollbar *scroll_hor = new Scrollbar(left_btn, right_btn, hor_btn, new_canvase, 
-//                                      Scrollbar::Type::HORIZONTAL, Dot(0.00, 0.00), Vector(1.0, 1.0));
-
-//     Button *up_btn = new Button(Up_Scl, Up_Scl, Up_Scl, Up_Scl, 
-//                                 new ScrollCanvas(Dot(0.0, -0.05), new_canvase), 
-//                                 Dot(0.0, 0.0), Vector(0.03, 0.03));
-
-//     Button *down_btn = new Button(Down_Scl, Down_Scl, Down_Scl, Down_Scl, 
-//                                 new ScrollCanvas(Vector(0.0, 0.05), new_canvase), 
-//                                 Dot(0, 0.97), Vector(0.03, 0.03));
-
-//     Button *ver_btn = new Button(Ver_Scl, Ver_Scl, Ver_Scl, Ver_Scl, 
-//                                 new ScrollCanvas(Dot(0, 0), new_canvase), 
-//                                 Dot(0.0, 0.03), Vector(0.03, 1.0));
-
-//     Scrollbar *scroll_ver = new Scrollbar(up_btn, down_btn, ver_btn, new_canvase, 
-//                                      Scrollbar::Type::VERTICAL, Dot(0.96, 0.05), Vector(1.0, 1.0));
-   
-
-//     scrolls->AddWidget(new_canvase);
-//     scrolls->AddWidget(scroll_hor);
-//     scrolls->AddWidget(scroll_ver);
-
-//     Widget *new_frame = new Frame(Frame_Texture, close_btn, {buf, sf::Color::Black}, 
-//                                   scrolls, Canvase_Frame_Offset, Canvase_Frame_Scale);
-
-//     canvases_.PushBack(new_frame);
-// }
-
-// //================================================================================
+//================================================================================
 
 Scrollbar::Scrollbar(   Canvas *canvas, const Type type,
                         const Vector &size, const Vector &pos, 
@@ -600,6 +679,9 @@ void Scrollbar::onUpdate (const LayoutBox &parent_layout)
 
     if (type_ == Scrollbar::Type::VERTICAL)
         layout_box->setSize(Vector(size.x, layout_box->getSize().y));
+
+    if (type_ == Scrollbar::Type::HORIZONTAL)
+        layout_box->setSize(Vector(layout_box->getSize().x, size.y));
     
     bottom_button_->onUpdate(*layout_box);
     center_button_->onUpdate(*layout_box);

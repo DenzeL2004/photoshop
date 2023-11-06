@@ -52,23 +52,22 @@ bool Frame::onMouseMoved(const Vector &pos, Container<Transform> &stack_transfor
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();    
 
-    Dot new_coord = last_trf.applyTransform(pos);
-    
+    Dot local_pos = last_trf.applyTransform(pos);
+
+    size_t cnt = widgets_.getSize();
+    for (size_t it = 0; it < cnt; it++)
+    {
+        widgets_[it]->onMouseMoved(pos, stack_transform);
+    }
+
     if(state_)
     {
         if (state_ == Borders::TOP)
-            moveFrame(new_coord);
+            moveFrame(local_pos);
         else
-            resizeFrame(new_coord);
+            resizeFrame(local_pos);
     }  
-    else
-    {
-        size_t cnt = widgets_.getSize();
-        for (size_t it = 0; it < cnt; it++)
-        {
-            widgets_[it]->onMouseMoved(pos, stack_transform);
-        }
-    }
+    
 
     stack_transform.popBack();
 
@@ -93,7 +92,7 @@ void Frame::clickOnBorder()
 }
 
 
-void Frame::resizeFrame(const Dot &new_coord)
+void Frame::resizeFrame(const Dot &local_pos)
 {
     LayoutBox* layout_box = &getLayoutBox();
 
@@ -101,12 +100,12 @@ void Frame::resizeFrame(const Dot &new_coord)
 
     Vector pos = layout_box->getPosition();
 
-    Vector delta = new_coord - prev_pos_;
+    Vector delta = local_pos - prev_pos_;
    
     if (state_ & Frame::Borders::LEFT) 
     {
         if (size.x <= Size_min_limit.x + Eps) return;
-        moveFrame(Dot(new_coord.x, hold_pos_.y));
+            moveFrame(Dot(local_pos.x, hold_pos_.y));
         
         delta.x = pos.x - layout_box->getPosition().x;
     }    
@@ -134,7 +133,7 @@ void Frame::resizeFrame(const Dot &new_coord)
         else
             layout_box->setSize(new_size);
 
-        prev_pos_ = new_coord;
+        prev_pos_ = local_pos;
     }
     else
         layout_box->setPosition(pos);
@@ -148,11 +147,11 @@ void Frame::resizeFrame(const Dot &new_coord)
 }
 
 
-void Frame::moveFrame(const Dot &new_coord)
+void Frame::moveFrame(const Dot &local_pos)
 {
     LayoutBox* layout_box = &getLayoutBox();
 
-    Vector delta = new_coord - hold_pos_;
+    Vector delta = local_pos - hold_pos_;
         
     Vector new_pos = getLayoutBox().getPosition() + delta;
     
@@ -160,6 +159,7 @@ void Frame::moveFrame(const Dot &new_coord)
     {
         Vector parent_size = parent_->getLayoutBox().getSize();
         Vector size = layout_box->getSize();
+
         if (new_pos.x > Eps && new_pos.x + size.x <= parent_size.x && 
             new_pos.y > Eps && new_pos.y + size.y <= parent_size.y)
         {
@@ -178,8 +178,6 @@ bool Frame::onMousePressed(const Vector &pos, const MouseKey key, Container<Tran
     Transform trf(getLayoutBox().getPosition(), scale_);
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
 
-    Transform last_trf = stack_transform.getBack();    
-
     bool flag = false;
 
     size_t cnt = widgets_.getSize();
@@ -190,14 +188,16 @@ bool Frame::onMousePressed(const Vector &pos, const MouseKey key, Container<Tran
 
     if (!flag)
     {
-        Dot new_coord = last_trf.applyTransform(pos);
-        flag = checkIn(new_coord, getLayoutBox().getSize());    
+        Transform last_trf = stack_transform.getBack(); 
+
+        Dot local_pos = last_trf.applyTransform(pos);
+        flag = checkIn(local_pos, getLayoutBox().getSize()); 
 
         if (flag)
         {
             if (key == MouseKey::LEFT)
             {
-                hold_pos_ = prev_pos_ = new_coord;
+                hold_pos_ = prev_pos_ = local_pos;
                 clickOnBorder();
 
                 if (!state_) state_ = Borders::TOP;
@@ -236,7 +236,9 @@ bool Frame::onKeyboardPressed(const KeyboardKey key)
 {
     size_t cnt = widgets_.getSize();
     for (size_t it = 0; it < cnt; it++)
-        widgets_[it]->onKeyboardReleased(key);
+        widgets_[it]->onKeyboardPressed(key);
+
+    return false;
 }
 
 //================================================================================
@@ -246,6 +248,8 @@ bool Frame::onKeyboardReleased(const KeyboardKey key)
     size_t cnt = widgets_.getSize();
     for (size_t it = 0; it < cnt; it++)
         widgets_[it]->onKeyboardReleased(key);
+
+    return false;
 }
 
 //================================================================================
@@ -255,8 +259,6 @@ bool Frame::onTick(const time_t delta_time)
     size_t cnt = widgets_.getSize();
     for (size_t it = 0; it < cnt; it++)
         widgets_[it]->onTick(delta_time);
-
-
     return false;
 } 
 
