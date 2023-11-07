@@ -105,9 +105,11 @@ class AppWindow: public Window
 
         virtual ~AppWindow()
         {
-            delete button_create_;
-            delete tools_button_;
-            delete colors_button_;
+            size_t size = widgets_.getSize(); 
+            for (size_t it = 0; it < size; it++)
+            {
+                delete widgets_[it];
+            }
         }
 
         virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
@@ -123,18 +125,19 @@ class AppWindow: public Window
 
     protected:
         
+        bool handlHotKey(const KeyboardKey key);
+
+        Container <Widget*> widgets_;
+
         CanvasManager canvas_manager_;
-        Button *button_create_;
-
-        ButtonList *tools_button_;
-        ButtonList *colors_button_;
-
+        
         ToolPalette tool_pallette_;
 
-        ButtonList *filters_button_;
         FilterPalette filter_pallette_;
 
-        ColorPalette *colors_;
+        ColorPalette colors_;
+
+        bool active_hot_key_;
 };
 
 

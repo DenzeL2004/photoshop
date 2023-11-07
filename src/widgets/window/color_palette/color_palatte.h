@@ -3,20 +3,14 @@
 
 #include "../../widget/widget.h"
 
-const double Max_ray = 256.0;
-const double Min_ray = 5.0;
+const size_t Color_limit = 256;
 
 class ColorPalette : public Widget
 {
     public:
         ColorPalette(   const Vector &size, const Vector &pos, 
                         const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),
-                        const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0)):
-                        Widget(size, pos, parent, parent_size, origin, scale),
-                        colors_(), active_color_(sf::Color::White)
-                        {
-                            colors_= new sf::Color[256 * 6];
-                        }
+                        const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
 
         virtual ~ColorPalette()
         {
@@ -33,9 +27,13 @@ class ColorPalette : public Widget
 
         virtual void draw               (sf::RenderTarget &target, Container<Transform> &stack_transform);  
 
+        sf::Color getActiveColor () {return active_color_;}
+
     private:
         
-        void getDrawFormat(const sf::Texture &texture, sf::VertexArray &vertex_array, const Transform &trf) const;
+        void getDrawFormat(sf::VertexArray &vertex_array, const Transform &trf) const;
+
+        sf::Texture texture_;
 
         sf::Color *colors_;
         sf::Color active_color_;

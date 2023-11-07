@@ -95,7 +95,7 @@ class LineWidget : public Widget
             drawLine(targert, start_pos_ + last_trf.offset, end_pos_ + last_trf.offset, cur_color_);
         }
     
-        sf::Color GetColor() const {return cur_color_;}
+        
 
     private:
        const Dot &start_pos_;
@@ -183,7 +183,7 @@ class SquareWidget : public Widget
             drawRectangle(targert, start_pos_ + last_trf.offset, end_pos_ + last_trf.offset, cur_color_);     
         }
     
-        sf::Color GetColor() const {return cur_color_;}
+        
 
     private:
        const Dot &start_pos_;
@@ -280,7 +280,7 @@ class CircleWidget : public Widget
             drawCircle(targert, center, (float)rad, cur_color_);
         }
     
-        sf::Color GetColor() const {return cur_color_;}
+        
 
     private:
        const Dot &start_pos_;
@@ -594,7 +594,7 @@ class PolyLineWidget : public Widget
 
         }
     
-        sf::Color GetColor() const {return cur_color_;}
+        
 
         sf::VertexArray arr_;
 

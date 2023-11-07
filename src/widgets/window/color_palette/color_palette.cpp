@@ -1,15 +1,12 @@
 
 #include "color_palatte.h"
 
-const size_t Color_limit = 256;
-
-void ColorPalette::draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
+ColorPalette::ColorPalette( const Vector &size, const Vector &pos, 
+                            const Widget *parent, const Vector &parent_size,
+                            const Vector &origin, const Vector &scale):
+                            Widget(size, pos, parent, parent_size, origin, scale),
+                            colors_(new sf::Color[Color_limit * 6]), active_color_(sf::Color::White), texture_()
 {
-    LayoutBox *layout_box = &getLayoutBox();
-    
-    Transform trf(layout_box->getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
-    
     size_t offset = 0;
 
     for (size_t ray = 0; ray < Color_limit; ray++)
@@ -22,30 +19,35 @@ void ColorPalette::draw(sf::RenderTarget &target, Container<Transform> &stack_tr
         colors_[5 * Color_limit + ray] = sf::Color(Color_limit - 1, 0, Color_limit - ray - 1);
     }
 
-    Transform last_trf = stack_transform.getBack();
-
     sf::Image img;
     img.create(Color_limit * 6, 1);
 
     for (size_t it = 0; it < Color_limit * 6; it++)
         img.setPixel(it, 0, colors_[it]);
 
-    sf::Texture texture;
-    texture.loadFromImage(img);
+    texture_.loadFromImage(img);
+}
+
+
+void ColorPalette::draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
+{   
+    Transform trf(getLayoutBox().getPosition(), scale_);
+    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    
+    Transform last_trf = stack_transform.getBack();
    
     sf::VertexArray vertex_array(sf::Quads, 4);
+    getDrawFormat(vertex_array, last_trf);
 
-    getDrawFormat(texture, vertex_array, last_trf);
-
-    target.draw(vertex_array, &texture);
+    target.draw(vertex_array, &texture_);
 
     stack_transform.popBack();
 }
 
 
-void ColorPalette::getDrawFormat(const sf::Texture &texture, sf::VertexArray &vertex_array, const Transform &trf) const
+void ColorPalette::getDrawFormat(sf::VertexArray &vertex_array, const Transform &trf) const
 {
-    sf::Vector2u texture_size = texture.getSize();
+    sf::Vector2u texture_size = texture_.getSize();
 
     vertex_array[0].texCoords = sf::Vector2f(0, 0);
     vertex_array[1].texCoords = sf::Vector2f((float)texture_size.x, 0);
@@ -69,16 +71,46 @@ void ColorPalette::getDrawFormat(const sf::Texture &texture, sf::VertexArray &ve
 
 bool ColorPalette::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
-    Transform trf(getLayoutBox().getPosition(), scale_);
+    LayoutBox *layout_box = &getLayoutBox();
+
+    Transform trf(layout_box->getPosition(), scale_);
 
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();
     
     Dot local_pos = last_trf.applyTransform(pos);
 
-    printf("%lg %lg\n");
+    bool flag = checkIn(local_pos, layout_box->getSize());
 
-    bool flag = checkIn(local_pos, getLayoutBox().getPosition());
+    if (flag)
+    {
+        double abs_width  = last_trf.scale.x * getLayoutBox().getSize().x;
+        double abs_height = last_trf.scale.y * getLayoutBox().getSize().y;
+
+        sf::RenderTexture tmp;
+        tmp.create(abs_width, abs_height);
+
+        sf::VertexArray vertex_array(sf::Quads, 4);
+        sf::Vector2u texture_size = texture_.getSize();
+
+        vertex_array[0].texCoords = sf::Vector2f(0, 0);
+        vertex_array[1].texCoords = sf::Vector2f((float)texture_size.x, 0);
+        vertex_array[2].texCoords = sf::Vector2f((float)texture_size.x, (float)texture_size.y);
+        vertex_array[3].texCoords = sf::Vector2f(0, (float)texture_size.y);
+
+        vertex_array[0].position = sf::Vector2f(0, 0);
+        vertex_array[1].position = sf::Vector2f((float)abs_width, 0);
+        vertex_array[2].position = sf::Vector2f((float)abs_width, (float)abs_height);
+        vertex_array[3].position = sf::Vector2f(0, (float)abs_height);
+
+        tmp.draw(vertex_array, &texture_);
+
+        sf::Texture palete_texture = tmp.getTexture();
+        sf::Image palette_img = palete_texture.copyToImage();
+
+        active_color_ = palette_img.getPixel(local_pos.x, local_pos.y);  
+    }
+
 
     stack_transform.popBack();
 

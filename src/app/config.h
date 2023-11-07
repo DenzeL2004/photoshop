@@ -20,9 +20,17 @@ static const char *Empty_texture = "src/img/empty.png";
 static Dot Canvase_manager_pos  = Dot(0.0, 50);
 static Dot Canvase_manager_size = Dot(1, 0.93);
 
+static Dot Menu_size = Dot(1, 50);
+static Dot Menu_pos  = Dot(0, 0);
+
+static Dot Colors_palette_size = Dot(200, Menu_size.y - 20);
+static Dot Colors_palette_pos  = Dot(160, 10);
 
 
-static Dot Menu_Button_size = Dot(50, 50);
+
+static Dot Menu_Button_size = Dot(50, Menu_size.y);
+
+
 
 static Dot Button_create_pos    = Dot(0.0, 0.0);
 static Dot Button_create_size   = Menu_Button_size;

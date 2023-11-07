@@ -9,17 +9,24 @@ AppWindow::AppWindow(   const char *path_texture,
                         const Vector &origin, const Vector &scale):
                         Window(path_texture, size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale), 
                         canvas_manager_(Empty_texture, Dot(size.x, Canvase_manager_size.y * size.y), Canvase_manager_pos, this),
-                        tool_pallette_(), filter_pallette_(), colors_()
+                        tool_pallette_(), filter_pallette_(), 
+                        colors_(Colors_palette_size, Colors_palette_pos, this),
+                        active_hot_key_(false)
 {
 
-    button_create_ = new Button(    "src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
-                                    "src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
-                                    new AddCanvase(&canvas_manager_, &tool_pallette_, &filter_pallette_), 
-                                    Button_create_size, Button_create_pos, this);
+    widgets_.pushBack(new Window("src/img/frame2.png", 
+                                Vector(size.x, Menu_size.y), Menu_pos, this));
+
+    widgets_.pushBack(new Button("src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
+                                "src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
+                                new AddCanvase(&canvas_manager_, &tool_pallette_, &filter_pallette_), 
+                                Button_create_size, Button_create_pos, this));
+    
+    
     {
-        tools_button_ = new ButtonList( "src/img/ToolsReleased.png", "src/img/ToolsPressed.png", 
-                                        "src/img/ToolsPressed.png", "src/img/ToolsPressed.png", 
-                                        nullptr, Button_Tools_size, Button_Tools_pos , this);
+        ButtonList *tools_button_ = new ButtonList( "src/img/ToolsReleased.png", "src/img/ToolsPressed.png", 
+                                                    "src/img/ToolsPressed.png", "src/img/ToolsPressed.png", 
+                                                    nullptr, Button_Tools_size, Button_Tools_pos , this);
 
         tools_button_->action_ = new ShowButtonList(&(tools_button_->buttons_)); 
                 
@@ -50,7 +57,7 @@ AppWindow::AppWindow(   const char *path_texture,
 
         tools_button_->addButton(new Button("src/img/BrushReleased.png", "src/img/BrushPressed.png", 
                                             "src/img/BrushPressed.png",  "src/img/BrushPressed.png", 
-                                            new ChooseTool(ToolPalette::BRUSH, &tool_pallette_), 
+                                            new ChooseTool(ToolPalette::PEN, &tool_pallette_), 
                                             Button_Pen_size, Button_Pen_pos, tools_button_));
 
         tools_button_->addButton(new Button("src/img/EraserReleased.png", "src/img/EraserPressed.png", 
@@ -61,36 +68,34 @@ AppWindow::AppWindow(   const char *path_texture,
         size_t size = tools_button_->buttons_.getSize();
         for (size_t it = 0; it < size; it++)
             tools_button_->buttons_[it]->state_ = Button::ButtonState::DISABLED;
-    }
-
-    tool_pallette_.setActiveColor(sf::Color::Green);
+        
+        widgets_.pushBack(tools_button_);
+    }    
 
     {
-        filters_button_ = new ButtonList("src/img/FilterReleased.png", "src/img/FilterPressed.png", 
-                                         "src/img/FilterPressed.png", "src/img/FilterPressed.png", 
-                                          nullptr, Button_Filter_size, Button_Filter_pos, this);
-        
-        filters_button_->action_ = new ShowButtonList(&(filters_button_->buttons_)); 
+        ButtonList *filters_button = new ButtonList("src/img/FilterReleased.png", "src/img/FilterPressed.png", 
+                                                    "src/img/FilterPressed.png", "src/img/FilterPressed.png", 
+                                                    nullptr, Button_Filter_size, Button_Filter_pos, this);
 
-        
-        filters_button_->addButton(new Button("src/img/IncBrightReleased.png", "src/img/IncBrightPressed.png", 
-                                              "src/img/IncBrightPressed.png",  "src/img/IncBrightPressed.png", 
-                                              new ChangeBrightness(&filter_pallette_, &canvas_manager_, 0.05), 
-                                              Button_Inclight_size, Button_Inclight_pos, filters_button_));
+        filters_button->action_ = new ShowButtonList(&(filters_button->buttons_)); 
 
-        filters_button_->addButton(new Button("src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
-                                              "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
-                                              new ChangeBrightness(&filter_pallette_, &canvas_manager_, -0.05),
-                                              Button_Declight_size, Button_Declight_pos, filters_button_));
 
-        
-        
-        size_t size = filters_button_->buttons_.getSize();
+        filters_button->addButton(new Button("src/img/IncBrightReleased.png", "src/img/IncBrightPressed.png", 
+                                                "src/img/IncBrightPressed.png",  "src/img/IncBrightPressed.png", 
+                                                new ChangeBrightness(&filter_pallette_, &canvas_manager_, 0.05f), 
+                                                Button_Inclight_size, Button_Inclight_pos, filters_button));
+
+        filters_button->addButton(new Button("src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
+                                                "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
+                                                new ChangeBrightness(&filter_pallette_, &canvas_manager_, -0.05f),
+                                                Button_Declight_size, Button_Declight_pos, filters_button));
+
+        size_t size = filters_button->buttons_.getSize();
         for (size_t it = 0; it < size; it++)
-            filters_button_->buttons_[it]->state_ = Button::ButtonState::DISABLED;
-    }
+            filters_button->buttons_[it]->state_ = Button::ButtonState::DISABLED;
 
-    colors_ = new ColorPalette(Vector(200, 200), Vector(200, 200), this);
+        widgets_.pushBack(filters_button);
+    }
 } 
 
 
@@ -102,10 +107,14 @@ void AppWindow::draw(sf::RenderTarget &target, Container<Transform> &stack_trans
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
 
     canvas_manager_.draw(target, stack_transform);
-    button_create_->draw(target, stack_transform);
-    tools_button_->draw(target, stack_transform);
-    filters_button_->draw(target, stack_transform);
-    colors_->draw(target, stack_transform);
+    
+    size_t size = widgets_.getSize(); 
+    for (size_t it = 0; it < size; it++)
+    {
+        widgets_[it]->draw(target, stack_transform);
+    }
+
+    colors_.draw(target, stack_transform);
     
     stack_transform.popBack();
 
@@ -119,10 +128,13 @@ bool AppWindow::onMouseMoved(const Vector &pos, Container<Transform> &stack_tran
     Transform trf(getLayoutBox().getPosition(), scale_);
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
 
-    button_create_->onMouseMoved(pos, stack_transform);
-    tools_button_->onMouseMoved(pos, stack_transform);
+    size_t size = widgets_.getSize(); 
+    for (size_t it = 0; it < size; it++)
+    {
+        widgets_[it]->onMouseMoved(pos, stack_transform);
+    }
+
     canvas_manager_.onMouseMoved(pos, stack_transform);
-    filters_button_->onMouseMoved(pos, stack_transform);
     
     stack_transform.popBack();
 
@@ -143,11 +155,20 @@ bool AppWindow::onMousePressed(const Vector &pos, const MouseKey key, Container<
     if (flag)
     {
         flag = false;
-        flag |= button_create_->onMousePressed(pos, key, stack_transform);
-        flag |= tools_button_->onMousePressed(pos, key, stack_transform);
-        flag |= filters_button_->onMousePressed(pos, key, stack_transform);
-        if (!flag) flag |= canvas_manager_.onMousePressed(pos, key, stack_transform);
-        
+
+        if (colors_.onMousePressed(pos, key, stack_transform))
+        {
+            tool_pallette_.setActiveColor(colors_.getActiveColor());
+            flag = true;
+        }
+
+        size_t size = widgets_.getSize(); 
+        for (size_t it = 0; it < size; it++)
+        {
+            flag = widgets_[it]->onMousePressed(pos, key, stack_transform);
+        }
+
+        if (!flag) flag |= canvas_manager_.onMousePressed(pos, key, stack_transform);   
     }
 
     stack_transform.popBack();
@@ -162,9 +183,11 @@ bool AppWindow::onMouseReleased(const Vector &pos, const MouseKey key, Container
     Transform trf(getLayoutBox().getPosition(), scale_);
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
 
-    button_create_->onMouseReleased(pos, key, stack_transform);
-    tools_button_->onMouseReleased(pos, key, stack_transform);
-    filters_button_->onMouseReleased(pos, key, stack_transform);
+    size_t size = widgets_.getSize(); 
+    for (size_t it = 0; it < size; it++)
+    {
+        widgets_[it]->onMouseReleased(pos, key, stack_transform);
+    }
     canvas_manager_.onMouseReleased(pos, key, stack_transform);
 
     stack_transform.popBack();
@@ -175,14 +198,44 @@ bool AppWindow::onMouseReleased(const Vector &pos, const MouseKey key, Container
 
 bool AppWindow::onKeyboardPressed(const KeyboardKey key)
 {
+    bool flag = handlHotKey(key);
+
+    if (!active_hot_key_)
+        return canvas_manager_.onKeyboardPressed(key);
+
+    return flag;
+}
+
+//================================================================================
+
+bool AppWindow::handlHotKey(const KeyboardKey key)
+{
     if (key == KeyboardKey::CTRL)
     {
         filter_pallette_.setActive(true);
         return true;
     }
 
-    Canvas *canvas = canvas_manager_.getActiveCanvas();
-    return canvas->onKeyboardPressed(key);
+    // if (active_hot_key_)
+    // {
+    //     switch (key)
+    //     {
+    //         case /* constant-expression */:
+    //             /* code */
+    //             break;
+            
+    //         default:
+    //             break;
+    //     }
+    // }
+
+    // if (key == KeyboardKey::ALT)
+    // {
+    //     active_hot_key_ = true;
+    //     return true;
+    // }
+    
+    return canvas_manager_.onKeyboardPressed(key);
 }
 
 //================================================================================
@@ -195,8 +248,10 @@ bool AppWindow::onKeyboardReleased(const KeyboardKey key)
         return true;
     }
 
-    Canvas *canvas = canvas_manager_.getActiveCanvas();
-    return canvas->onKeyboardPressed(key);
+    // if (key == KeyboardKey::ALT)
+    //     active_hot_key_ = false;
+
+    return canvas_manager_.onKeyboardPressed(key);
 }
 
 //================================================================================

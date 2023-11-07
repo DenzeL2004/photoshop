@@ -62,7 +62,7 @@ class Widget
 
         LayoutBox&         getLayoutBox();
         const LayoutBox&   getLayoutBox() const;
-        void                setLayoutBox(const LayoutBox &layout_box);
+        void               setLayoutBox(const LayoutBox &layout_box);
 
     protected:
         const Widget *parent_;
