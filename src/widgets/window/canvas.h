@@ -7,6 +7,7 @@
 
 #include "../../app/config.h"
 
+
 class ToolPalette;
 class Tool;
 
@@ -25,7 +26,10 @@ class Canvas : public Window
                 const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),  
                 const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
         
-        virtual ~Canvas(){}
+        virtual ~Canvas()
+        {
+            delete &filter_mask_;
+        }
 
         virtual bool onMousePressed     (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
         virtual bool onMouseMoved       (const Vector& pos, Container<Transform> &stack_transform);
@@ -48,6 +52,8 @@ class Canvas : public Window
     private:
         void getDrawFormat(sf::VertexArray &vertex_array, const Transform &trf) const;
         Dot getCanvaseCoord(const Vector &pos) const;
+
+        bool applyFilter(const KeyboardKey key);
 
         sf::RenderTexture background_;
 

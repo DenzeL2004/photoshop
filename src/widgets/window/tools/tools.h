@@ -15,6 +15,9 @@ struct ControlState
 class Tool
 {
     public:
+
+        Tool& operator= (const Tool &other) = delete;
+
         virtual void onMainButton       (ControlState state, const Dot &pos, Canvas &canvas) = 0;
         virtual void onSecondaryButton  (ControlState state, const Dot &pos, Canvas &canvas) = 0;
 
@@ -52,6 +55,9 @@ class ToolPalette
 
         ToolPalette ();
         ~ToolPalette ();
+
+        ToolPalette(const ToolPalette &other) = delete;
+        ToolPalette& operator= (const ToolPalette &other) = delete;
 
         void setActiveTool  (const ToolType tool_type);
         void setActiveColor (const sf::Color &color);

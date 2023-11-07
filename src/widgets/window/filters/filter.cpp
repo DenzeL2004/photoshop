@@ -156,10 +156,9 @@ void FilterBrightness::setDelta(const float delta)
 
 FilterPalette::FilterPalette():
         filters_(),
-        last_filter_(FilterType::NOTHING),
-        is_active_(false)
+        last_filter_(FilterType::NOTHING)
 {
-    filters_.pushBack(new FilterBrightness(0.00));   
+    filters_.pushBack(new FilterBrightness(0.0));   
 }
 
 FilterPalette::~FilterPalette()
@@ -171,15 +170,10 @@ FilterPalette::~FilterPalette()
 
 Filter* FilterPalette::getFilter(size_t filter_id)
 {
-    switch (filter_id)
-    {
-        case FilterPalette::FilterType::LIGHT:
-            return filters_[FilterPalette::FilterType::LIGHT];
-        default:
-            return nullptr;
-    }
-
-    return nullptr;
+    if (filter_id == FilterPalette::FilterType::NOTHING || filter_id >= filters_.getSize()) 
+        return nullptr;
+    
+    return filters_[filter_id];;
 }
 
 Filter* FilterPalette::getLastFilter()

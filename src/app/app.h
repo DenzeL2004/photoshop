@@ -125,7 +125,7 @@ class AppWindow: public Window
 
     protected:
         
-        bool handlHotKey(const KeyboardKey key);
+        bool switchTool(const KeyboardKey key);
 
         Container <Widget*> widgets_;
 
@@ -136,8 +136,6 @@ class AppWindow: public Window
         FilterPalette filter_pallette_;
 
         ColorPalette colors_;
-
-        bool active_hot_key_;
 };
 
 

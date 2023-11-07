@@ -13,11 +13,12 @@
 
 #include "../event/event.h"
 
-
 const sf::Color Debug_color = sf::Color(255, 20, 147);
 
 const double Default_width  = 720.0;
 const double Default_height = 480.0;
+
+using KeyMask = uint32_t;
 
 enum WidgetErr
 {
@@ -39,6 +40,7 @@ class Widget
             delete layout_box_;
         }
 
+        Widget(const Widget &other) = delete;
         Widget& operator=(const Widget&) = delete;
 
         virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);

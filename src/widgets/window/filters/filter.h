@@ -72,16 +72,11 @@ class FilterPalette
         
         size_t  getFilterCount() const {return filters_.getSize();}
 
-        bool  getActive() const {return is_active_;}
-        void  setActive(bool flag)  {is_active_ = flag;}
-
         void addFilter      (Filter *ptr);
 
     private:
         Container<Filter*>  filters_;
         size_t last_filter_;
-
-        bool is_active_;
 
 };
 

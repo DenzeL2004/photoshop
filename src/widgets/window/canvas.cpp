@@ -5,7 +5,6 @@
 #include "tools/tools.h"
 #include "filters/filter.h"
 
-
 Canvas::Canvas( ToolPalette *tool_palette, FilterPalette *filter_palette,
                 const Vector &canvas_size,
                 const Vector &size, const Vector &pos, 
@@ -111,7 +110,7 @@ bool Canvas::onMousePressed(const Vector& pos, const MouseKey key, Container<Tra
     Dot local_pos = last_trf.applyTransform(pos);
 
     bool flag = checkIn(local_pos);
-    if (flag && key == MouseKey::LEFT)
+    if (flag && key == Key_use_tool)
     {
         Tool *active_tool = tool_palette_.getActiveTool(); 
         if (active_tool) active_tool->onMainButton({ControlState::ButtonState::PRESSED}, local_pos, *this);
@@ -128,7 +127,7 @@ bool Canvas::onMousePressed(const Vector& pos, const MouseKey key, Container<Tra
 
 bool Canvas::onMouseReleased(const Vector& pos, const MouseKey key, Container<Transform> &stack_transform)
 {
-    if (key == MouseKey::LEFT)
+    if (key == Key_use_tool)
     {
         Tool *active_tool = tool_palette_.getActiveTool(); 
         if (active_tool) active_tool->onConfirm(*this);
@@ -146,35 +145,39 @@ Dot Canvas::getCanvaseCoord(const Vector &local_pos) const
 
 bool Canvas::onKeyboardPressed(const KeyboardKey key)
 {
-    printf("asddsa\n");
-    if (filter_palette_.getActive())
+    if (isCtrlPressed(key))
     {
-       
-        Filter *filter = nullptr;
-        if (key == KeyboardKey::L)
-        {
-            filter  = filter_palette_.getFilter(FilterPalette::FilterType::LIGHT);
-            filter_palette_.setLastFilter(FilterPalette::FilterType::LIGHT);
-        }
-
-        if (key == KeyboardKey::F)
-            filter  = filter_palette_.getLastFilter();
-        
-        if (filter)
-        {
-            filter->applyFilter(*this, filter_mask_);
-            return true;
-        }
+        return applyFilter(key);
     }
 
     return false;
+}
+
+bool Canvas::applyFilter(const KeyboardKey key)
+{
+    Filter *filter = nullptr;
+
+    if (getKeyCode(key) == Key_use_light_filter)
+    {
+        filter  = filter_palette_.getFilter(FilterPalette::FilterType::LIGHT);
+        filter_palette_.setLastFilter(FilterPalette::FilterType::LIGHT);
+    }
+
+    if (getKeyCode(key) == Key_use_last_filter)
+        filter  = filter_palette_.getLastFilter();
+    
+    if (filter && focused_)
+    {
+        filter->applyFilter(*this, filter_mask_);
+        return true;
+    }
 }
 
 //================================================================================
 
 bool Canvas::onKeyboardReleased(const KeyboardKey key)
 {
-   if (key == KeyboardKey::ENTER)
+   if (getKeyCode(key) == Key_conferm_tool)
     {
         Tool *active_tool = tool_palette_.getActiveTool(); 
         if (active_tool) active_tool->onConfirm(*this);
@@ -182,7 +185,7 @@ bool Canvas::onKeyboardReleased(const KeyboardKey key)
         return true;
     }
 
-    if (key == KeyboardKey::ESC)
+    if (getKeyCode(key) == Key_cancel_tool)
     {
         Tool *active_tool = tool_palette_.getActiveTool(); 
         if (active_tool) active_tool->onCancel();

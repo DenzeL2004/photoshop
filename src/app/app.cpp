@@ -10,8 +10,7 @@ AppWindow::AppWindow(   const char *path_texture,
                         Window(path_texture, size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale), 
                         canvas_manager_(Empty_texture, Dot(size.x, Canvase_manager_size.y * size.y), Canvase_manager_pos, this),
                         tool_pallette_(), filter_pallette_(), 
-                        colors_(Colors_palette_size, Colors_palette_pos, this),
-                        active_hot_key_(false)
+                        colors_(Colors_palette_size, Colors_palette_pos, this)
 {
 
     widgets_.pushBack(new Window("src/img/frame2.png", 
@@ -198,59 +197,59 @@ bool AppWindow::onMouseReleased(const Vector &pos, const MouseKey key, Container
 
 bool AppWindow::onKeyboardPressed(const KeyboardKey key)
 {
-    bool flag = handlHotKey(key);
+    if (isAltPressed(key))
+    {
+        return switchTool(key);
+    }
 
-    if (!active_hot_key_)
-        return canvas_manager_.onKeyboardPressed(key);
-
-    return flag;
+    return canvas_manager_.onKeyboardPressed(key);;
 }
 
 //================================================================================
 
-bool AppWindow::handlHotKey(const KeyboardKey key)
+bool AppWindow::switchTool(const KeyboardKey key)
 {
-    if (key == KeyboardKey::CTRL)
+    switch (getKeyCode(key))
     {
-        filter_pallette_.setActive(true);
-        return true;
+        case Hot_key_brush:
+            tool_pallette_.setActiveTool(ToolPalette::BRUSH);
+            break;
+
+        case Hot_key_line:
+            tool_pallette_.setActiveTool(ToolPalette::LINE);
+            break;
+
+        case Hot_key_circle:
+            tool_pallette_.setActiveTool(ToolPalette::CIRCLE);
+            break;
+
+        case Hot_key_square:
+            tool_pallette_.setActiveTool(ToolPalette::SQUARE);
+            break;
+
+        case Hot_key_polyline:
+            tool_pallette_.setActiveTool(ToolPalette::POLYLINE);
+            break;
+        
+        case Hot_key_eraser:
+            tool_pallette_.setActiveTool(ToolPalette::ERASER);
+            break;
+
+        case Hot_key_pen:
+            tool_pallette_.setActiveTool(ToolPalette::PEN);
+            break;
+        
+        default:
+            return false;
     }
 
-    // if (active_hot_key_)
-    // {
-    //     switch (key)
-    //     {
-    //         case /* constant-expression */:
-    //             /* code */
-    //             break;
-            
-    //         default:
-    //             break;
-    //     }
-    // }
-
-    // if (key == KeyboardKey::ALT)
-    // {
-    //     active_hot_key_ = true;
-    //     return true;
-    // }
-    
-    return canvas_manager_.onKeyboardPressed(key);
+    return true;
 }
 
 //================================================================================
 
 bool AppWindow::onKeyboardReleased(const KeyboardKey key)
 {
-    if (key == KeyboardKey::CTRL)
-    {
-        filter_pallette_.setActive(false);
-        return true;
-    }
-
-    // if (key == KeyboardKey::ALT)
-    //     active_hot_key_ = false;
-
     return canvas_manager_.onKeyboardPressed(key);
 }
 
@@ -287,6 +286,8 @@ void useApp()
 
     border.onUpdate(widget.getLayoutBox());
 
+    EventAdapter events;
+
     while (window.isOpen())
     {   
         window.clear();
@@ -298,7 +299,7 @@ void useApp()
                 window.close();
 
             sf::Mouse mouse;
-            eventAdapter(border, mouse.getPosition(window).x, mouse.getPosition(window).y, event, stack);
+            events.adapt(border, mouse.getPosition(window).x, mouse.getPosition(window).y, event, stack);
 
             if (close_window)
                 window.close();
