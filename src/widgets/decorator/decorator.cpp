@@ -191,7 +191,7 @@ bool Frame::onMousePressed(const Vector &pos, const MouseKey key, Container<Tran
         Transform last_trf = stack_transform.getBack(); 
 
         Dot local_pos = last_trf.applyTransform(pos);
-        flag = checkIn(local_pos, getLayoutBox().getSize()); 
+        flag = checkIn(local_pos); 
 
         if (flag)
         {

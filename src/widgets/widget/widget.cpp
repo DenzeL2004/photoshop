@@ -4,47 +4,27 @@
 
 bool Widget::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
-    Transform trf(layout_box_->getPosition(), scale_);
-
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
-    Transform last_trf = stack_transform.getBack();
-    
-    Dot new_coord = last_trf.applyTransform(pos);
-
-    bool flag = checkIn(new_coord, layout_box_->getPosition());
-
-    stack_transform.popBack();
-
-    return flag;
+    return false;
 }
 
 //================================================================================
 
 bool Widget::onMouseReleased(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
-    bool flag = false;
-
-    fprintf(stderr, "Widget: onMouseReleased\n");
-
-    return flag;
+    return false;
 }
 
 //================================================================================
 
 bool Widget::onMouseMoved(const Vector &pos, Container<Transform> &stack_transform)
 {
-    bool flag = false;
-
-    fprintf(stderr, "Widget: onMouseMove\n");
-
-    return flag;
+    return false;
 }
 
 //================================================================================
 
 bool Widget::onKeyboardPressed(const KeyboardKey key)
 {
-    fprintf(stderr, "Widget: mouse keyboard kye pressed\n");
     return false;
 }
 
@@ -52,7 +32,6 @@ bool Widget::onKeyboardPressed(const KeyboardKey key)
 
 bool Widget::onKeyboardReleased(const KeyboardKey key)
 {
-    fprintf(stderr, "Widget: mouse keyboard kye released\n");
     return false;
 }
 
@@ -60,7 +39,6 @@ bool Widget::onKeyboardReleased(const KeyboardKey key)
 
 bool Widget::onTick(const time_t delta_time)
 {
-    fprintf(stderr, "Widget: mouse keyboard kye released\n");
     return false;
 }
 
@@ -127,10 +105,12 @@ void Widget::setLayoutBox(const LayoutBox &layout_box)
     layout_box_ = layout_box.clone();
 }
 
-bool checkIn(const Dot &mouse_pos, const Vector &size)
+bool Widget::checkIn(const Dot &local_pos)
 {
-    bool horizontal = (Eps < mouse_pos.x && size.x - Eps > mouse_pos.x);
-    bool vertical   = (Eps < mouse_pos.y && size.y - Eps > mouse_pos.y);
+    Vector size = layout_box_->getSize();
+
+    bool horizontal = (Eps < local_pos.x && size.x - Eps > local_pos.x);
+    bool vertical   = (Eps < local_pos.y && size.y - Eps > local_pos.y);
    
     return horizontal  &vertical;
 }

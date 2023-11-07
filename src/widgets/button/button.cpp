@@ -121,7 +121,7 @@ bool Button::onMouseMoved(const Vector &pos, Container<Transform> &stack_transfo
     Transform last_trf = stack_transform.getBack();
     Dot local_pos = last_trf.applyTransform(pos);
 
-    bool flag = checkIn(local_pos, getLayoutBox().getSize());
+    bool flag = checkIn(local_pos);
 
     stack_transform.popBack();
 
@@ -157,7 +157,7 @@ bool Button::onMousePressed(const Vector &pos, const MouseKey key, Container<Tra
     
     Dot local_pos = last_trf.applyTransform(pos);
 
-    bool flag = checkIn(local_pos, getLayoutBox().getSize());
+    bool flag = checkIn(local_pos);
 
     stack_transform.popBack();
     
@@ -243,7 +243,7 @@ bool ButtonList::onMouseMoved(const Vector &pos, Container<Transform> &stack_tra
 
     stack_transform.popBack();
 
-    bool flag = checkIn(local_pos, getLayoutBox().getSize());
+    bool flag = checkIn(local_pos);
 
     if (!flag)
     { 
@@ -316,7 +316,7 @@ bool ButtonList::onMousePressed(const Vector &pos, const MouseKey key, Container
     Transform last_trf = stack_transform.getBack();
     Dot local_pos = last_trf.applyTransform(pos);
 
-    flag = checkIn(local_pos, getLayoutBox().getSize());
+    flag = checkIn(local_pos);
     stack_transform.popBack();
 
     if (flag && state_ != Button::ButtonState::PRESSED)

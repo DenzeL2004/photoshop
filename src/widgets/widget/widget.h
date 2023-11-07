@@ -24,9 +24,6 @@ enum WidgetErr
     LOAD_TEXTURE_ERR,
 };
 
-
-bool checkIn(const Dot &mouse_pos, const Vector &size);
-
 class Widget
 {
     public:
@@ -65,6 +62,8 @@ class Widget
         void               setLayoutBox(const LayoutBox &layout_box);
 
     protected:
+        bool checkIn(const Dot &local_pos);
+
         const Widget *parent_;
 
         Vector origin_;

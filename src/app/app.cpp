@@ -151,7 +151,7 @@ bool AppWindow::onMousePressed(const Vector &pos, const MouseKey key, Container<
     Transform last_trf = stack_transform.getBack();
     Dot new_coord = last_trf.applyTransform(pos);
 
-    bool flag = checkIn(new_coord, getLayoutBox().getSize());
+    bool flag = checkIn(new_coord);
     if (flag)
     {
         flag = false;

@@ -87,7 +87,7 @@ bool Canvas::onMouseMoved(const Vector& pos, Container<Transform> &stack_transfo
 
     Dot local_pos = last_trf.applyTransform(pos);
 
-    bool flag = checkIn(local_pos, getLayoutBox().getSize());
+    bool flag = checkIn(local_pos);
     if (flag)
     {
         Tool *active_tool = tool_palette_.getActiveTool(); 
@@ -110,7 +110,7 @@ bool Canvas::onMousePressed(const Vector& pos, const MouseKey key, Container<Tra
 
     Dot local_pos = last_trf.applyTransform(pos);
 
-    bool flag = checkIn(local_pos, getLayoutBox().getSize());
+    bool flag = checkIn(local_pos);
     if (flag && key == MouseKey::LEFT)
     {
         Tool *active_tool = tool_palette_.getActiveTool(); 
@@ -589,12 +589,10 @@ bool Scrollbar::onMousePressed(const Vector& pos, const MouseKey key, Container<
  
     prev_canvas_real_pos_ = canvas_->getRealPos();
 
-    bool flag = false;
+    bool flag = checkIn(local_pos);
 
-    if (checkIn(local_pos, layout_box->getSize()))
+    if (flag)
     {
-        
-
         flag |= center_button_->onMousePressed(pos, key, stack_transform);
         flag |= top_button_->onMousePressed(pos, key, stack_transform);
         flag |= bottom_button_->onMousePressed(pos, key, stack_transform);

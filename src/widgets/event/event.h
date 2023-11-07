@@ -25,10 +25,6 @@ enum class KeyboardKey
     CTRL, 
     L, 
     F, 
-
-    ALT,
-    B, C, S, P, E, L,  
-
 };
 
 void eventAdapter (Widget &widget, int mouse_x, int mouse_y, sf::Event &event, Container<Transform> &stack_transform);

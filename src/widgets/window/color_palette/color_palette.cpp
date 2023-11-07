@@ -80,7 +80,7 @@ bool ColorPalette::onMousePressed(const Vector &pos, const MouseKey key, Contain
     
     Dot local_pos = last_trf.applyTransform(pos);
 
-    bool flag = checkIn(local_pos, layout_box->getSize());
+    bool flag = checkIn(local_pos);
 
     if (flag)
     {
