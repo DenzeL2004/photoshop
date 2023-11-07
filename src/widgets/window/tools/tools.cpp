@@ -12,14 +12,15 @@ static void correctPos(Vector &pos, const Canvas &canvas)
 ToolPalette::ToolPalette():
         tools_(),
         active_tool_(ToolType::NOTHING), 
-        color_type_(FOREGROUND), foreground_color_(sf::Color::White), background_color_(sf::Color::Transparent)
+        color_type_(FOREGROUND), foreground_color_(sf::Color::White), background_color_(sf::Color::White)
 {
     tools_.pushBack(new LineTool(&foreground_color_));
     tools_.pushBack(new BrushTool(&foreground_color_));
     tools_.pushBack(new SquareTool(&foreground_color_));
     tools_.pushBack(new CircleTool(&foreground_color_));
     tools_.pushBack(new PolyLineTool(&foreground_color_));
-    tools_.pushBack(new BrushTool(&sf::Color::White));
+    tools_.pushBack(new BrushTool(&background_color_));
+    tools_.pushBack(new PenTool(&foreground_color_));
 }
 
 
@@ -34,37 +35,10 @@ ToolPalette::~ToolPalette()
 
 Tool* ToolPalette::getActiveTool () const
 {
-    switch (active_tool_)
-    {
-        case ToolPalette::ToolType::LINE:
-            return tools_[ToolPalette::ToolType::LINE];
-            
+    if (active_tool_ == ToolPalette::ToolType::NOTHING)
+        return nullptr;
 
-        case ToolPalette::ToolType::BRUSH:
-            return tools_[ToolPalette::ToolType::BRUSH];
-            
-
-        case ToolPalette::ToolType::SQUARE:
-            return tools_[ToolPalette::ToolType::SQUARE];
-            
-
-        case ToolPalette::ToolType::CIRCLE:
-            return tools_[ToolPalette::ToolType::CIRCLE];
-            
-
-        case ToolPalette::ToolType::POLYLINE:
-            return tools_[ToolPalette::ToolType::POLYLINE];
-
-
-        case ToolPalette::ToolType::ERASER:
-            return tools_[ToolPalette::ToolType::ERASER];
-
-        case ToolPalette::ToolType::FILL:
-            return tools_[ToolPalette::ToolType::FILL];
-
-        default:
-            return nullptr;
-    }
+    return tools_[active_tool_];
 }
 
 void ToolPalette::setActiveColor (const sf::Color &color) 
@@ -418,6 +392,53 @@ Widget* BrushTool::getWidget() const
 void BrushTool::drawForm (const Dot &pos, Canvas &canvas)
 {
     drawCircle(canvas.getBackground(), pos, 10, cur_color_);
+}
+
+//================================================================================
+PenTool::PenTool(const sf::Color *cur_color):
+                    using_(false), cur_color_(*cur_color){}
+
+
+void PenTool::onMainButton(ControlState state, const Dot &pos, Canvas &canvas)
+{
+    if (state.state != ControlState::ButtonState::PRESSED)
+        return;
+
+    if (using_)
+        return;
+
+    using_ = true;
+
+    prev_pos_ = pos;
+    correctPos(prev_pos_, canvas);
+
+    drawPixel(canvas.getBackground(), prev_pos_, cur_color_);
+}
+
+void PenTool::onMove(const Dot &pos, Canvas &canvas)
+{
+    if (!using_)
+        return;
+
+    Vector tmp_pos = pos;
+    correctPos(tmp_pos, canvas);
+
+    drawLine(canvas.getBackground(), prev_pos_, tmp_pos, cur_color_);
+
+    prev_pos_ = tmp_pos;
+}
+
+void PenTool::onConfirm (Canvas &canvas)
+{
+    if (!using_)
+        return;
+
+    using_ = false;
+}
+
+Widget* PenTool::getWidget() const
+{
+    return nullptr;
 }
 
 //================================================================================

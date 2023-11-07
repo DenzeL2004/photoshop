@@ -47,7 +47,7 @@ class ToolPalette
             CIRCLE   = 3,
             POLYLINE = 4,
             ERASER   = 5,
-            FILL     = 6,
+            PEN      = 6,
         };
 
         ToolPalette ();
@@ -138,6 +138,37 @@ class BrushTool : public Tool
 
         const sf::Color &cur_color_;
 };
+
+class PenTool : public Tool
+{
+    public:
+        PenTool(const sf::Color *cur_color);
+
+        ~PenTool(){}
+
+        virtual void onMainButton       (ControlState state, const Dot &pos, Canvas &canvas);
+        virtual void onSecondaryButton  (ControlState state, const Dot &pos, Canvas &canvas){}
+
+        virtual void onModifier1        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void onModifier2        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void onModifier3        (ControlState state, const Dot &pos, Canvas &canvas){}
+
+        virtual void onMove             (const Dot &pos, Canvas &canvas);
+        virtual void onConfirm          (Canvas &canvas);
+        virtual void onCancel           (){}
+
+        Widget* getWidget() const;
+
+    private:
+
+        bool using_;
+
+        Dot prev_pos_;
+
+        const sf::Color &cur_color_;
+};
+
+
 
 class SquareWidget;
 

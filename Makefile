@@ -10,8 +10,11 @@ FLAGS = -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equa
 SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 
-run:		obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/filter.o obj/tools.o obj/app.o obj/main.o
-	g++   	obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/filter.o obj/tools.o obj/app.o obj/main.o -o run  $(SFML_FLAGS)
+run:		obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o 			\
+			obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/filter.o obj/tools.o obj/app.o obj/color_palette.o obj/main.o
+
+	g++   	obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o \
+		 	obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/filter.o obj/tools.o obj/app.o obj/color_palette.o obj/main.o -o run  $(SFML_FLAGS)
 
 
 obj/main.o: main.cpp
@@ -73,6 +76,9 @@ obj/tools.o:  	src/widgets/window/tools/tools.cpp src/widgets/window/tools/tools
 
 obj/filter.o:  	src/widgets/window/filters/filter.cpp src/widgets/window/filters/filter.h
 		g++		src/widgets/window/filters/filter.cpp -c -o obj/filter.o $(FLAGS)
+
+obj/color_palette.o:  	src/widgets/window/color_palette/color_palette.cpp src/widgets/window/color_palette/color_palatte.h
+		g++				src/widgets/window/color_palette/color_palette.cpp -c -o obj/color_palette.o $(FLAGS)
 
 .PHONY: cleanup mkdirectory
 

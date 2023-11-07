@@ -9,7 +9,7 @@ AppWindow::AppWindow(   const char *path_texture,
                         const Vector &origin, const Vector &scale):
                         Window(path_texture, size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale), 
                         canvas_manager_(Empty_texture, Dot(size.x, Canvase_manager_size.y * size.y), Canvase_manager_pos, this),
-                        tool_pallette_(), filter_pallette_()
+                        tool_pallette_(), filter_pallette_(), colors_()
 {
 
     button_create_ = new Button(    "src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
@@ -19,39 +19,44 @@ AppWindow::AppWindow(   const char *path_texture,
     {
         tools_button_ = new ButtonList( "src/img/ToolsReleased.png", "src/img/ToolsPressed.png", 
                                         "src/img/ToolsPressed.png", "src/img/ToolsPressed.png", 
-                                        nullptr, Button_Tools_Scale, Button_Tools_Offset , this);
+                                        nullptr, Button_Tools_size, Button_Tools_pos , this);
 
         tools_button_->action_ = new ShowButtonList(&(tools_button_->buttons_)); 
                 
         tools_button_->addButton(new Button("src/img/LineReleased.png", "src/img/LinePressed.png", 
                                             "src/img/LinePressed.png",  "src/img/LinePressed.png", 
                                             new ChooseTool(ToolPalette::LINE, &tool_pallette_), 
-                                            Button_Line_Scale, Button_Line_Offset, tools_button_));
+                                            Button_Line_size, Button_Line_pos, tools_button_));
         
         tools_button_->addButton(new Button("src/img/BrushReleased.png", "src/img/BrushPressed.png", 
                                             "src/img/BrushPressed.png",  "src/img/BrushPressed.png", 
                                             new ChooseTool(ToolPalette::BRUSH, &tool_pallette_), 
-                                            Button_Brush_Scale, Button_Brush_Offset, tools_button_));
+                                            Button_Brush_size, Button_Brush_pos, tools_button_));
         
         tools_button_->addButton(new Button("src/img/SquareReleased.png", "src/img/SquarePressed.png", 
                                             "src/img/SquarePressed.png",  "src/img/SquarePressed.png", 
                                             new ChooseTool(ToolPalette::SQUARE, &tool_pallette_), 
-                                            Button_Square_Scale, Button_Square_Offset, tools_button_));
+                                            Button_Square_size, Button_Square_pos, tools_button_));
 
         tools_button_->addButton(new Button("src/img/CircleReleased.png", "src/img/CirclePressed.png", 
                                             "src/img/CirclePressed.png",  "src/img/CirclePressed.png", 
                                             new ChooseTool(ToolPalette::CIRCLE, &tool_pallette_), 
-                                            Button_Circle_Scale, Button_Circle_Offset, tools_button_));
+                                            Button_Circle_size, Button_Circle_pos, tools_button_));
         
         tools_button_->addButton(new Button("src/img/PolylineReleased.png", "src/img/PolylinePressed.png", 
                                             "src/img/PolylinePressed.png",  "src/img/PolylinePressed.png", 
                                             new ChooseTool(ToolPalette::POLYLINE, &tool_pallette_), 
-                                            Button_Polyline_Scale, Button_Polyline_Offset, tools_button_));
+                                            Button_Polyline_size, Button_Polyline_pos, tools_button_));
+
+        tools_button_->addButton(new Button("src/img/BrushReleased.png", "src/img/BrushPressed.png", 
+                                            "src/img/BrushPressed.png",  "src/img/BrushPressed.png", 
+                                            new ChooseTool(ToolPalette::BRUSH, &tool_pallette_), 
+                                            Button_Pen_size, Button_Pen_pos, tools_button_));
 
         tools_button_->addButton(new Button("src/img/EraserReleased.png", "src/img/EraserPressed.png", 
                                             "src/img/EraserPressed.png",  "src/img/EraserPressed.png", 
                                             new ChooseTool(ToolPalette::ERASER, &tool_pallette_), 
-                                            Button_Eraser_Scale, Button_Eraser_Offset, tools_button_));
+                                            Button_Eraser_size, Button_Eraser_pos, tools_button_));
 
         size_t size = tools_button_->buttons_.getSize();
         for (size_t it = 0; it < size; it++)
@@ -63,7 +68,7 @@ AppWindow::AppWindow(   const char *path_texture,
     {
         filters_button_ = new ButtonList("src/img/FilterReleased.png", "src/img/FilterPressed.png", 
                                          "src/img/FilterPressed.png", "src/img/FilterPressed.png", 
-                                          nullptr, Button_Filter_Scale, Button_Filter_Offset, this);
+                                          nullptr, Button_Filter_size, Button_Filter_pos, this);
         
         filters_button_->action_ = new ShowButtonList(&(filters_button_->buttons_)); 
 
@@ -71,12 +76,12 @@ AppWindow::AppWindow(   const char *path_texture,
         filters_button_->addButton(new Button("src/img/IncBrightReleased.png", "src/img/IncBrightPressed.png", 
                                               "src/img/IncBrightPressed.png",  "src/img/IncBrightPressed.png", 
                                               new ChangeBrightness(&filter_pallette_, &canvas_manager_, 0.05), 
-                                              Button_Inclight_Scale, Button_Inclight_Offset, filters_button_));
+                                              Button_Inclight_size, Button_Inclight_pos, filters_button_));
 
         filters_button_->addButton(new Button("src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
                                               "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
                                               new ChangeBrightness(&filter_pallette_, &canvas_manager_, -0.05),
-                                              Button_Declight_Scale, Button_Declight_Offset, filters_button_));
+                                              Button_Declight_size, Button_Declight_pos, filters_button_));
 
         
         
@@ -85,6 +90,7 @@ AppWindow::AppWindow(   const char *path_texture,
             filters_button_->buttons_[it]->state_ = Button::ButtonState::DISABLED;
     }
 
+    colors_ = new ColorPalette(Vector(200, 200), Vector(200, 200), this);
 } 
 
 
@@ -99,6 +105,7 @@ void AppWindow::draw(sf::RenderTarget &target, Container<Transform> &stack_trans
     button_create_->draw(target, stack_transform);
     tools_button_->draw(target, stack_transform);
     filters_button_->draw(target, stack_transform);
+    colors_->draw(target, stack_transform);
     
     stack_transform.popBack();
 

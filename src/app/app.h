@@ -8,6 +8,7 @@
 
 #include "../widgets/window/tools/tools.h"
 #include "../widgets/window/filters/filter.h"
+#include "../widgets/window/color_palette/color_palatte.h"
 
 #include "../widgets/window/canvas.h"
 
@@ -132,6 +133,8 @@ class AppWindow: public Window
 
         ButtonList *filters_button_;
         FilterPalette filter_pallette_;
+
+        ColorPalette *colors_;
 };
 
 
