@@ -11,10 +11,10 @@ SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 
 run:		obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o 			\
-			obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/filter.o obj/tools.o obj/app.o obj/color_palette.o obj/main.o
+			obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/filter.o obj/tools.o obj/app.o obj/color_palette.o obj/text_box.o obj/main.o
 
-	g++   	obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o \
-		 	obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/filter.o obj/tools.o obj/app.o obj/color_palette.o obj/main.o -o run  $(SFML_FLAGS)
+	g++   	obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o 			\
+		 	obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/filter.o obj/tools.o obj/app.o obj/color_palette.o obj/text_box.o obj/main.o -o run  $(SFML_FLAGS)
 
 
 obj/main.o: main.cpp
@@ -79,6 +79,9 @@ obj/filter.o:  	src/widgets/window/filters/filter.cpp src/widgets/window/filters
 
 obj/color_palette.o:  	src/widgets/window/color_palette/color_palette.cpp src/widgets/window/color_palette/color_palatte.h
 		g++				src/widgets/window/color_palette/color_palette.cpp -c -o obj/color_palette.o $(FLAGS)
+
+obj/text_box.o:	src/widgets/text_box/text_box.cpp src/widgets/text_box/text_box.h
+		g++				src/widgets/text_box/text_box.cpp -c -o obj/text_box.o $(FLAGS)
 
 .PHONY: cleanup mkdirectory
 

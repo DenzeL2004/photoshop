@@ -29,11 +29,14 @@ const KeyCode Hot_key_square   = sf::Keyboard::S;
 const KeyCode Hot_key_pen      = sf::Keyboard::P;
 const KeyCode Hot_key_eraser   = sf::Keyboard::E;
 const KeyCode Hot_key_polyline = sf::Keyboard::N;
+const KeyCode Hot_key_text     = sf::Keyboard::T;
 
 
 
-const KeyCode Key_use_light_filter = sf::Keyboard::L;
-const KeyCode Key_use_last_filter  = sf::Keyboard::F;
+const KeyCode Key_use_light_filter      = sf::Keyboard::L;
+const KeyCode Key_use_blackwhite_filter = sf::Keyboard::B;
+const KeyCode Key_use_last_filter       = sf::Keyboard::F;
+const KeyCode Key_use_invert_filter     = sf::Keyboard::I;
 
 const KeyCode Key_conferm_tool = sf::Keyboard::Enter;
 const KeyCode Key_cancel_tool  = sf::Keyboard::Escape;

@@ -21,6 +21,7 @@ ToolPalette::ToolPalette():
     tools_.pushBack(new PolyLineTool(&foreground_color_));
     tools_.pushBack(new BrushTool(&background_color_));
     tools_.pushBack(new PenTool(&foreground_color_));
+    tools_.pushBack(new TextTool(&foreground_color_));
 }
 
 
@@ -111,7 +112,6 @@ LineTool::LineTool(const sf::Color *cur_color):
 //================================================================================
 void LineTool::onMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {
-    
     if (state.state != ControlState::ButtonState::PRESSED)
         return;
 
@@ -215,7 +215,7 @@ void SquareTool::onMove(const Dot &pos, Canvas &canvas)
     if (!using_)
         return;
     
-    end_pos_ = pos; 
+    end_pos_ = pos;
 }
 
 void SquareTool::onConfirm (Canvas &canvas)
@@ -312,7 +312,7 @@ void CircleTool::onMove(const Dot &pos, Canvas &canvas)
     if (!using_)
         return;
     
-    end_pos_ = pos; 
+    end_pos_ = pos;
 }
 
 void CircleTool::onConfirm (Canvas &canvas)
@@ -333,7 +333,6 @@ void CircleTool::onConfirm (Canvas &canvas)
 void CircleTool::onCancel ()
 {
     start_pos_  = end_pos_ = {0, 0};
-
     using_ = false;
 }
 
@@ -672,3 +671,52 @@ Widget* PolyLineTool::getWidget() const
 }
 
 //================================================================================
+
+
+TextTool::TextTool(const sf::Color *cur_color):
+                  using_(false), start_pos_(), 
+                  preview_(new TextBox(50, 40, cur_color, Vector(0.0,  0.0), nullptr)), cur_color_(*cur_color){}
+
+void TextTool::onMainButton(ControlState state, const Dot &pos, Canvas &canvas)
+{
+    if (state.state != ControlState::ButtonState::PRESSED)
+        return;
+
+    start_pos_ = pos;
+
+    preview_->getLayoutBox().setPosition(start_pos_);
+
+    using_ = true;
+}
+
+void TextTool::onConfirm (Canvas &canvas)
+{
+    if (using_) 
+    {
+        using_ = false;
+        return;
+    }
+
+    correctPos(start_pos_, canvas);
+
+    sf::Text text = preview_->getText();
+    text.setPosition(start_pos_.x, start_pos_.y);
+    text.setColor(cur_color_);
+
+    text.scale(1.0f, -1.0f);
+
+    canvas.getBackground().draw(text);
+    preview_->clear();   
+}
+
+void TextTool::onCancel ()
+{
+    using_ = false;
+
+    preview_->clear();
+}
+
+Widget* TextTool::getWidget() const
+{
+    return preview_;
+}

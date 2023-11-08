@@ -17,7 +17,6 @@ class Filter;
 
 class Canvas : public Window
 {
-
     public:
         
         Canvas( ToolPalette *tool_palette, FilterPalette *filter_palette, 
@@ -38,7 +37,8 @@ class Canvas : public Window
         virtual bool onKeyboardPressed  (const KeyboardKey);
         virtual bool onKeyboardReleased (const KeyboardKey);
 
-        virtual void draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform);  
+        virtual void draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform);
+        virtual bool onTick             (const float delta_time);  
 
         Vector  getRealPos      () const;
         void    setRealPos      (const Vector &new_pos);   
@@ -91,6 +91,8 @@ class CanvasManager : public Window
         virtual bool onKeyboardReleased (const KeyboardKey);
 
         virtual void draw               (sf::RenderTarget &target, Container<Transform> &stack_transform);
+        
+        bool onTick                     (const float delta_time);
 
         void createCanvas(ToolPalette *tool_palette, FilterPalette *filter_palette);
         

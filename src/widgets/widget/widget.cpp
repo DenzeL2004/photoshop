@@ -37,7 +37,7 @@ bool Widget::onKeyboardReleased(const KeyboardKey key)
 
 //================================================================================
 
-bool Widget::onTick(const time_t delta_time)
+bool Widget::onTick(const float delta_time)
 {
     return false;
 }

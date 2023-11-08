@@ -11,6 +11,8 @@
 #include "../widgets/window/color_palette/color_palatte.h"
 
 #include "../widgets/window/canvas.h"
+#include "../widgets/text_box/text_box.h"
+
 
 #include "config.h"
 
@@ -75,12 +77,15 @@ class ChangeBrightness : public Action
 
         void operator() () const
         {
+             Canvas *active_canvas = canvas_manager_.getActiveCanvas();
+             if (active_canvas == nullptr) return;
+
             FilterBrightness *filter  = (FilterBrightness*)filter_palette_.getFilter(FilterPalette::FilterType::LIGHT);
             filter_palette_.setLastFilter(FilterPalette::FilterType::LIGHT);
 
             filter->setDelta(delta_);
 
-            Canvas *active_canvas = canvas_manager_.getActiveCanvas();
+           
             filter->applyFilter(*active_canvas, active_canvas->getFilterMask());
 
         }
@@ -91,6 +96,33 @@ class ChangeBrightness : public Action
         CanvasManager &canvas_manager_;
        
         float delta_;
+        
+};
+
+class UseFilter : public Action
+{
+    public:
+        UseFilter(FilterPalette *filter_palette, CanvasManager *manager, const FilterPalette::FilterType type): 
+                    filter_palette_(*filter_palette), canvas_manager_(*manager), type_(type) {};
+        ~UseFilter(){};
+
+        void operator() () const
+        {
+             Canvas *active_canvas = canvas_manager_.getActiveCanvas();
+             if (active_canvas == nullptr) return;
+
+            FilterBrightness *filter  = (FilterBrightness*)filter_palette_.getFilter(type_);
+            filter_palette_.setLastFilter(type_);
+           
+            if (filter) filter->applyFilter(*active_canvas, active_canvas->getFilterMask());
+        }
+
+
+    private:
+        FilterPalette &filter_palette_;
+        CanvasManager &canvas_manager_;
+       
+        FilterPalette::FilterType type_;
         
 };
 
@@ -121,7 +153,7 @@ class AppWindow: public Window
 
         virtual void draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;  
 
-        virtual bool onTick             (const time_t delta_time);
+        virtual bool onTick             (const float delta_time);
 
     protected:
         

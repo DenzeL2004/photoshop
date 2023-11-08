@@ -52,14 +52,55 @@ class FilterBrightness : public Filter
         float delta_;
 };
 
+class FilterBlackWhite : public Filter
+{
+    public:
+        FilterBlackWhite(){}
+        ~FilterBlackWhite() = default;
+
+        virtual void applyFilter(Canvas &canvas, const FilterMask &mask);
+
+    private:
+};
+
+
+class FilterInvert : public Filter
+{
+    public:
+        FilterInvert(){}
+        ~FilterInvert() = default;
+
+        virtual void applyFilter(Canvas &canvas, const FilterMask &mask);
+
+    private:
+};
+
+class FilterColorMask : public Filter
+{
+    public:
+        FilterColorMask(const sf::Color mask = sf::Color::White):mask_(mask){}
+        ~FilterColorMask() = default;
+
+        virtual void applyFilter(Canvas &canvas, const FilterMask &mask);
+
+    private:
+        sf::Color mask_;
+};
+
 class FilterPalette
 {
     public:
 
         enum FilterType
         {
-            NOTHING  = -1,
-            LIGHT    = 0, 
+            NOTHING     = -1,
+            LIGHT       = 0, 
+            BLACKWHITE  = 1, 
+            INVERT      = 2, 
+            RED         = 3,
+            GREEN       = 4,
+            BLUE        = 5,
+
         };
 
         FilterPalette ();

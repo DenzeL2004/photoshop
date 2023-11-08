@@ -254,7 +254,7 @@ bool Frame::onKeyboardReleased(const KeyboardKey key)
 
 //================================================================================
 
-bool Frame::onTick(const time_t delta_time)
+bool Frame::onTick(const float delta_time)
 {
     size_t cnt = widgets_.getSize();
     for (size_t it = 0; it < cnt; it++)

@@ -50,7 +50,7 @@ class Widget
         virtual bool onKeyboardPressed  (const KeyboardKey);
         virtual bool onKeyboardReleased (const KeyboardKey);
 
-        virtual bool onTick             (const time_t delta_time);
+        virtual bool onTick             (const float delta_time);
 
         virtual void draw               (sf::RenderTarget &target, Container<Transform> &stack_transform);  
 
@@ -64,7 +64,7 @@ class Widget
         void               setLayoutBox(const LayoutBox &layout_box);
 
     protected:
-        bool checkIn(const Dot &local_pos);
+        virtual bool checkIn(const Dot &local_pos);
 
         const Widget *parent_;
 

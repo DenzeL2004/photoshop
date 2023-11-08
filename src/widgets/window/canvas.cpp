@@ -127,13 +127,18 @@ bool Canvas::onMousePressed(const Vector& pos, const MouseKey key, Container<Tra
 
 bool Canvas::onMouseReleased(const Vector& pos, const MouseKey key, Container<Transform> &stack_transform)
 {
-    if (key == Key_use_tool)
+    if (focused_)
     {
-        Tool *active_tool = tool_palette_.getActiveTool(); 
-        if (active_tool) active_tool->onConfirm(*this);
+        if (key == Key_use_tool)
+        {
+            Tool *active_tool = tool_palette_.getActiveTool(); 
+            if (active_tool) active_tool->onConfirm(*this);
+
+            return true;
+        }
     }
 
-    return true;
+    return false;
 }
 
 Dot Canvas::getCanvaseCoord(const Vector &local_pos) const
@@ -150,6 +155,18 @@ bool Canvas::onKeyboardPressed(const KeyboardKey key)
         return applyFilter(key);
     }
 
+    if (focused_)
+    {
+        Tool *active_tool = tool_palette_.getActiveTool(); 
+        if (active_tool)
+        {
+            Widget *preview = active_tool->getWidget();
+            if (preview) preview->onKeyboardPressed(key);
+            
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -161,6 +178,18 @@ bool Canvas::applyFilter(const KeyboardKey key)
     {
         filter  = filter_palette_.getFilter(FilterPalette::FilterType::LIGHT);
         filter_palette_.setLastFilter(FilterPalette::FilterType::LIGHT);
+    }
+
+    if (getKeyCode(key) == Key_use_blackwhite_filter)
+    {
+        filter  = filter_palette_.getFilter(FilterPalette::FilterType::BLACKWHITE);
+        filter_palette_.setLastFilter(FilterPalette::FilterType::BLACKWHITE);
+    }
+
+    if (getKeyCode(key) == Key_use_invert_filter)
+    {
+        filter  = filter_palette_.getFilter(FilterPalette::FilterType::INVERT);
+        filter_palette_.setLastFilter(FilterPalette::FilterType::INVERT);
     }
 
     if (getKeyCode(key) == Key_use_last_filter)
@@ -191,6 +220,21 @@ bool Canvas::onKeyboardReleased(const KeyboardKey key)
         if (active_tool) active_tool->onCancel();
 
         return true;
+    }
+
+    return false;
+}
+
+bool Canvas::onTick(const float delta_time)
+{
+    if (focused_)
+    {
+        Tool *active_tool = tool_palette_.getActiveTool(); 
+        if (active_tool)
+        {
+            Widget *preview = active_tool->getWidget();
+            if (preview) preview->onTick(delta_time);
+        }
     }
 
     return false;
@@ -357,6 +401,18 @@ bool CanvasManager::onKeyboardReleased(const KeyboardKey key)
 
     return widgets_[size - 1]->onKeyboardReleased(key);
 }
+
+//================================================================================
+
+bool CanvasManager::onTick(const float delta_time)
+{
+    size_t size = widgets_.getSize();
+    if (size == 0)
+        return false;
+
+    return widgets_[size - 1]->onTick(delta_time);
+}
+
 //================================================================================
 
 void CanvasManager::createCanvas(ToolPalette *tool_palette, FilterPalette *filter_palette)

@@ -162,8 +162,7 @@ bool Button::onMousePressed(const Vector &pos, const MouseKey key, Container<Tra
     stack_transform.popBack();
     
     if (flag && key == MouseKey::LEFT)
-    {
-        
+    {    
         if (action_ != nullptr) (*action_)();
         state_ = Button::ButtonState::PRESSED;
     }
@@ -259,11 +258,10 @@ bool ButtonList::onMouseMoved(const Vector &pos, Container<Transform> &stack_tra
         }
     }
 
-
     size_t size = buttons_.getSize();
     for (size_t it = 0; it < size; it++)
     {
-        if (state_ == Button::ButtonState::COVERED || state_ == Button::ButtonState::PRESSED)
+        if (prev_state_ == Button::ButtonState::PRESSED)
         {
             buttons_[it]->state_ = buttons_[it]->prev_state_;
             buttons_[it]->onMouseMoved(pos, stack_transform);

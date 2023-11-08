@@ -12,7 +12,6 @@ AppWindow::AppWindow(   const char *path_texture,
                         tool_pallette_(), filter_pallette_(), 
                         colors_(Colors_palette_size, Colors_palette_pos, this)
 {
-
     widgets_.pushBack(new Window("src/img/frame2.png", 
                                 Vector(size.x, Menu_size.y), Menu_pos, this));
 
@@ -54,8 +53,8 @@ AppWindow::AppWindow(   const char *path_texture,
                                             new ChooseTool(ToolPalette::POLYLINE, &tool_pallette_), 
                                             Button_Polyline_size, Button_Polyline_pos, tools_button_));
 
-        tools_button_->addButton(new Button("src/img/BrushReleased.png", "src/img/BrushPressed.png", 
-                                            "src/img/BrushPressed.png",  "src/img/BrushPressed.png", 
+        tools_button_->addButton(new Button("src/img/PenReleased.png", "src/img/PenPressed.png", 
+                                            "src/img/PenPressed.png",  "src/img/PenPressed.png", 
                                             new ChooseTool(ToolPalette::PEN, &tool_pallette_), 
                                             Button_Pen_size, Button_Pen_pos, tools_button_));
 
@@ -63,6 +62,11 @@ AppWindow::AppWindow(   const char *path_texture,
                                             "src/img/EraserPressed.png",  "src/img/EraserPressed.png", 
                                             new ChooseTool(ToolPalette::ERASER, &tool_pallette_), 
                                             Button_Eraser_size, Button_Eraser_pos, tools_button_));
+        
+        tools_button_->addButton(new Button("src/img/TextReleased.png", "src/img/TextPressed.png", 
+                                            "src/img/TextPressed.png",  "src/img/TextPressed.png", 
+                                            new ChooseTool(ToolPalette::TEXT, &tool_pallette_), 
+                                            Button_Text_size, Button_Text_pos, tools_button_));
 
         size_t size = tools_button_->buttons_.getSize();
         for (size_t it = 0; it < size; it++)
@@ -79,15 +83,40 @@ AppWindow::AppWindow(   const char *path_texture,
         filters_button->action_ = new ShowButtonList(&(filters_button->buttons_)); 
 
 
-        filters_button->addButton(new Button("src/img/IncBrightReleased.png", "src/img/IncBrightPressed.png", 
+        filters_button->addButton(new Button(   "src/img/IncBrightReleased.png", "src/img/IncBrightPressed.png", 
                                                 "src/img/IncBrightPressed.png",  "src/img/IncBrightPressed.png", 
                                                 new ChangeBrightness(&filter_pallette_, &canvas_manager_, 0.05f), 
                                                 Button_Inclight_size, Button_Inclight_pos, filters_button));
 
-        filters_button->addButton(new Button("src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
+        filters_button->addButton(new Button(   "src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
                                                 "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
                                                 new ChangeBrightness(&filter_pallette_, &canvas_manager_, -0.05f),
                                                 Button_Declight_size, Button_Declight_pos, filters_button));
+
+        filters_button->addButton(new Button(   "src/img/BlackWhiteReleased.png", "src/img/BlackWhitePressed.png", 
+                                                "src/img/BlackWhitePressed.png",  "src/img/BlackWhitePressed.png", 
+                                                new UseFilter(&filter_pallette_, &canvas_manager_, FilterPalette::FilterType::BLACKWHITE),
+                                                Button_Blackwhite_size, Button_Blackwhite_pos, filters_button));
+
+        filters_button->addButton(new Button(   "src/img/InvertReleased.png", "src/img/InvertPressed.png", 
+                                                "src/img/InvertPressed.png",  "src/img/InvertPressed.png", 
+                                                new UseFilter(&filter_pallette_, &canvas_manager_, FilterPalette::FilterType::INVERT),
+                                                Button_Invert_size, Button_Invert_pos, filters_button));
+
+        filters_button->addButton(new Button(   "src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
+                                                "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
+                                                new UseFilter(&filter_pallette_, &canvas_manager_, FilterPalette::FilterType::RED),
+                                                Button_Redfilter_size, Button_Redfilter_pos, filters_button));
+
+        filters_button->addButton(new Button(   "src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
+                                                "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
+                                                new UseFilter(&filter_pallette_, &canvas_manager_, FilterPalette::FilterType::GREEN),
+                                                Button_Greenfilter_size, Button_Greenfilter_pos, filters_button));
+
+        filters_button->addButton(new Button(   "src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
+                                                "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
+                                                new UseFilter(&filter_pallette_, &canvas_manager_, FilterPalette::FilterType::BLUE),
+                                                Button_Bluefilter_size, Button_Bluefilter_pos, filters_button));
 
         size_t size = filters_button->buttons_.getSize();
         for (size_t it = 0; it < size; it++)
@@ -148,9 +177,9 @@ bool AppWindow::onMousePressed(const Vector &pos, const MouseKey key, Container<
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
     
     Transform last_trf = stack_transform.getBack();
-    Dot new_coord = last_trf.applyTransform(pos);
+    Dot local_pos = last_trf.applyTransform(pos);
 
-    bool flag = checkIn(new_coord);
+    bool flag = checkIn(local_pos);
     if (flag)
     {
         flag = false;
@@ -201,7 +230,6 @@ bool AppWindow::onKeyboardPressed(const KeyboardKey key)
     {
         return switchTool(key);
     }
-
     return canvas_manager_.onKeyboardPressed(key);;
 }
 
@@ -238,6 +266,10 @@ bool AppWindow::switchTool(const KeyboardKey key)
         case Hot_key_pen:
             tool_pallette_.setActiveTool(ToolPalette::PEN);
             break;
+
+        case Hot_key_text:
+            tool_pallette_.setActiveTool(ToolPalette::TEXT);
+            break;
         
         default:
             return false;
@@ -250,13 +282,20 @@ bool AppWindow::switchTool(const KeyboardKey key)
 
 bool AppWindow::onKeyboardReleased(const KeyboardKey key)
 {
-    return canvas_manager_.onKeyboardPressed(key);
+    return canvas_manager_.onKeyboardReleased(key);
 }
 
 //================================================================================
 
-bool AppWindow::onTick(const time_t delta_time)
+bool AppWindow::onTick(const float delta_time)
 {
+    size_t size = widgets_.getSize(); 
+    for (size_t it = 0; it < size; it++)
+    {
+        widgets_[it]->onTick(delta_time);
+    }
+    
+    canvas_manager_.onTick(delta_time);
     return false;
 }
 
@@ -288,6 +327,8 @@ void useApp()
 
     EventAdapter events;
 
+    sf::Clock timer;
+
     while (window.isOpen())
     {   
         window.clear();
@@ -306,6 +347,8 @@ void useApp()
         }
 
         border.draw(window, stack);
+        border.onTick(timer.getElapsedTime().asSeconds());
+        timer.restart();
     
         window.display();
     }

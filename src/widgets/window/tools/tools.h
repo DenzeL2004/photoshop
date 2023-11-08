@@ -2,6 +2,7 @@
 #define _TOOLS_H_
 
 #include "../canvas.h"
+#include "../../text_box/text_box.h"
 
 struct ControlState
 {
@@ -51,6 +52,7 @@ class ToolPalette
             POLYLINE = 4,
             ERASER   = 5,
             PEN      = 6,
+            TEXT     = 7,
         };
 
         ToolPalette ();
@@ -287,7 +289,10 @@ class PolyLineTool : public Tool
     public:
         PolyLineTool(const sf::Color *cur_color);
 
-        ~PolyLineTool(){}
+        ~PolyLineTool()
+        {
+             delete preview_;
+        }
 
         virtual void onMainButton       (ControlState state, const Dot &pos, Canvas &canvas);
         virtual void onSecondaryButton  (ControlState state, const Dot &pos, Canvas &canvas){}
@@ -311,5 +316,40 @@ class PolyLineTool : public Tool
         
         const sf::Color &cur_color_;
 };
+
+
+class TextTool : public Tool
+{
+    public:
+        TextTool(const sf::Color *cur_color);
+
+        ~TextTool()
+        {
+            delete preview_;
+        }
+
+        virtual void onMainButton       (ControlState state, const Dot &pos, Canvas &canvas);
+        virtual void onSecondaryButton  (ControlState state, const Dot &pos, Canvas &canvas){}
+
+        virtual void onModifier1        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void onModifier2        (ControlState state, const Dot &pos, Canvas &canvas){}
+        virtual void onModifier3        (ControlState state, const Dot &pos, Canvas &canvas){}
+
+        virtual void onMove             (const Dot &pos, Canvas &canvas){}
+        virtual void onConfirm          (Canvas &canvas);
+        virtual void onCancel           ();
+
+        Widget* getWidget() const;
+
+    private:
+        bool using_;
+
+        Dot start_pos_;
+    
+        TextBox* preview_;
+        
+        const sf::Color &cur_color_;
+};
+
 
 #endif

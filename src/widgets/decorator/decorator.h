@@ -74,7 +74,7 @@ class Frame: public Window
         virtual bool onKeyboardPressed  (const KeyboardKey);
         virtual bool onKeyboardReleased (const KeyboardKey);
 
-        virtual bool onTick             (const time_t delta_time);
+        virtual bool onTick             (const float delta_time);
         virtual void onUpdate           (const LayoutBox &parent_layout);
 
         virtual void draw               (sf::RenderTarget &target, Container<Transform> &stack_transform);  

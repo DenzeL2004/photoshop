@@ -154,11 +154,131 @@ void FilterBrightness::setDelta(const float delta)
 
 //==========================================================================
 
+void FilterBlackWhite::applyFilter(Canvas &canvas, const FilterMask &mask)
+{
+    
+    sf::Image image = canvas.getBackground().getTexture().copyToImage();
+
+    size_t width  = mask.getWidth();
+    size_t height = mask.getHeight();
+
+    for (size_t it = 0; it < width; it++)
+    {
+        for (size_t jt = 0; jt < height; jt++)
+        {
+
+            if (mask.getPixel(it, jt))
+            {
+                sf::Color color = image.getPixel(it, jt);
+                
+                size_t new_tone = (color.r + color.g + color.b) / 3;
+
+                color.r = new_tone;
+                color.g = new_tone;
+                color.b = new_tone;
+                    
+                image.setPixel(it, jt, color);
+            }
+        }
+    }
+
+    sf::Texture texture;
+    texture.loadFromImage(image);
+    
+    sf::Sprite sprite(texture);
+    sprite.setTextureRect(sf::IntRect(0, height, width, -height));
+    
+    canvas.getBackground().clear();
+    canvas.getBackground().draw(sprite);
+}
+
+//==========================================================================
+
+void FilterInvert::applyFilter(Canvas &canvas, const FilterMask &mask)
+{
+    
+    sf::Image image = canvas.getBackground().getTexture().copyToImage();
+
+    size_t width  = mask.getWidth();
+    size_t height = mask.getHeight();
+
+    for (size_t it = 0; it < width; it++)
+    {
+        for (size_t jt = 0; jt < height; jt++)
+        {
+
+            if (mask.getPixel(it, jt))
+            {
+                sf::Color color = image.getPixel(it, jt);
+
+                color.r = 255 - color.r;
+                color.g = 255 - color.g;
+                color.b = 255 - color.b;
+                    
+                image.setPixel(it, jt, color);
+            }
+        }
+    }
+
+    sf::Texture texture;
+    texture.loadFromImage(image);
+    
+    sf::Sprite sprite(texture);
+    sprite.setTextureRect(sf::IntRect(0, height, width, -height));
+    
+    canvas.getBackground().clear();
+    canvas.getBackground().draw(sprite);
+}
+
+
+void FilterColorMask::applyFilter(Canvas &canvas, const FilterMask &mask)
+{
+    
+    sf::Image image = canvas.getBackground().getTexture().copyToImage();
+
+    size_t width  = mask.getWidth();
+    size_t height = mask.getHeight();
+
+    for (size_t it = 0; it < width; it++)
+    {
+        for (size_t jt = 0; jt < height; jt++)
+        {
+
+            if (mask.getPixel(it, jt))
+            {
+                sf::Color color = image.getPixel(it, jt);
+
+                color.r &= mask_.r;
+                color.g &= mask_.g;
+                color.b &= mask_.b;
+                    
+                image.setPixel(it, jt, color);
+            }
+        }
+    }
+
+    sf::Texture texture;
+    texture.loadFromImage(image);
+    
+    sf::Sprite sprite(texture);
+    sprite.setTextureRect(sf::IntRect(0, height, width, -height));
+    
+    canvas.getBackground().clear();
+    canvas.getBackground().draw(sprite);
+}
+
+//==========================================================================
+
 FilterPalette::FilterPalette():
         filters_(),
         last_filter_(FilterType::NOTHING)
 {
-    filters_.pushBack(new FilterBrightness(0.0));   
+    filters_.pushBack(new FilterBrightness(0.0));
+    filters_.pushBack(new FilterBlackWhite());      
+    filters_.pushBack(new FilterInvert());
+    filters_.pushBack(new FilterColorMask(sf::Color::Red));
+    filters_.pushBack(new FilterColorMask(sf::Color::Green));
+    filters_.pushBack(new FilterColorMask(sf::Color::Blue));      
 }
 
 FilterPalette::~FilterPalette()
