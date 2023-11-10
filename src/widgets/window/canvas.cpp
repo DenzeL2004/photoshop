@@ -652,6 +652,7 @@ bool Scrollbar::onMousePressed(const Vector& pos, const MouseKey key, Container<
 
     if (flag)
     {
+        flag = false;
         flag |= center_button_->onMousePressed(pos, key, stack_transform);
         flag |= top_button_->onMousePressed(pos, key, stack_transform);
         flag |= bottom_button_->onMousePressed(pos, key, stack_transform);
