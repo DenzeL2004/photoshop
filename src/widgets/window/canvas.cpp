@@ -730,7 +730,7 @@ bool Scrollbar::onKeyboardReleased(const KeyboardKey key)
 
 void Scrollbar::onUpdate (const LayoutBox &parent_layout)
 {
-    LayoutBox *layout_box =  &getLayoutBox();
+    LayoutBox *layout_box = &getLayoutBox();
     Vector size = layout_box->getSize();
 
     layout_box->onParentUpdate(parent_layout);

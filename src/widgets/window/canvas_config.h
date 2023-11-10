@@ -20,7 +20,7 @@ char *Hor_Scl   = "src/img/scroll.png";
 //====================================================================
 
 static const Dot Title_offset = Dot(10.0, 5.0);
-static const Dot Frame_size   = Dot(730, 540.0); 
+static const Dot Frame_size   = Dot(730, 440.0); 
 static const Dot Frame_pos    = Dot(10.0, 10.0);
 
 static const Dot Close_button_size = Dot(25.0, 25.0);
@@ -30,7 +30,7 @@ static const Dot Close_button_pos  = Dot(705.0, 0.0);
 //Canvas
 
 static const Dot Canvas_size = Dot(2000.0, 2000.0);
-static const Dot Canvas_view_size = Vector(680, 470.0);
+static const Dot Canvas_view_size = Vector(680, 370.0);
 static const Dot Canvas_pos       = Vector(10.0, 60.0);
 
 //====================================================================
