@@ -9,11 +9,11 @@ class LayoutBox
 
         ~LayoutBox() = default;
 
-        virtual Vector      getPosition() const = 0;
-        virtual bool        setPosition(const Vector& new_pos) = 0;
+        virtual Vec2d      getPosition() const = 0;
+        virtual bool        setPosition(const Vec2d& new_pos) = 0;
 
-        virtual Vector      getSize() const = 0;
-        virtual bool        setSize(const Vector& new_size) = 0;
+        virtual Vec2d      getSize() const = 0;
+        virtual bool        setSize(const Vec2d& new_size) = 0;
 
         virtual void        onParentUpdate(const LayoutBox& parent_layout) = 0;
 
@@ -22,8 +22,8 @@ class LayoutBox
 
     private:
 
-        Vector pos_;
-        Vector size_;      
+        Vec2d pos_;
+        Vec2d size_;      
 };
 
 
@@ -32,16 +32,16 @@ class BaseLayoutBox : public LayoutBox
 {
     public:
 
-        BaseLayoutBox(const Vector& pos, 
-                      const Vector& size, const Vector& parent_size, 
+        BaseLayoutBox(const Vec2d& pos, 
+                      const Vec2d& size, const Vec2d& parent_size, 
                       const bool resize_flag, const bool save_locals_flag);
         ~BaseLayoutBox() = default;
 
-        virtual Vector      getPosition() const;
-        virtual bool        setPosition(const Vector& new_pos);
+        virtual Vec2d      getPosition() const;
+        virtual bool        setPosition(const Vec2d& new_pos);
 
-        virtual Vector      getSize() const;
-        virtual bool        setSize(const Vector& new_size);
+        virtual Vec2d      getSize() const;
+        virtual bool        setSize(const Vec2d& new_size);
 
         virtual void        onParentUpdate(const LayoutBox& parent_layout);
 
@@ -50,10 +50,10 @@ class BaseLayoutBox : public LayoutBox
 
     private:
 
-        Vector pos_;
-        Vector size_;      
+        Vec2d pos_;
+        Vec2d size_;      
 
-        Vector parent_size_;
+        Vec2d parent_size_;
 
         bool resizable_;
         bool save_locals_;

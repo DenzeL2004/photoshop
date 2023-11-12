@@ -1,9 +1,9 @@
 #include "window.h"
 
 Window::Window( const char *path_texture,
-                const Vector &size, const Vector &pos, 
-                const Widget *parent, const Vector &parent_size, 
-                const Vector &origin, const Vector& scale):
+                const Vec2d &size, const Vec2d &pos, 
+                const Widget *parent, const Vec2d &parent_size, 
+                const Vec2d &origin, const Vec2d& scale):
                 Widget(size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale),
                 texture_()
 {

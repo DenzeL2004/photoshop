@@ -1,9 +1,9 @@
 #include "tools.h"
 
 
-static void correctPos(Vector &pos, const Canvas &canvas);
+static void correctPos(Vec2d &pos, const Canvas &canvas);
 
-static void correctPos(Vector &pos, const Canvas &canvas)
+static void correctPos(Vec2d &pos, const Canvas &canvas)
 {
     pos += canvas.getRealPos();
     pos.y = canvas.getCanvasSize().y - pos.y;
@@ -75,14 +75,14 @@ class LineWidget : public Widget
 {
     public:
         LineWidget( const Dot *start_pos, const Dot *end_pos, const sf::Color *cur_color):
-                    Widget(Vector(1.0, 1.0), Vector(0.0,  0.0), nullptr),
+                    Widget(Vec2d(1.0, 1.0), Vec2d(0.0,  0.0), nullptr),
                     start_pos_(*start_pos), end_pos_(*end_pos), cur_color_(*cur_color){}
 
         ~LineWidget(){}
 
-        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform) {return true;};
-        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform) {return true;}
-        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform){return true;}
+        virtual bool onMousePressed     (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform) {return true;};
+        virtual bool onMouseMoved       (const Vec2d &pos, Container<Transform> &stack_transform) {return true;}
+        virtual bool onMouseReleased    (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform){return true;}
 
         virtual bool onKeyboardPressed  (const KeyboardKey){return true;}
         virtual bool onKeyboardReleased (const KeyboardKey){return true;}
@@ -163,14 +163,14 @@ class SquareWidget : public Widget
 {
     public:
         SquareWidget(   const Dot *start_pos, const Dot *end_pos, const sf::Color *cur_color):
-                        Widget(Vector(1.0, 1.0), Vector(0.0,  0.0), nullptr),
+                        Widget(Vec2d(1.0, 1.0), Vec2d(0.0,  0.0), nullptr),
                         start_pos_(*start_pos), end_pos_(*end_pos), cur_color_(*cur_color){}
 
         ~SquareWidget(){}
 
-        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform) {return true;};
-        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform) {return true;}
-        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform){return true;}
+        virtual bool onMousePressed     (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform) {return true;};
+        virtual bool onMouseMoved       (const Vec2d &pos, Container<Transform> &stack_transform) {return true;}
+        virtual bool onMouseReleased    (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform){return true;}
 
         virtual bool onKeyboardPressed  (const KeyboardKey){return true;}
         virtual bool onKeyboardReleased (const KeyboardKey){return true;}
@@ -253,14 +253,14 @@ class CircleWidget : public Widget
 {
     public:
         CircleWidget(   const Dot *start_pos, const Dot *end_pos, const sf::Color *cur_color):
-                        Widget(Vector(1.0, 1.0), Vector(0.0,  0.0), nullptr),
+                        Widget(Vec2d(1.0, 1.0), Vec2d(0.0,  0.0), nullptr),
                         start_pos_(*start_pos), end_pos_(*end_pos), cur_color_(*cur_color){}
 
         ~CircleWidget(){}
 
-        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform) {return true;};
-        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform) {return true;}
-        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform){return true;}
+        virtual bool onMousePressed     (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform) {return true;};
+        virtual bool onMouseMoved       (const Vec2d &pos, Container<Transform> &stack_transform) {return true;}
+        virtual bool onMouseReleased    (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform){return true;}
 
         virtual bool onKeyboardPressed  (const KeyboardKey){return true;}
         virtual bool onKeyboardReleased (const KeyboardKey){return true;}
@@ -275,7 +275,7 @@ class CircleWidget : public Widget
             Dot center = start_pos_ + last_trf.offset;
             Dot other  = end_pos_ + last_trf.offset;
 
-            double rad = (center - other).Len();
+            double rad = (center - other).length();
 
             drawCircle(targert, center, (float)rad, cur_color_);
         }
@@ -320,7 +320,7 @@ void CircleTool::onConfirm (Canvas &canvas)
     if (!using_)
         return;
 
-    double rad = (start_pos_ - end_pos_).Len();
+    double rad = (start_pos_ - end_pos_).length();
 
     correctPos(start_pos_, canvas);
 
@@ -358,7 +358,7 @@ void BrushTool::onMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 
     using_ = true;
 
-    Vector tmp_pos = pos;
+    Vec2d tmp_pos = pos;
     correctPos(tmp_pos, canvas);
 
     drawForm(tmp_pos, canvas);
@@ -369,7 +369,7 @@ void BrushTool::onMove(const Dot &pos, Canvas &canvas)
     if (!using_)
         return;
 
-    Vector tmp_pos = pos;
+    Vec2d tmp_pos = pos;
     correctPos(tmp_pos, canvas);
     
     drawForm(tmp_pos, canvas);
@@ -419,7 +419,7 @@ void PenTool::onMove(const Dot &pos, Canvas &canvas)
     if (!using_)
         return;
 
-    Vector tmp_pos = pos;
+    Vec2d tmp_pos = pos;
     correctPos(tmp_pos, canvas);
 
     drawLine(canvas.getBackground(), prev_pos_, tmp_pos, cur_color_);
@@ -557,14 +557,14 @@ class PolyLineWidget : public Widget
 {
     public:
         PolyLineWidget( const Dot *end_pos, const sf::Color *cur_color):
-                        Widget(Vector(1.0, 1.0), Vector(0.0,  0.0), nullptr),
+                        Widget(Vec2d(1.0, 1.0), Vec2d(0.0,  0.0), nullptr),
                         end_pos_(*end_pos), cur_color_(*cur_color){}
 
         ~PolyLineWidget(){}
 
-        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform) {return true;};
-        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform) {return true;}
-        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform){return true;}
+        virtual bool onMousePressed     (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform) {return true;};
+        virtual bool onMouseMoved       (const Vec2d &pos, Container<Transform> &stack_transform) {return true;}
+        virtual bool onMouseReleased    (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform){return true;}
 
         virtual bool onKeyboardPressed  (const KeyboardKey){return true;}
         virtual bool onKeyboardReleased (const KeyboardKey){return true;}
@@ -675,7 +675,7 @@ Widget* PolyLineTool::getWidget() const
 
 TextTool::TextTool(const sf::Color *cur_color):
                   using_(false), start_pos_(), 
-                  preview_(new TextBox(50, 40, cur_color, Vector(0.0,  0.0), nullptr)), cur_color_(*cur_color){}
+                  preview_(new TextBox(50, 40, cur_color, Vec2d(0.0,  0.0), nullptr)), cur_color_(*cur_color){}
 
 void TextTool::onMainButton(ControlState state, const Dot &pos, Canvas &canvas)
 {

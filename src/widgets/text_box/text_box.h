@@ -7,9 +7,9 @@ class TextBox : public Widget
 {
     public:
         TextBox(    const size_t limit_cnt_symbols, const size_t thicknesses, const sf::Color *color,
-                    const Vector &pos, 
-                    const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),
-                    const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
+                    const Vec2d &pos, 
+                    const Widget *parent, const Vec2d &parent_size = Vec2d(1.0, 1.0),
+                    const Vec2d &origin = Vec2d(0.0, 0.0), const Vec2d &scale = Vec2d(1.0, 1.0));
 
         virtual ~TextBox()
         {
@@ -20,7 +20,7 @@ class TextBox : public Widget
         TextBox(const TextBox &other) = delete;
         TextBox& operator= (const TextBox &other) = delete;
 
-        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMousePressed     (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform);
     
         virtual bool onKeyboardPressed  (const KeyboardKey key);
         virtual bool onKeyboardReleased (const KeyboardKey key);
@@ -42,7 +42,7 @@ class TextBox : public Widget
         size_t limit_cnt_symbols_;
         char *buf_;
 
-        Vector cursor_;
+        Vec2d cursor_;
 
         const sf::Color &color_;
 

@@ -28,9 +28,9 @@ enum WidgetErr
 class Widget
 {
     public:
-        Widget( const Vector &size, const Vector &pos, 
-                const Widget* parent, const Vector &parent_size = Vector(1.0, 1.0), 
-                const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0)):
+        Widget( const Vec2d &size, const Vec2d &pos, 
+                const Widget* parent, const Vec2d &parent_size = Vec2d(1.0, 1.0), 
+                const Vec2d &origin = Vec2d(0.0, 0.0), const Vec2d &scale = Vec2d(1.0, 1.0)):
                 parent_(parent),
                 layout_box_(new BaseLayoutBox(pos, size, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, true, false)),
                 origin_(origin), scale_(scale), focused_(false){}
@@ -43,9 +43,9 @@ class Widget
         Widget(const Widget &other) = delete;
         Widget& operator=(const Widget&) = delete;
 
-        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform);
-        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMousePressed     (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMouseMoved       (const Vec2d &pos, Container<Transform> &stack_transform);
+        virtual bool onMouseReleased    (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform);
 
         virtual bool onKeyboardPressed  (const KeyboardKey);
         virtual bool onKeyboardReleased (const KeyboardKey);
@@ -68,8 +68,8 @@ class Widget
 
         const Widget *parent_;
 
-        Vector origin_;
-        Vector scale_; 
+        Vec2d origin_;
+        Vec2d scale_; 
 
         bool focused_;
 

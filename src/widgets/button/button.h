@@ -26,9 +26,9 @@ class Button : public Widget
         Button( const char *released_texture_file, const char *covered_texture_file, 
                 const char *pressed_texture_file,  const char *disabled_texture_file,
                 const Action *action, 
-                const Vector &size, const Vector &pos, 
-                const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),
-                const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
+                const Vec2d &size, const Vec2d &pos, 
+                const Widget *parent, const Vec2d &parent_size = Vec2d(1.0, 1.0),
+                const Vec2d &origin = Vec2d(0.0, 0.0), const Vec2d &scale = Vec2d(1.0, 1.0));
 
         virtual ~Button()
         {
@@ -39,9 +39,9 @@ class Button : public Widget
         Button(const Button &other) = delete;
         Button& operator= (const Button &other) = delete;
 
-        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform);
-        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMousePressed     (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMouseMoved       (const Vec2d &pos, Container<Transform> &stack_transform);
+        virtual bool onMouseReleased    (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform);
 
         virtual bool onKeyboardPressed  (const KeyboardKey);
         virtual bool onKeyboardReleased (const KeyboardKey);
@@ -82,9 +82,9 @@ class ButtonList : public Button
         ButtonList (const char *released_texture_file, const char *covered_texture_file, 
                     const char *pressed_texture_file,  const char *disabled_texture_file,
                     const Action *action, 
-                    const Vector &size, const Vector &pos, 
-                    const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),
-                    const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0)):
+                    const Vec2d &size, const Vec2d &pos, 
+                    const Widget *parent, const Vec2d &parent_size = Vec2d(1.0, 1.0),
+                    const Vec2d &origin = Vec2d(0.0, 0.0), const Vec2d &scale = Vec2d(1.0, 1.0)):
                     Button(released_texture_file, covered_texture_file, 
                            pressed_texture_file, disabled_texture_file, 
                            action, size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale), buttons_(){}
@@ -103,9 +103,9 @@ class ButtonList : public Button
 
         virtual ButtonList &operator= (const ButtonList &other) = delete;
 
-        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform);
-        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMousePressed     (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMouseMoved       (const Vec2d &pos, Container<Transform> &stack_transform);
+        virtual bool onMouseReleased    (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform);
 
         virtual bool onKeyboardPressed  (const KeyboardKey);
         virtual bool onKeyboardReleased (const KeyboardKey);

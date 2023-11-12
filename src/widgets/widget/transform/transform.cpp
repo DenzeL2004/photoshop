@@ -2,7 +2,7 @@
 
 Transform Transform::applyPrev(const Transform &prev) const
 {
-    Dot new_pos = prev.offset + Vector(prev.scale.x * offset.x, prev.scale.y * offset.y);
+    Dot new_pos = prev.offset + Vec2d(prev.scale.x * offset.x, prev.scale.y * offset.y);
     Transform res(new_pos, {scale.x * prev.scale.x, scale.y * prev.scale.y});
 
     return res;

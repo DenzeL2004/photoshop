@@ -20,19 +20,19 @@ class Canvas : public Window
     public:
         
         Canvas( ToolPalette *tool_palette, FilterPalette *filter_palette, 
-                const Vector &canvas_size,
-                const Vector &size, const Vector &pos, 
-                const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),  
-                const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
+                const Vec2d &canvas_size,
+                const Vec2d &size, const Vec2d &pos, 
+                const Widget *parent, const Vec2d &parent_size = Vec2d(1.0, 1.0),  
+                const Vec2d &origin = Vec2d(0.0, 0.0), const Vec2d &scale = Vec2d(1.0, 1.0));
         
         virtual ~Canvas()
         {
             delete &filter_mask_;
         }
 
-        virtual bool onMousePressed     (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool onMouseMoved       (const Vector& pos, Container<Transform> &stack_transform);
-        virtual bool onMouseReleased    (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMousePressed     (const Vec2d& pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMouseMoved       (const Vec2d& pos, Container<Transform> &stack_transform);
+        virtual bool onMouseReleased    (const Vec2d& pos, const MouseKey key, Container<Transform> &stack_transform);
 
         virtual bool onKeyboardPressed  (const KeyboardKey);
         virtual bool onKeyboardReleased (const KeyboardKey);
@@ -40,18 +40,18 @@ class Canvas : public Window
         virtual void draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform);
         virtual bool onTick             (const float delta_time);  
 
-        Vector  getRealPos      () const;
-        void    setRealPos      (const Vector &new_pos);   
-        Vector  getCanvasSize   () const;
+        Vec2d  getRealPos      () const;
+        void    setRealPos      (const Vec2d &new_pos);   
+        Vec2d  getCanvasSize   () const;
 
-        void correctCanvasRealPos(const Vector &abs_size);
+        void correctCanvasRealPos(const Vec2d &abs_size);
         
         sf::RenderTexture& getBackground();
         FilterMask& getFilterMask();
 
     private:
         void getDrawFormat(sf::VertexArray &vertex_array, const Transform &trf) const;
-        Dot getCanvaseCoord(const Vector &pos) const;
+        Dot getCanvaseCoord(const Vec2d &pos) const;
 
         bool applyFilter(const KeyboardKey key);
 
@@ -62,7 +62,7 @@ class Canvas : public Window
 
         FilterPalette &filter_palette_;
 
-        Vector canvas_size_;
+        Vec2d canvas_size_;
         Dot real_pos_;
 };
 
@@ -72,9 +72,9 @@ class CanvasManager : public Window
     public:
 
         CanvasManager( const char *path_texture,
-                        const Vector &size, const Vector &pos, 
-                        const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),  
-                        const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
+                        const Vec2d &size, const Vec2d &pos, 
+                        const Widget *parent, const Vec2d &parent_size = Vec2d(1.0, 1.0),  
+                        const Vec2d &origin = Vec2d(0.0, 0.0), const Vec2d &scale = Vec2d(1.0, 1.0));
     
         ~CanvasManager()
         {
@@ -83,9 +83,9 @@ class CanvasManager : public Window
                 delete canvases_[it];
         };
 
-        virtual bool onMousePressed     (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool onMouseMoved       (const Vector& pos, Container<Transform> &stack_transform);
-        virtual bool onMouseReleased    (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMousePressed     (const Vec2d& pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMouseMoved       (const Vec2d& pos, Container<Transform> &stack_transform);
+        virtual bool onMouseReleased    (const Vec2d& pos, const MouseKey key, Container<Transform> &stack_transform);
 
         virtual bool onKeyboardPressed  (const KeyboardKey);
         virtual bool onKeyboardReleased (const KeyboardKey);
@@ -109,7 +109,7 @@ class CanvasManager : public Window
 class ScrollCanvas : public Action
 {
     public:
-        ScrollCanvas(const Vector &delta, Canvas *ptr): 
+        ScrollCanvas(const Vec2d &delta, Canvas *ptr): 
                 delta_(delta), canvas_(ptr){};
         ~ScrollCanvas(){};
 
@@ -134,9 +134,9 @@ class Scrollbar: public Widget
         };
 
         Scrollbar(  Canvas *canvas, const Type type,
-                    const Vector &size, const Vector &pos, 
-                    const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),  
-                    const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
+                    const Vec2d &size, const Vec2d &pos, 
+                    const Widget *parent, const Vec2d &parent_size = Vec2d(1.0, 1.0),  
+                    const Vec2d &origin = Vec2d(0.0, 0.0), const Vec2d &scale = Vec2d(1.0, 1.0));
 
         virtual ~Scrollbar()
         {
@@ -145,9 +145,9 @@ class Scrollbar: public Widget
             delete center_button_;
         }
 
-        virtual bool onMousePressed     (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool onMouseMoved       (const Vector& pos, Container<Transform> &stack_transform);
-        virtual bool onMouseReleased    (const Vector& pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMousePressed     (const Vec2d& pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMouseMoved       (const Vec2d& pos, Container<Transform> &stack_transform);
+        virtual bool onMouseReleased    (const Vec2d& pos, const MouseKey key, Container<Transform> &stack_transform);
 
         virtual void draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform);  
 
@@ -167,8 +167,8 @@ class Scrollbar: public Widget
         Button *top_button_, *bottom_button_, *center_button_;
         Canvas *canvas_;
 
-        Vector hold_pos_;
-        Vector prev_canvas_real_pos_;
+        Vec2d hold_pos_;
+        Vec2d prev_canvas_real_pos_;
         
         Type type_;
 };

@@ -5,7 +5,7 @@
 
 void EventAdapter::adapt(Widget &widget, int mouse_x, int mouse_y, sf::Event &event, Container<Transform> &stack_transform)
 {
-    Vector mouse_pos((double)mouse_x, (double)mouse_y);
+    Vec2d mouse_pos((double)mouse_x, (double)mouse_y);
 
     if (event.type == sf::Event::MouseMoved)
     {

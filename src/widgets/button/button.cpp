@@ -4,9 +4,9 @@
 Button::Button (const char *released_texture_file, const char *covered_texture_file, 
                 const char *pressed_texture_file,  const char *disabled_texture_file,
                 const Action *action, 
-                const Vector &size, const Vector &pos, 
-                const Widget *parent, const Vector &parent_size, 
-                const Vector &origin, const Vector &scale):
+                const Vec2d &size, const Vec2d &pos, 
+                const Widget *parent, const Vec2d &parent_size, 
+                const Vec2d &origin, const Vec2d &scale):
                 action_(action), 
                 state_(ButtonState::RELEASED), prev_state_(ButtonState::RELEASED),
                 released_texture_(), covered_texture_(), 
@@ -110,7 +110,7 @@ const sf::Texture* Button::defineTexture() const
 }
 
 
-bool Button::onMouseMoved(const Vector &pos, Container<Transform> &stack_transform)
+bool Button::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_transform)
 {
     if (state_ ==  Button::ButtonState::DISABLED)
         return false;
@@ -145,7 +145,7 @@ bool Button::onMouseMoved(const Vector &pos, Container<Transform> &stack_transfo
 
 //================================================================================
 
-bool Button::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+bool Button::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     if (state_ == Button::ButtonState::DISABLED)
         return false;
@@ -179,7 +179,7 @@ bool Button::onMousePressed(const Vector &pos, const MouseKey key, Container<Tra
 
 //================================================================================
 
-bool Button::onMouseReleased(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+bool Button::onMouseReleased(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     if (state_ == Button::ButtonState::DISABLED)
         return false;
@@ -229,7 +229,7 @@ void ButtonList::draw(sf::RenderTarget &target, Container<Transform> &stack_tran
 
 //================================================================================
 
-bool ButtonList::onMouseMoved(const Vector &pos, Container<Transform> &stack_transform)
+bool ButtonList::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_transform)
 {
     if (state_ ==  Button::ButtonState::DISABLED)
         return false;
@@ -275,7 +275,7 @@ bool ButtonList::onMouseMoved(const Vector &pos, Container<Transform> &stack_tra
 
 //================================================================================
 
-bool ButtonList::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+bool ButtonList::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     if (state_ == Button::ButtonState::DISABLED)
         return false;
@@ -334,7 +334,7 @@ bool ButtonList::onMousePressed(const Vector &pos, const MouseKey key, Container
 //================================================================================
 
 
-bool ButtonList::onMouseReleased(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+bool ButtonList::onMouseReleased(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     if (state_ == Button::ButtonState::DISABLED)
         return false;

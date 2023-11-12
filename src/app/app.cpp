@@ -4,16 +4,16 @@ const double WIDTH = 1600.0;
 const double HIEGHT = 900.0;
 
 AppWindow::AppWindow(   const char *path_texture,
-                        const Vector &size, const Vector &pos, 
-                        const Widget *parent, const Vector &parent_size, 
-                        const Vector &origin, const Vector &scale):
+                        const Vec2d &size, const Vec2d &pos, 
+                        const Widget *parent, const Vec2d &parent_size, 
+                        const Vec2d &origin, const Vec2d &scale):
                         Window(path_texture, size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale), 
                         canvas_manager_(Empty_texture, Dot(size.x, Canvase_manager_size.y * size.y), Canvase_manager_pos, this),
                         tool_pallette_(), filter_pallette_(), 
                         colors_(Colors_palette_size, Colors_palette_pos, this)
 {
     widgets_.pushBack(new Window("src/img/frame2.png", 
-                                Vector(size.x, Menu_size.y), Menu_pos, this));
+                                Vec2d(size.x, Menu_size.y), Menu_pos, this));
 
     widgets_.pushBack(new Button("src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
                                 "src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
@@ -151,7 +151,7 @@ void AppWindow::draw(sf::RenderTarget &target, Container<Transform> &stack_trans
 
 //================================================================================
 
-bool AppWindow::onMouseMoved(const Vector &pos, Container<Transform> &stack_transform)
+bool AppWindow::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
@@ -171,7 +171,7 @@ bool AppWindow::onMouseMoved(const Vector &pos, Container<Transform> &stack_tran
 
 //================================================================================
 
-bool AppWindow::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+bool AppWindow::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
@@ -206,7 +206,7 @@ bool AppWindow::onMousePressed(const Vector &pos, const MouseKey key, Container<
 
 //================================================================================
 
-bool AppWindow::onMouseReleased(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+bool AppWindow::onMouseReleased(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
@@ -303,19 +303,19 @@ void useApp()
 {
     sf::RenderWindow window(sf::VideoMode((uint32_t)WIDTH, (uint32_t)HIEGHT), "window manager");
 
-    Widget widget(Vector(0, 0), Vector(WIDTH, HIEGHT), nullptr, Vector(WIDTH, HIEGHT));
+    Widget widget(Vec2d(0, 0), Vec2d(WIDTH, HIEGHT), nullptr, Vec2d(WIDTH, HIEGHT));
 
     Frame border(   Frame_Texture, Title({10.0, 10.0}, "window manager", sf::Color::Black), 
-                    Vector(WIDTH, HIEGHT), Vector(0, 0), &widget);
+                    Vec2d(WIDTH, HIEGHT), Vec2d(0, 0), &widget);
 
     bool close_window = false;
     Button *close_button = new Button(  Cross_Button_Release, Cross_Button_Covered,
                                         Cross_Button_Release, Cross_Button_Covered, 
                                         new Click(&close_window),
-                                        Vector(25.0, 25.0), Vector(WIDTH - 25.0, 0), &border);
+                                        Vec2d(25.0, 25.0), Vec2d(WIDTH - 25.0, 0), &border);
  
 
-    AppWindow *app = new AppWindow("src/img/window.jpg",Vector(WIDTH - 20 , HIEGHT - 40), Vector(10, 30), &border); 
+    AppWindow *app = new AppWindow("src/img/window.jpg",Vec2d(WIDTH - 20 , HIEGHT - 40), Vec2d(10, 30), &border); 
 
     border.addWidget(close_button);
     border.addWidget(app);

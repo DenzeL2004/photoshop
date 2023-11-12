@@ -11,7 +11,7 @@ enum DecoratorState
 };
 
 
-static const Vector Size_min_limit = Vector(400, 400);
+static const Vec2d Size_min_limit = Vec2d(400, 400);
 
 
 //=================================================================================================
@@ -23,7 +23,7 @@ struct Title
             msg_(""),  len_msg_(0), 
             color_(sf::Color::Black){}
 
-    Title(  const Vector &pos, const char *msg, const sf::Color &color):
+    Title(  const Vec2d &pos, const char *msg, const sf::Color &color):
             pos_(pos),
             msg_(msg), 
             len_msg_(strlen(msg)), 
@@ -34,7 +34,7 @@ struct Title
     Title(const Title &other) = default;
     Title &operator= (const Title &other) = default;
 
-    Vector pos_;
+    Vec2d pos_;
 
     const char* msg_;
     size_t len_msg_;
@@ -56,9 +56,9 @@ class Frame: public Window
 
         Frame(  const char *path_texture,
                 const Title &title,
-                const Vector &size, const Vector &pos, 
-                const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0),
-                const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
+                const Vec2d &size, const Vec2d &pos, 
+                const Widget *parent, const Vec2d &parent_size = Vec2d(1.0, 1.0),
+                const Vec2d &origin = Vec2d(0.0, 0.0), const Vec2d &scale = Vec2d(1.0, 1.0));
 
         virtual ~Frame()
         {
@@ -67,9 +67,9 @@ class Frame: public Window
                 delete widgets_[it];
         }
 
-        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform);
-        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMousePressed     (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMouseMoved       (const Vec2d &pos, Container<Transform> &stack_transform);
+        virtual bool onMouseReleased    (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform);
         
         virtual bool onKeyboardPressed  (const KeyboardKey);
         virtual bool onKeyboardReleased (const KeyboardKey);

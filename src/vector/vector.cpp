@@ -2,95 +2,119 @@
 
 //=======================================================================
 
-Vector& Vector::operator = (const Vector &other)
+double Vec2d::length2() const
+{
+    return x * x + y * y; 
+}
+
+double Vec2d::length() const 
+{
+    return sqrt(this->length2());
+}
+
+
+//=======================================================================
+
+double dot(const Vec2d &lhs, const Vec2d &rhs)
+{
+    return lhs.x * rhs.x + lhs.y * rhs.y;
+}
+
+double cross(const Vec2d &lhs, const Vec2d &rhs)
+{
+    return lhs.x * rhs.y - lhs.y * rhs.x;
+}
+
+Vec2d normalize(const Vec2d &src)
+{
+    double len = src.length();
+    return src / len;
+}
+
+//=======================================================================
+
+Vec2d& Vec2d::operator = (const Vec2d &other)
 {
     this->x = other.x;
     this->y = other.y;
-    this->z = other.z;
 
     return *this;
 }
 
 //=======================================================================
 
-Vector& Vector::operator += (const Vector &other)
+Vec2d& Vec2d::operator += (const Vec2d &other)
 {
     this->x += other.x;
     this->y += other.y;
-    this->z += other.z;
 
     return *this;
 }
 
 //=======================================================================
 
-Vector& Vector::operator -= (const Vector &other)
+Vec2d& Vec2d::operator -= (const Vec2d &other)
 {
     this->x -= other.x;
     this->y -= other.y;
-    this->z -= other.z;
 
     return *this;
 }
 
 //=======================================================================
 
-Vector& Vector::operator *= (const double scale)
+Vec2d& Vec2d::operator *= (const double scale)
 {
     this->x *= scale;
     this->y *= scale;
-    this->z *= scale;
 
     return *this;
 }
 
-//=======================================================================
 
-Vector& Vector::operator /= (const double scale)
-{
-    this->x /= scale;
-    this->y /= scale;
-    this->z /= scale;
-
-    return *this;
-}
-
-//=======================================================================
-
-Vector& Vector::operator *= (const Vector &other)
+Vec2d& Vec2d::operator *= (const Vec2d &other)
 {
     x *= other.x;
     y *= other.y;
-    z *= other.z;
 
     return *this;
 }
 
-Vector operator * (const Vector &lhs, const Vector &rhs)
+//=======================================================================
+
+Vec2d& Vec2d::operator /= (const double scale)
 {
-    Vector res = lhs;
+    this->x /= scale;
+    this->y /= scale;
+
+    return *this;
+}
+
+
+Vec2d& Vec2d::operator /= (const Vec2d &other)
+{
+    x /= other.x;
+    y /= other.y;
+
+    return *this;
+}
+
+//=======================================================================
+
+
+Vec2d operator * (const Vec2d &lhs, const Vec2d &rhs)
+{
+    Vec2d res = lhs;
     res *= rhs;
 
     return res;
 }
 
-//=======================================================================
 
-double Vector::Len () const
+Vec2d operator / (const Vec2d &lhs, const Vec2d &rhs)
 {
-    double len = this->Dot(*this);
-    
-    len = sqrt(len);
-
-    return len;
-}
-
-//=======================================================================
-
-
-Vector Vector::Normal () const
-{
-    Vector res(*this / this->Len());
+    Vec2d res = lhs;
+    res /= rhs;
 
     return res;
 }
@@ -98,18 +122,9 @@ Vector Vector::Normal () const
 
 //=======================================================================
 
-double Vector::Dot (const Vector &vec) const
+Vec2d operator + (const Vec2d &vec1, const Vec2d &vec2)
 {
-    return  vec.x * this->x + 
-            vec.y * this->y +
-            vec.z * this->z;
-}
-
-//=======================================================================
-
-Vector operator + (const Vector &vec1, const Vector &vec2)
-{
-    Vector res = vec1;
+    Vec2d res = vec1;
     res += vec2;
 
     return res;
@@ -117,9 +132,9 @@ Vector operator + (const Vector &vec1, const Vector &vec2)
 
 //=======================================================================
 
-Vector operator - (const Vector &vec1, const Vector &vec2)
+Vec2d operator - (const Vec2d &vec1, const Vec2d &vec2)
 {
-    Vector res = vec1;
+    Vec2d res = vec1;
     res -= vec2;
     
     return res;
@@ -127,17 +142,17 @@ Vector operator - (const Vector &vec1, const Vector &vec2)
 
 //=======================================================================
 
-Vector operator * (const Vector &vec, const double scale)
+Vec2d operator * (const Vec2d &vec, const double scale)
 {
-    Vector res = vec;
+    Vec2d res = vec;
     res *= scale;
 
     return res;
 }
 
-Vector operator * (const double scale, const Vector &vec)
+Vec2d operator * (const double scale, const Vec2d &vec)
 {
-    Vector res = vec;
+    Vec2d res = vec;
     res *= scale;
 
     return res;
@@ -145,39 +160,20 @@ Vector operator * (const double scale, const Vector &vec)
 
 //=======================================================================
 
-Vector operator / (const Vector &vec, const double scale)
+Vec2d operator / (const Vec2d &vec, const double scale)
 {
-    Vector res = vec;
+    Vec2d res = vec;
     res /= scale;
 
     return res;
 }
 
-//=======================================================================
 
-Vector Vector::Orthogonal () const
-{
-    Vector res(-this->y, this->x);
-    return res;
-}
 
 //=======================================================================
 
-Vector Vector::Reflection (const Vector &other) const
-{
-    Vector other_ortogonal = other.Orthogonal();
-    other_ortogonal = other_ortogonal.Normal();
-
-    Vector res = this->Dot(other_ortogonal) * 2.0 * other_ortogonal - *this;
-
-    return res;
-}
-
-//=======================================================================
-
-bool  Vector::operator == (const Vector &other)
+bool  Vec2d::operator == (const Vec2d &other)
 {
     return  EqualityDouble(this->x, other.x) &&
-            EqualityDouble(this->y, other.y) &&
-            EqualityDouble(this->z, other.z);
+            EqualityDouble(this->y, other.y);
 }

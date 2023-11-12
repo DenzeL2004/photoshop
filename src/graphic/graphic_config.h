@@ -10,8 +10,8 @@ const uint32_t Default_plane_width  = (uint32_t)((double)Default_window_width / 
 const double X_plane_start = 10.0;
 const double Y_plane_start = 10.0;
 
-const Dot Left_corner  = Vector(X_plane_start, Y_plane_start, 0.0);
-const Dot Right_corner = Vector(X_plane_start + Default_window_width + 50, Y_plane_start, 0.0);
+const Dot Left_corner  = Dot(X_plane_start, Y_plane_start);
+const Dot Right_corner = Dot(X_plane_start + Default_window_width + 50, Y_plane_start);
 
 
 //===============================================================================

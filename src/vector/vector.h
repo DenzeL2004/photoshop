@@ -8,67 +8,56 @@
 #include "../generals_func/generals.h"
 #include "../log_info/log_errors.h"
 
-class Vector 
+class Vec2d 
 {
     public:
-    
-        Vector (const double x, const double y, const double z = 0.0): x(x), y(y), z(z) {}
-        Vector (): x(0.0), y(0.0), z(0.0) {}
 
-        Vector (const Vector &src): x(src.x), y(src.y), z(src.z) {} 
+        double x;
+        double y;       
 
-        ~Vector ()
+
+        Vec2d (const double coord_x, const double coord_y): x(coord_x), y(coord_y) {}
+        Vec2d (): x(0.0), y(0.0) {}
+
+        Vec2d (const Vec2d &src): x(src.x), y(src.y){} 
+
+        ~Vec2d ()
         {
             x = NAN;
             y = NAN;
-            z = NAN;
         }
 
-        bool operator == (const Vector &other);
+        double length2() const;
+        double length()  const;
 
-        Vector& operator  = (const Vector &other);
-        Vector& operator += (const Vector &other);
-        Vector& operator -= (const Vector &other);
-        Vector& operator *= (const double scale);
-        Vector& operator /= (const double scale);
+        bool operator == (const Vec2d &other);
 
-        Vector& operator *= (const Vector &other);
+        Vec2d& operator  = (const Vec2d &other);
+        Vec2d& operator += (const Vec2d &other);
+        Vec2d& operator -= (const Vec2d &other);
+        Vec2d& operator *= (const double scale);
+        Vec2d& operator /= (const double scale);
 
-        Vector  Normal     () const;
-        Vector  Orthogonal  () const;
-        Vector  Reflection (const Vector &other) const;  
-        
-        double  Dot      (const Vector &vec) const;
-        double  Len      () const;
+        Vec2d& operator *= (const Vec2d &other);
+        Vec2d& operator /= (const Vec2d &other);
 
-
-        double x;
-        double y;
-        double z; 
-        
 };
 
-Vector operator + (const Vector &vec1, const Vector &vec2);
-Vector operator - (const Vector &vec1, const Vector &vec2);
+double dot(const Vec2d &lhs, const Vec2d &rhs);
 
-Vector operator * (const Vector &vec, const double scale);
-Vector operator * (const double scale, const Vector &vec);
-Vector operator * (const Vector &lhs,  const Vector &rhs);
+Vec2d operator + (const Vec2d &vec1, const Vec2d &vec2);
+Vec2d operator - (const Vec2d &vec1, const Vec2d &vec2);
 
+Vec2d operator * (const Vec2d &vec, const double scale);
+Vec2d operator * (const double scale, const Vec2d &vec);
+Vec2d operator * (const Vec2d &lhs,  const Vec2d &rhs);
 
-Vector operator / (const Vector &vec, const double scale);
+Vec2d operator / (const Vec2d &vec, const double scale);
+Vec2d operator / (const Vec2d &lhs, const Vec2d &rhs);
 
-typedef Vector Dot;
+using Dot = Vec2d;
 
 //===================================================================
-
-const Dot Null_dot = Vector(0.0, 0.0, 0.0);
-
-const Vector Unit_vector_x = Vector(1.0, 0.0, 0.0);
-const Vector Unit_vector_y = Vector(0.0, 1.0, 0.0);
-const Vector Unit_vector_z = Vector(0.0, 0.0, 1.0);
-
-const Vector Err_vector    = Vector(NAN, NAN, NAN);
 
 
 #endif //#endif _VECTOR_H_

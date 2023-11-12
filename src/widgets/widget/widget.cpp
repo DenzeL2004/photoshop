@@ -2,21 +2,21 @@
 #include "../../graphic/graphic.h"
 
 
-bool Widget::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+bool Widget::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     return false;
 }
 
 //================================================================================
 
-bool Widget::onMouseReleased(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+bool Widget::onMouseReleased(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     return false;
 }
 
 //================================================================================
 
-bool Widget::onMouseMoved(const Vector &pos, Container<Transform> &stack_transform)
+bool Widget::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_transform)
 {
     return false;
 }
@@ -53,7 +53,7 @@ void Widget::draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
 
     sf::Vector2f pos = last_trf.rollbackTransform(Dot(0, 0));
     
-    Vector abs_pos((double)pos.x, (double)pos.y);
+    Vec2d abs_pos((double)pos.x, (double)pos.y);
     double abs_width  = last_trf.scale.x * layout_box_->getSize().x;
     double abs_height = last_trf.scale.y * layout_box_->getSize().y;
 
@@ -107,7 +107,7 @@ void Widget::setLayoutBox(const LayoutBox &layout_box)
 
 bool Widget::checkIn(const Dot &local_pos)
 {
-    Vector size = layout_box_->getSize();
+    Vec2d size = layout_box_->getSize();
 
     bool horizontal = (Eps < local_pos.x && size.x - Eps > local_pos.x);
     bool vertical   = (Eps < local_pos.y && size.y - Eps > local_pos.y);

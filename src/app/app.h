@@ -131,9 +131,9 @@ class AppWindow: public Window
 {
     public:
         AppWindow(  const char *path_texture,
-                    const Vector &size, const Vector &pos, 
-                    const Widget *parent, const Vector &parent_size = Vector(1.0, 1.0), 
-                    const Vector &origin = Vector(0.0, 0.0), const Vector &scale = Vector(1.0, 1.0));
+                    const Vec2d &size, const Vec2d &pos, 
+                    const Widget *parent, const Vec2d &parent_size = Vec2d(1.0, 1.0), 
+                    const Vec2d &origin = Vec2d(0.0, 0.0), const Vec2d &scale = Vec2d(1.0, 1.0));
 
         virtual ~AppWindow()
         {
@@ -144,9 +144,9 @@ class AppWindow: public Window
             }
         }
 
-        virtual bool onMousePressed     (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
-        virtual bool onMouseMoved       (const Vector &pos, Container<Transform> &stack_transform);
-        virtual bool onMouseReleased    (const Vector &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMousePressed     (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform);
+        virtual bool onMouseMoved       (const Vec2d &pos, Container<Transform> &stack_transform);
+        virtual bool onMouseReleased    (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform);
 
         virtual bool onKeyboardPressed  (const KeyboardKey);
         virtual bool onKeyboardReleased (const KeyboardKey);

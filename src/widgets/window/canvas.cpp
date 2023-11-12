@@ -6,10 +6,10 @@
 #include "filters/filter.h"
 
 Canvas::Canvas( ToolPalette *tool_palette, FilterPalette *filter_palette,
-                const Vector &canvas_size,
-                const Vector &size, const Vector &pos, 
-                const Widget *parent, const Vector &parent_size, 
-                const Vector &origin, const Vector &scale):
+                const Vec2d &canvas_size,
+                const Vec2d &size, const Vec2d &pos, 
+                const Widget *parent, const Vec2d &parent_size, 
+                const Vec2d &origin, const Vec2d &scale):
                 Window(Debug_texture, size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale),
                 tool_palette_(*tool_palette), filter_palette_(*filter_palette), 
                 filter_mask_(*(new FilterMask(canvas_size.x, canvas_size.y))),
@@ -77,7 +77,7 @@ void Canvas::getDrawFormat(sf::VertexArray &vertex_array, const Transform &trf) 
 
 //================================================================================
 
-bool Canvas::onMouseMoved(const Vector& pos, Container<Transform> &stack_transform)
+bool Canvas::onMouseMoved(const Vec2d& pos, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
 
@@ -100,7 +100,7 @@ bool Canvas::onMouseMoved(const Vector& pos, Container<Transform> &stack_transfo
 
 //================================================================================
 
-bool Canvas::onMousePressed(const Vector& pos, const MouseKey key, Container<Transform> &stack_transform)
+bool Canvas::onMousePressed(const Vec2d& pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
@@ -125,7 +125,7 @@ bool Canvas::onMousePressed(const Vector& pos, const MouseKey key, Container<Tra
 
 //================================================================================
 
-bool Canvas::onMouseReleased(const Vector& pos, const MouseKey key, Container<Transform> &stack_transform)
+bool Canvas::onMouseReleased(const Vec2d& pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     if (focused_)
     {
@@ -141,7 +141,7 @@ bool Canvas::onMouseReleased(const Vector& pos, const MouseKey key, Container<Tr
     return false;
 }
 
-Dot Canvas::getCanvaseCoord(const Vector &local_pos) const
+Dot Canvas::getCanvaseCoord(const Vec2d &local_pos) const
 {
     return Dot(real_pos_.x + local_pos.x, canvas_size_.y - (real_pos_.y + local_pos.y) );
 }
@@ -241,17 +241,17 @@ bool Canvas::onTick(const float delta_time)
 }
 
 
-void Canvas::setRealPos (const Vector &new_pos)
+void Canvas::setRealPos (const Vec2d &new_pos)
 {
     real_pos_ = new_pos;
 }  
 
-Vector Canvas::getRealPos () const
+Vec2d Canvas::getRealPos () const
 {
     return real_pos_;
 }  
 
-Vector Canvas::getCanvasSize () const
+Vec2d Canvas::getCanvasSize () const
 {
     return canvas_size_;
 }
@@ -261,7 +261,7 @@ FilterMask& Canvas::getFilterMask ()
     return filter_mask_;
 }
 
-void Canvas::correctCanvasRealPos(const Vector &abs_size)
+void Canvas::correctCanvasRealPos(const Vec2d &abs_size)
 {
     if (real_pos_.x < Eps)
         real_pos_.x = 0.0;
@@ -285,9 +285,9 @@ sf::RenderTexture& Canvas::getBackground()
 // // //CONTAINER WINDOW
 
 CanvasManager::CanvasManager(   const char *path_texture,
-                                const Vector &size, const Vector &pos, 
-                                const Widget *parent, const Vector &parent_size,  
-                                const Vector &origin, const Vector &scale):
+                                const Vec2d &size, const Vec2d &pos, 
+                                const Widget *parent, const Vec2d &parent_size,  
+                                const Vec2d &origin, const Vec2d &scale):
                                 Window(path_texture, size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale),
                                 canvases_(), delete_canvas_(false), cnt_(){}
 
@@ -311,7 +311,7 @@ void CanvasManager::draw(sf::RenderTarget &target, Container<Transform> &stack_t
 
 //=======================================================================================
 
-bool CanvasManager::onMouseMoved(const Vector &pos, Container<Transform> &stack_transform)
+bool CanvasManager::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_transform)
 {
     size_t size = widgets_.getSize();
     if (size == 0) return false;
@@ -328,7 +328,7 @@ bool CanvasManager::onMouseMoved(const Vector &pos, Container<Transform> &stack_
 
 //================================================================================
 
-bool CanvasManager::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+bool CanvasManager::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
@@ -364,7 +364,7 @@ bool CanvasManager::onMousePressed(const Vector &pos, const MouseKey key, Contai
 
 //================================================================================
 
-bool CanvasManager::onMouseReleased(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+bool CanvasManager::onMouseReleased(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
@@ -452,12 +452,12 @@ void CanvasManager::createCanvas(ToolPalette *tool_palette, FilterPalette *filte
                                     Buttons_scroll_size, Left_pos, scroll_hor);
 
     Button *right_btn = new Button( Right_Scl_Rel, Right_Scl_Prs, Right_Scl_Rel, Right_Scl_Prs, 
-                                    new ScrollCanvas(Vector(5.0, 0.0), canvas), 
+                                    new ScrollCanvas(Vec2d(5.0, 0.0), canvas), 
                                     Buttons_scroll_size, Right_pos, scroll_hor);
 
     Button *hor_btn = new Button(   Hor_Scl, Hor_Scl, Hor_Scl, Hor_Scl, 
                                     new ScrollCanvas(Dot(0, 0), canvas), 
-                                    Buttons_scroll_size, Vector(0.0, 0.0), scroll_hor);
+                                    Buttons_scroll_size, Vec2d(0.0, 0.0), scroll_hor);
     
     Scrollbar *scroll_ver = new Scrollbar(  canvas, Scrollbar::Type::VERTICAL, 
                                             Scroll_ver_size, Scroll_ver_pos, frame);
@@ -467,12 +467,12 @@ void CanvasManager::createCanvas(ToolPalette *tool_palette, FilterPalette *filte
                                     Buttons_scroll_size, Up_pos, scroll_ver);
 
     Button *down_btn = new Button(  Down_Scl_Rel, Down_Scl_Prs, Down_Scl_Rel, Down_Scl_Prs, 
-                                    new ScrollCanvas(Vector(0.0, 5.0), canvas), 
+                                    new ScrollCanvas(Vec2d(0.0, 5.0), canvas), 
                                     Buttons_scroll_size, Down_pos, scroll_ver);
 
     Button *ver_btn = new Button(   Ver_Scl, Ver_Scl, Ver_Scl, Ver_Scl, 
                                     new ScrollCanvas(Dot(0, 0), canvas), 
-                                    Buttons_scroll_size, Vector(0.0, 0.0), scroll_ver);
+                                    Buttons_scroll_size, Vec2d(0.0, 0.0), scroll_ver);
 
 
     scroll_hor->addButtons(left_btn, right_btn, hor_btn);
@@ -502,9 +502,9 @@ Canvas* CanvasManager::getActiveCanvas()
 //================================================================================
 
 Scrollbar::Scrollbar(   Canvas *canvas, const Type type,
-                        const Vector &size, const Vector &pos, 
-                        const Widget *parent, const Vector &parent_size,  
-                        const Vector &origin, const Vector &scale):
+                        const Vec2d &size, const Vec2d &pos, 
+                        const Widget *parent, const Vec2d &parent_size,  
+                        const Vec2d &origin, const Vec2d &scale):
                         Widget(size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale),
                         top_button_(nullptr), bottom_button_(nullptr), center_button_(nullptr),
                         canvas_(canvas), hold_pos_(Dot(0.0, 0.0)), prev_canvas_real_pos_(0.0, 0.0), type_(type)
@@ -534,7 +534,7 @@ void Scrollbar::draw(sf::RenderTarget &target, Container<Transform> &stack_trans
     float abs_width  = (float)(trf.scale.x * getLayoutBox().getSize().x);
     float abs_height = (float)(trf.scale.y * getLayoutBox().getSize().y);
     
-    canvas_->correctCanvasRealPos(Vector(abs_width, abs_height));
+    canvas_->correctCanvasRealPos(Vec2d(abs_width, abs_height));
     
     top_button_->draw(target, stack_transform);
     bottom_button_->draw(target, stack_transform);
@@ -547,7 +547,7 @@ void Scrollbar::draw(sf::RenderTarget &target, Container<Transform> &stack_trans
 
 //================================================================================
 
-bool Scrollbar::onMouseMoved(const Vector& pos, Container<Transform> &stack_transform)
+bool Scrollbar::onMouseMoved(const Vec2d& pos, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
 
@@ -566,7 +566,7 @@ bool Scrollbar::onMouseMoved(const Vector& pos, Container<Transform> &stack_tran
         Dot real_pos = canvas_->getRealPos();
         Dot center_button_pos = center_button_->getLayoutBox().getPosition();
         
-        Vector scrollbar_size = getLayoutBox().getSize() - top_button_->getLayoutBox().getSize() - bottom_button_->getLayoutBox().getSize();
+        Vec2d scrollbar_size = getLayoutBox().getSize() - top_button_->getLayoutBox().getSize() - bottom_button_->getLayoutBox().getSize();
 
         if (type_ == Scrollbar::Type::HORIZONTAL)
         {
@@ -583,7 +583,7 @@ bool Scrollbar::onMouseMoved(const Vector& pos, Container<Transform> &stack_tran
         float abs_width  = (float)(trf.scale.x * getLayoutBox().getSize().x);
         float abs_height = (float)(trf.scale.y * getLayoutBox().getSize().y);
 
-        canvas_->correctCanvasRealPos(Vector(abs_width, abs_height));
+        canvas_->correctCanvasRealPos(Vec2d(abs_width, abs_height));
         moveCenter();
     }
     
@@ -594,48 +594,48 @@ bool Scrollbar::onMouseMoved(const Vector& pos, Container<Transform> &stack_tran
 
 void Scrollbar::moveCenter()
 {
-    Vector canvas_size = canvas_->getCanvasSize();
-    Vector canvas_pos = canvas_->getRealPos();
+    Vec2d canvas_size = canvas_->getCanvasSize();
+    Vec2d canvas_pos = canvas_->getRealPos();
 
     double cf_x = canvas_pos.x / canvas_size.x;
     double cf_y = canvas_pos.y / canvas_size.y;
     
-    Vector center_button_pos = center_button_->getLayoutBox().getPosition();
+    Vec2d center_button_pos = center_button_->getLayoutBox().getPosition();
 
-    Vector scrollbar_size = getLayoutBox().getSize() - top_button_->getLayoutBox().getSize() - bottom_button_->getLayoutBox().getSize();
+    Vec2d scrollbar_size = getLayoutBox().getSize() - top_button_->getLayoutBox().getSize() - bottom_button_->getLayoutBox().getSize();
 
     if (type_ == Scrollbar::Type::HORIZONTAL)
-        center_button_pos = Vector(cf_x * scrollbar_size.x + top_button_->getLayoutBox().getSize().x, center_button_pos.y); 
+        center_button_pos = Vec2d(cf_x * scrollbar_size.x + top_button_->getLayoutBox().getSize().x, center_button_pos.y); 
 
     if (type_ == Scrollbar::Type::VERTICAL)
-        center_button_pos = Vector(center_button_pos.x, cf_y * scrollbar_size.y + top_button_->getLayoutBox().getSize().y); 
+        center_button_pos = Vec2d(center_button_pos.x, cf_y * scrollbar_size.y + top_button_->getLayoutBox().getSize().y); 
     
     center_button_->getLayoutBox().setPosition(center_button_pos);
 }
 
 void Scrollbar::resizeCenter()
 {
-    Vector canvas_size = canvas_->getCanvasSize();
+    Vec2d canvas_size = canvas_->getCanvasSize();
     
     double cf_x = std::min(1.0, getLayoutBox().getSize().x / canvas_size.x);
     double cf_y = std::min(1.0, getLayoutBox().getSize().y / canvas_size.y);
     
-    Vector center_button_size = center_button_->getLayoutBox().getSize();
+    Vec2d center_button_size = center_button_->getLayoutBox().getSize();
 
-    Vector scrollbar_size = getLayoutBox().getSize() - top_button_->getLayoutBox().getSize() - bottom_button_->getLayoutBox().getSize();
+    Vec2d scrollbar_size = getLayoutBox().getSize() - top_button_->getLayoutBox().getSize() - bottom_button_->getLayoutBox().getSize();
 
     if (type_ == Scrollbar::Type::HORIZONTAL)
-        center_button_size = Vector(cf_x * scrollbar_size.x, center_button_size.y); 
+        center_button_size = Vec2d(cf_x * scrollbar_size.x, center_button_size.y); 
 
     if (type_ == Scrollbar::Type::VERTICAL)
-        center_button_size = Vector(center_button_size.x, cf_y * scrollbar_size.y); 
+        center_button_size = Vec2d(center_button_size.x, cf_y * scrollbar_size.y); 
     
     center_button_->getLayoutBox().setSize(center_button_size);
 }
 
 //================================================================================
 
-bool Scrollbar::onMousePressed(const Vector& pos, const MouseKey key, Container<Transform> &stack_transform)
+bool Scrollbar::onMousePressed(const Vec2d& pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     LayoutBox *layout_box =  &getLayoutBox();
 
@@ -682,7 +682,7 @@ bool Scrollbar::onMousePressed(const Vector& pos, const MouseKey key, Container<
         float abs_width  = (float)(trf.scale.x * layout_box->getSize().x);
         float abs_height = (float)(trf.scale.y * layout_box->getSize().y);
 
-        canvas_->correctCanvasRealPos(Vector(abs_width, abs_height));
+        canvas_->correctCanvasRealPos(Vec2d(abs_width, abs_height));
     }
     
     moveCenter();
@@ -694,7 +694,7 @@ bool Scrollbar::onMousePressed(const Vector& pos, const MouseKey key, Container<
 
 //================================================================================
 
-bool Scrollbar::onMouseReleased(const Vector& pos, const MouseKey key, Container<Transform> &stack_transform)
+bool Scrollbar::onMouseReleased(const Vec2d& pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
@@ -731,15 +731,15 @@ bool Scrollbar::onKeyboardReleased(const KeyboardKey key)
 void Scrollbar::onUpdate (const LayoutBox &parent_layout)
 {
     LayoutBox *layout_box = &getLayoutBox();
-    Vector size = layout_box->getSize();
+    Vec2d size = layout_box->getSize();
 
     layout_box->onParentUpdate(parent_layout);
 
     if (type_ == Scrollbar::Type::VERTICAL)
-        layout_box->setSize(Vector(size.x, layout_box->getSize().y));
+        layout_box->setSize(Vec2d(size.x, layout_box->getSize().y));
 
     if (type_ == Scrollbar::Type::HORIZONTAL)
-        layout_box->setSize(Vector(layout_box->getSize().x, size.y));
+        layout_box->setSize(Vec2d(layout_box->getSize().x, size.y));
     
     bottom_button_->onUpdate(*layout_box);
     center_button_->onUpdate(*layout_box);

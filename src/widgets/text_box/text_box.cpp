@@ -2,10 +2,10 @@
 #include "text_box.h"
 
 TextBox::TextBox(   const size_t limit_cnt_symbols, const size_t thicknesses, const sf::Color *color, 
-                    const Vector &pos, 
-                    const Widget *parent, const Vector &parent_size,
-                    const Vector &origin, const Vector &scale):
-                    Widget(Vector(0, thicknesses), pos, parent, parent_size, origin, scale), 
+                    const Vec2d &pos, 
+                    const Widget *parent, const Vec2d &parent_size,
+                    const Vec2d &origin, const Vec2d &scale):
+                    Widget(Vec2d(0, thicknesses), pos, parent, parent_size, origin, scale), 
                     font_(),  
                     thicknesses_(thicknesses), color_(*color), 
                     cnt_symbols_(0), limit_cnt_symbols_(limit_cnt_symbols), 
@@ -31,7 +31,7 @@ void TextBox::draw(sf::RenderTarget &target, Container<Transform> &stack_transfo
     Transform last_trf = stack_transform.getBack();
     sf::Vector2f pos = last_trf.rollbackTransform(Dot(0, 0));
     
-    Vector abs_pos((double)pos.x, (double)pos.y);
+    Vec2d abs_pos((double)pos.x, (double)pos.y);
 
     sf::Text text(buf_, font_, thicknesses_ * last_trf.scale.y);
     text.setFillColor(color_);
@@ -64,7 +64,7 @@ sf::Text TextBox::getText()
 
 //================================================================================
 
-bool TextBox::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+bool TextBox::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     if (cnt_symbols_ == 0) return false;
 
@@ -138,7 +138,7 @@ bool TextBox::onKeyboardPressed  (const KeyboardKey key)
 
         buf_[cnt_symbols_] = '\0';
 
-        getLayoutBox().setSize(Vector(cnt_symbols_, thicknesses_));
+        getLayoutBox().setSize(Vec2d(cnt_symbols_, thicknesses_));
         return true;
         
     }
@@ -169,7 +169,7 @@ bool TextBox::onKeyboardPressed  (const KeyboardKey key)
     cursor_.x++;
     cnt_symbols_++;
 
-    getLayoutBox().setSize(Vector(cnt_symbols_, thicknesses_));
+    getLayoutBox().setSize(Vec2d(cnt_symbols_, thicknesses_));
 
     return true;
 }

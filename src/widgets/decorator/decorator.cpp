@@ -9,9 +9,9 @@ const double Border_width = 10;
 
 Frame::Frame(   const char *path_texture,
                 const Title &title,
-                const Vector &size, const Vector &pos, 
-                const Widget *parent, const Vector &parent_size, 
-                const Vector &origin, const Vector &scale):
+                const Vec2d &size, const Vec2d &pos, 
+                const Widget *parent, const Vec2d &parent_size, 
+                const Vec2d &origin, const Vec2d &scale):
                 Window(path_texture, size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale),  
                 title_(title), widgets_(),
                 state_(DEFAULT), hold_pos_({0.0, 0.0}), prev_pos_({0.0, 0.0}){}
@@ -45,7 +45,7 @@ void Frame::draw(sf::RenderTarget &target, Container<Transform> &stack_transform
 
 //================================================================================
 
-bool Frame::onMouseMoved(const Vector &pos, Container<Transform> &stack_transform)
+bool Frame::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
 
@@ -77,7 +77,7 @@ bool Frame::onMouseMoved(const Vector &pos, Container<Transform> &stack_transfor
 //================================================================================
 void Frame::clickOnBorder()
 {
-    Vector size = getLayoutBox().getSize();
+    Vec2d size = getLayoutBox().getSize();
 
     state_ = 0;
 
@@ -96,11 +96,11 @@ void Frame::resizeFrame(const Dot &local_pos)
 {
     LayoutBox* layout_box = &getLayoutBox();
 
-    Vector size = layout_box->getSize();
+    Vec2d size = layout_box->getSize();
 
-    Vector pos = layout_box->getPosition();
+    Vec2d pos = layout_box->getPosition();
 
-    Vector delta = local_pos - prev_pos_;
+    Vec2d delta = local_pos - prev_pos_;
    
     if (state_ & Frame::Borders::LEFT) 
     {
@@ -110,20 +110,20 @@ void Frame::resizeFrame(const Dot &local_pos)
         delta.x = pos.x - layout_box->getPosition().x;
     }    
 
-    Vector new_size = size;
+    Vec2d new_size = size;
 
     if (state_ & Frame::Borders::LEFT || state_ & Frame::Borders::RIGHT)
-        new_size += Vector(delta.x, 0.0);
+        new_size += Vec2d(delta.x, 0.0);
 
     if (state_ & Frame::Borders::BOTTOM)
-        new_size += Vector(0.0, delta.y);
+        new_size += Vec2d(0.0, delta.y);
 
     if (new_size.x >= Size_min_limit.x + Eps && new_size.y >= Size_min_limit.y + Eps)
     {
         if (parent_ != nullptr)
         {
-            Vector parent_size = parent_->getLayoutBox().getSize();
-            Vector new_pos = layout_box->getPosition();
+            Vec2d parent_size = parent_->getLayoutBox().getSize();
+            Vec2d new_pos = layout_box->getPosition();
             if (new_pos.x + new_size.x <= parent_size.x - Eps &&
                 new_pos.y + new_size.y <= parent_size.y - Eps)
             {
@@ -151,14 +151,14 @@ void Frame::moveFrame(const Dot &local_pos)
 {
     LayoutBox* layout_box = &getLayoutBox();
 
-    Vector delta = local_pos - hold_pos_;
+    Vec2d delta = local_pos - hold_pos_;
         
-    Vector new_pos = getLayoutBox().getPosition() + delta;
+    Vec2d new_pos = getLayoutBox().getPosition() + delta;
     
     if (parent_ != nullptr)
     {
-        Vector parent_size = parent_->getLayoutBox().getSize();
-        Vector size = layout_box->getSize();
+        Vec2d parent_size = parent_->getLayoutBox().getSize();
+        Vec2d size = layout_box->getSize();
 
         if (new_pos.x > Eps && new_pos.x + size.x <= parent_size.x && 
             new_pos.y > Eps && new_pos.y + size.y <= parent_size.y)
@@ -173,7 +173,7 @@ void Frame::moveFrame(const Dot &local_pos)
 
 //================================================================================
 
-bool Frame::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+bool Frame::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
@@ -214,7 +214,7 @@ bool Frame::onMousePressed(const Vector &pos, const MouseKey key, Container<Tran
 
 //================================================================================
 
-bool Frame::onMouseReleased(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+bool Frame::onMouseReleased(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
     stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));

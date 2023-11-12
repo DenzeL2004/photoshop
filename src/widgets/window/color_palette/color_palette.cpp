@@ -1,9 +1,9 @@
 
 #include "color_palatte.h"
 
-ColorPalette::ColorPalette( const Vector &size, const Vector &pos, 
-                            const Widget *parent, const Vector &parent_size,
-                            const Vector &origin, const Vector &scale):
+ColorPalette::ColorPalette( const Vec2d &size, const Vec2d &pos, 
+                            const Widget *parent, const Vec2d &parent_size,
+                            const Vec2d &origin, const Vec2d &scale):
                             Widget(size, pos, parent, parent_size, origin, scale),
                             colors_(new sf::Color[Color_limit * 6]), active_color_(sf::Color::White), texture_()
 {
@@ -69,7 +69,7 @@ void ColorPalette::getDrawFormat(sf::VertexArray &vertex_array, const Transform 
 
 //================================================================================
 
-bool ColorPalette::onMousePressed(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+bool ColorPalette::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     LayoutBox *layout_box = &getLayoutBox();
 
@@ -119,7 +119,7 @@ bool ColorPalette::onMousePressed(const Vector &pos, const MouseKey key, Contain
 
 //================================================================================
 
-bool ColorPalette::onMouseReleased(const Vector &pos, const MouseKey key, Container<Transform> &stack_transform)
+bool ColorPalette::onMouseReleased(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     bool flag = false;
 
@@ -130,7 +130,7 @@ bool ColorPalette::onMouseReleased(const Vector &pos, const MouseKey key, Contai
 
 //================================================================================
 
-bool ColorPalette::onMouseMoved(const Vector &pos, Container<Transform> &stack_transform)
+bool ColorPalette::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_transform)
 {
     bool flag = false;
 

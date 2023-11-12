@@ -29,9 +29,9 @@ static const Dot Close_button_pos  = Dot(705.0, 0.0);
 //====================================================================
 //Canvas
 
-static const Dot Canvas_size = Dot(2000.0, 2000.0);
-static const Dot Canvas_view_size = Vector(680, 370.0);
-static const Dot Canvas_pos       = Vector(10.0, 60.0);
+static const Dot Canvas_size      = Dot(2000.0, 2000.0);
+static const Dot Canvas_view_size = Vec2d(680, 370.0);
+static const Dot Canvas_pos       = Vec2d(10.0, 60.0);
 
 //====================================================================
 //Scrollbars
@@ -39,16 +39,16 @@ static const Dot Canvas_pos       = Vector(10.0, 60.0);
 static const Dot Scroll_hor_size = Dot(680.0, 20.0);
 static const Dot Scroll_hor_pos  = Dot(10.0, 30.0);
 
-static const Dot Scroll_ver_size = Dot(20, 470.0);
+static const Dot Scroll_ver_size = Dot(20, 370.0);
 static const Dot Scroll_ver_pos  = Dot(695.0, 60.0);
 
-static const Dot Buttons_scroll_size = Vector(20.0, 20.0);
+static const Dot Buttons_scroll_size = Vec2d(20.0, 20.0);
 
-static const Dot Left_pos   = Vector(0.0, 0.0);
-static const Dot Right_pos  = Vector(660.0, 0.0);
+static const Dot Left_pos   = Vec2d(0.0, 0.0);
+static const Dot Right_pos  = Vec2d(Scroll_hor_size.x - Buttons_scroll_size.x, 0.0);
 
-static const Dot Up_pos     = Vector(0.0, 0.0);
-static const Dot Down_pos   = Vector(0.0, 450.0);
+static const Dot Up_pos     = Vec2d(0.0, 0.0);
+static const Dot Down_pos   = Vec2d(0.0, Scroll_ver_size.y - Buttons_scroll_size.y);
 
 //====================================================================
 

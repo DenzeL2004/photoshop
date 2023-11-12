@@ -10,7 +10,7 @@ struct Transform
         Transform():
         offset(0, 0), scale(1.0, 1.0){}
 
-        Transform (const Vector& offset_ = Vector(0.0, 0.0), const Vector& scale_ = Vector(1.0, 1.0)):
+        Transform (const Vec2d& offset_ = Vec2d(0.0, 0.0), const Vec2d& scale_ = Vec2d(1.0, 1.0)):
                   offset(offset_), scale(scale_){}
 
         ~Transform() = default;
@@ -19,12 +19,12 @@ struct Transform
         Transform& operator= (const Transform &other) = default;
 
         Transform       applyPrev         (const Transform &prev) const;
-        Vector          applyTransform    (const Dot &pos) const;
+        Vec2d          applyTransform    (const Dot &pos) const;
         
         sf::Vector2f    rollbackTransform (const Dot &vec) const;
 
-        Vector offset;
-        Vector scale;
+        Vec2d offset;
+        Vec2d scale;
 
 };
 
