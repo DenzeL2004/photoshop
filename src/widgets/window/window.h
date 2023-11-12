@@ -21,7 +21,7 @@ class Window : public Widget
         virtual void draw               (sf::RenderTarget &target, Container<Transform> &stack_transform);  
 
     protected:
-        void getDrawFormat(sf::VertexArray &vertex_array, const Transform &transform) const;
+        void getDrawFormat(sf::VertexArray &vertex_array, Transform &transform) const;
         sf::Texture texture_; 
 
     private:

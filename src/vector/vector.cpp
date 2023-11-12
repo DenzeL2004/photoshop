@@ -35,8 +35,8 @@ Vec2d normalize(const Vec2d &src)
 
 Vec2d& Vec2d::operator = (const Vec2d &other)
 {
-    this->x = other.x;
-    this->y = other.y;
+    x = other.x;
+    y = other.y;
 
     return *this;
 }
@@ -45,8 +45,8 @@ Vec2d& Vec2d::operator = (const Vec2d &other)
 
 Vec2d& Vec2d::operator += (const Vec2d &other)
 {
-    this->x += other.x;
-    this->y += other.y;
+    x += other.x;
+    y += other.y;
 
     return *this;
 }
@@ -55,8 +55,8 @@ Vec2d& Vec2d::operator += (const Vec2d &other)
 
 Vec2d& Vec2d::operator -= (const Vec2d &other)
 {
-    this->x -= other.x;
-    this->y -= other.y;
+    x -= other.x;
+    y -= other.y;
 
     return *this;
 }
@@ -65,8 +65,8 @@ Vec2d& Vec2d::operator -= (const Vec2d &other)
 
 Vec2d& Vec2d::operator *= (const double scale)
 {
-    this->x *= scale;
-    this->y *= scale;
+    x *= scale;
+    y *= scale;
 
     return *this;
 }
@@ -84,8 +84,8 @@ Vec2d& Vec2d::operator *= (const Vec2d &other)
 
 Vec2d& Vec2d::operator /= (const double scale)
 {
-    this->x /= scale;
-    this->y /= scale;
+    x /= scale;
+    y /= scale;
 
     return *this;
 }

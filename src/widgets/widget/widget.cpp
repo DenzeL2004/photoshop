@@ -48,16 +48,14 @@ void Widget::draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
 {
     Transform trf(layout_box_->getPosition(), scale_);
 
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();
 
-    sf::Vector2f pos = last_trf.rollbackTransform(Dot(0, 0));
+    Vec2d pos = last_trf.restore(Dot(0, 0));
     
-    Vec2d abs_pos((double)pos.x, (double)pos.y);
-    double abs_width  = last_trf.scale.x * layout_box_->getSize().x;
-    double abs_height = last_trf.scale.y * layout_box_->getSize().y;
+    Vec2d size = last_trf.getScale() * getLayoutBox().getSize();
 
-    drawRectangle(target, abs_pos, Dot(abs_pos.x + abs_width, abs_pos.y + abs_height), Debug_color);
+    drawRectangle(target, pos, Dot(pos.x + size.x, pos.y + size.y), Debug_color);
 
     stack_transform.popBack();
 }

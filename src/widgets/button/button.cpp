@@ -50,7 +50,7 @@ void Button::draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
 
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();    
 
     sf::VertexArray vertex_array(sf::Quads, 4);
@@ -64,26 +64,23 @@ void Button::draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
     return;
 }
 
-void Button::getdrawFormat(sf::VertexArray &vertex_array, const Transform &trf) const
+void Button::getdrawFormat(sf::VertexArray &vertex_array, Transform &trf) const
 {
     sf::Vector2u texture_size = defineTexture()->getSize();
 
     vertex_array[0].texCoords = sf::Vector2f(0, 0);
-    vertex_array[1].texCoords = sf::Vector2f((float)texture_size.x, 0);
-    vertex_array[2].texCoords = sf::Vector2f((float)texture_size.x, (float)texture_size.y);
-    vertex_array[3].texCoords = sf::Vector2f(0, (float)texture_size.y);
+    vertex_array[1].texCoords = sf::Vector2f(texture_size.x, 0);
+    vertex_array[2].texCoords = sf::Vector2f(texture_size.x, texture_size.y);
+    vertex_array[3].texCoords = sf::Vector2f(0, texture_size.y);
     
-    sf::Vector2f pos = trf.rollbackTransform(Dot(0, 0));
+    Vec2d pos = trf.restore(Dot(0, 0));
 
-    const LayoutBox* layout_box = &getLayoutBox();
+    Vec2d size = trf.getScale() * getLayoutBox().getSize();
 
-    float abs_width  = (float)(trf.scale.x * layout_box->getSize().x);
-    float abs_height = (float)(trf.scale.y * layout_box->getSize().y);
-
-    vertex_array[0].position = pos;
-    vertex_array[1].position = sf::Vector2f(pos.x + abs_width, pos.y);
-    vertex_array[2].position = sf::Vector2f(pos.x + abs_width, pos.y + abs_height);
-    vertex_array[3].position = sf::Vector2f(pos.x, pos.y + abs_height);
+    vertex_array[0].position = sf::Vector2f(pos.x, pos.y);
+    vertex_array[1].position = sf::Vector2f(pos.x + size.x, pos.y);
+    vertex_array[2].position = sf::Vector2f(pos.x + size.x, pos.y + size.y);
+    vertex_array[3].position = sf::Vector2f(pos.x, pos.y + size.y);
 }
 
 const sf::Texture* Button::defineTexture() const
@@ -116,10 +113,10 @@ bool Button::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_transfor
         return false;
 
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     
     Transform last_trf = stack_transform.getBack();
-    Dot local_pos = last_trf.applyTransform(pos);
+    Dot local_pos = last_trf.apply(pos);
 
     bool flag = checkIn(local_pos);
 
@@ -152,10 +149,10 @@ bool Button::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Tran
 
     Transform trf(getLayoutBox().getPosition(), scale_);
 
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();
     
-    Dot local_pos = last_trf.applyTransform(pos);
+    Dot local_pos = last_trf.apply(pos);
 
     bool flag = checkIn(local_pos);
 
@@ -235,10 +232,10 @@ bool ButtonList::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_tran
         return false;
 
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     
     Transform last_trf = stack_transform.getBack();
-    Dot local_pos = last_trf.applyTransform(pos);
+    Dot local_pos = last_trf.apply(pos);
 
     stack_transform.popBack();
 
@@ -309,10 +306,10 @@ bool ButtonList::onMousePressed(const Vec2d &pos, const MouseKey key, Container<
     if (flag) return true;
 
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     
     Transform last_trf = stack_transform.getBack();
-    Dot local_pos = last_trf.applyTransform(pos);
+    Dot local_pos = last_trf.apply(pos);
 
     flag = checkIn(local_pos);
     stack_transform.popBack();

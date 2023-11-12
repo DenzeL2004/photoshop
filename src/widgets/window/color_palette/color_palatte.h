@@ -31,7 +31,7 @@ class ColorPalette : public Widget
 
     private:
         
-        void getDrawFormat(sf::VertexArray &vertex_array, const Transform &trf) const;
+        void getDrawFormat(sf::VertexArray &vertex_array, Transform &trf) const;
 
         sf::Texture texture_;
 

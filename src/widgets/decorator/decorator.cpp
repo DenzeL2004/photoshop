@@ -20,7 +20,7 @@ void Frame::draw(sf::RenderTarget &target, Container<Transform> &stack_transform
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
 
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();    
 
     sf::VertexArray vertex_array(sf::Quads, 4);
@@ -29,7 +29,7 @@ void Frame::draw(sf::RenderTarget &target, Container<Transform> &stack_transform
 
     target.draw(vertex_array, &texture_);
 
-    sf::Vector2f abs_pos = last_trf.rollbackTransform(Dot(0.0, 0.0));
+    Dot abs_pos = last_trf.restore(Dot(0.0, 0.0));
 
     writeText(target, Dot(abs_pos.x + title_.pos_.x, abs_pos.y + title_.pos_.y), 
               title_.msg_, Oldtimer_font_path, Tittle_size, title_.color_);
@@ -49,10 +49,10 @@ bool Frame::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_transform
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
 
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();    
 
-    Dot local_pos = last_trf.applyTransform(pos);
+    Dot local_pos = last_trf.apply(pos);
 
     size_t cnt = widgets_.getSize();
     for (size_t it = 0; it < cnt; it++)
@@ -176,7 +176,7 @@ void Frame::moveFrame(const Dot &local_pos)
 bool Frame::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
 
     bool flag = false;
 
@@ -190,7 +190,7 @@ bool Frame::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Trans
     {
         Transform last_trf = stack_transform.getBack(); 
 
-        Dot local_pos = last_trf.applyTransform(pos);
+        Dot local_pos = last_trf.apply(pos);
         flag = checkIn(local_pos); 
 
         if (flag)
@@ -217,7 +217,7 @@ bool Frame::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Trans
 bool Frame::onMouseReleased(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
 
     size_t cnt = widgets_.getSize();
     for (size_t it = 0; it < cnt; it++)

@@ -31,7 +31,7 @@ Canvas::Canvas( ToolPalette *tool_palette, FilterPalette *filter_palette,
 void Canvas::draw(sf::RenderTarget &target, Container<Transform>& stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     
     Transform last_trf = stack_transform.getBack();    
 
@@ -54,25 +54,25 @@ void Canvas::draw(sf::RenderTarget &target, Container<Transform>& stack_transfor
     stack_transform.popBack();
 }
 
-void Canvas::getDrawFormat(sf::VertexArray &vertex_array, const Transform &trf) const
+void Canvas::getDrawFormat(sf::VertexArray &vertex_array, Transform &trf) const
 {
     const LayoutBox* layout_box = &getLayoutBox();
 
-    float abs_width  = (float)(trf.scale.x * layout_box->getSize().x);
-    float abs_height = (float)(trf.scale.y * layout_box->getSize().y);
+    Vec2d scale = trf.getScale();
 
-    vertex_array[0].texCoords = sf::Vector2f((float)real_pos_.x, (float)real_pos_.y);
-    vertex_array[1].texCoords = sf::Vector2f((float)real_pos_.x + (float)abs_width - 1, (float)real_pos_.y);
-    vertex_array[2].texCoords = sf::Vector2f((float)real_pos_.x + (float)abs_width - 1, (float)real_pos_.y + (float)abs_height - 1);
-    vertex_array[3].texCoords = sf::Vector2f((float)real_pos_.x, (float)real_pos_.y + (float)abs_height - 1);
+    Vec2d size = trf.getScale() * getLayoutBox().getSize();
 
-     sf::Vector2f pos = trf.rollbackTransform(Dot(0, 0));
+    vertex_array[0].texCoords = sf::Vector2f(real_pos_.x, real_pos_.y);
+    vertex_array[1].texCoords = sf::Vector2f(real_pos_.x + size.x - 1, real_pos_.y);
+    vertex_array[2].texCoords = sf::Vector2f(real_pos_.x + size.x - 1, real_pos_.y + size.y - 1);
+    vertex_array[3].texCoords = sf::Vector2f(real_pos_.x, real_pos_.y + size.y - 1);
 
-    vertex_array[0].position = pos;
-    vertex_array[1].position = sf::Vector2f(pos.x + abs_width, pos.y);
-    vertex_array[2].position = sf::Vector2f(pos.x + abs_width, pos.y + abs_height);
-    vertex_array[3].position = sf::Vector2f(pos.x, pos.y + abs_height);
-    
+    Vec2d pos = trf.restore(Dot(0, 0));
+
+    vertex_array[0].position = sf::Vector2f(pos.x, pos.y);
+    vertex_array[1].position = sf::Vector2f(pos.x + size.x, pos.y);
+    vertex_array[2].position = sf::Vector2f(pos.x + size.x, pos.y + size.y);
+    vertex_array[3].position = sf::Vector2f(pos.x, pos.y + size.y);   
 }
 
 //================================================================================
@@ -81,10 +81,10 @@ bool Canvas::onMouseMoved(const Vec2d& pos, Container<Transform> &stack_transfor
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
 
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();    
 
-    Dot local_pos = last_trf.applyTransform(pos);
+    Dot local_pos = last_trf.apply(pos);
 
     bool flag = checkIn(local_pos);
     if (flag)
@@ -103,11 +103,11 @@ bool Canvas::onMouseMoved(const Vec2d& pos, Container<Transform> &stack_transfor
 bool Canvas::onMousePressed(const Vec2d& pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     
     Transform last_trf = stack_transform.getBack();    
 
-    Dot local_pos = last_trf.applyTransform(pos);
+    Dot local_pos = last_trf.apply(pos);
 
     bool flag = checkIn(local_pos);
     if (flag && key == Key_use_tool)
@@ -298,7 +298,7 @@ void CanvasManager::draw(sf::RenderTarget &target, Container<Transform> &stack_t
     Window::draw(target, stack_transform);
 
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
 
     size_t size = widgets_.getSize();
     for (size_t it = 0; it < size; it++)
@@ -317,7 +317,7 @@ bool CanvasManager::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_t
     if (size == 0) return false;
     
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
 
     widgets_[size - 1]->onMouseMoved(pos, stack_transform);
     
@@ -331,7 +331,7 @@ bool CanvasManager::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_t
 bool CanvasManager::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
 
     bool flag = false;
 
@@ -367,7 +367,7 @@ bool CanvasManager::onMousePressed(const Vec2d &pos, const MouseKey key, Contain
 bool CanvasManager::onMouseReleased(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
 
     int size = (int)widgets_.getSize();
     for (int it = size - 1; it >= 0; it--)
@@ -528,13 +528,12 @@ void Scrollbar::draw(sf::RenderTarget &target, Container<Transform> &stack_trans
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
 
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();    
 
-    float abs_width  = (float)(trf.scale.x * getLayoutBox().getSize().x);
-    float abs_height = (float)(trf.scale.y * getLayoutBox().getSize().y);
+    Vec2d size = last_trf.getScale() * getLayoutBox().getSize();
     
-    canvas_->correctCanvasRealPos(Vec2d(abs_width, abs_height));
+    canvas_->correctCanvasRealPos(size);
     
     top_button_->draw(target, stack_transform);
     bottom_button_->draw(target, stack_transform);
@@ -551,14 +550,14 @@ bool Scrollbar::onMouseMoved(const Vec2d& pos, Container<Transform> &stack_trans
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
 
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();    
 
     top_button_->onMouseMoved(pos, stack_transform);
     bottom_button_->onMouseMoved(pos, stack_transform);
     center_button_->onMouseMoved(pos, stack_transform);
 
-    Dot local_pos = last_trf.applyTransform(pos);
+    Dot local_pos = last_trf.apply(pos);
     
     if (center_button_->prev_state_ == Button::ButtonState::PRESSED || 
         center_button_->state_ == Button::ButtonState::PRESSED)
@@ -580,10 +579,9 @@ bool Scrollbar::onMouseMoved(const Vec2d& pos, Container<Transform> &stack_trans
             center_button_->getLayoutBox().setPosition(Dot(center_button_pos.x, local_pos.y - hold_pos_.y));
         }
 
-        float abs_width  = (float)(trf.scale.x * getLayoutBox().getSize().x);
-        float abs_height = (float)(trf.scale.y * getLayoutBox().getSize().y);
+        Vec2d size = last_trf.getScale() * getLayoutBox().getSize();
 
-        canvas_->correctCanvasRealPos(Vec2d(abs_width, abs_height));
+        canvas_->correctCanvasRealPos(size);
         moveCenter();
     }
     
@@ -641,10 +639,10 @@ bool Scrollbar::onMousePressed(const Vec2d& pos, const MouseKey key, Container<T
 
     Transform trf(layout_box->getPosition(), scale_);
 
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();    
 
-    Dot local_pos = last_trf.applyTransform(pos);
+    Dot local_pos = last_trf.apply(pos);
  
     prev_canvas_real_pos_ = canvas_->getRealPos();
 
@@ -677,12 +675,9 @@ bool Scrollbar::onMousePressed(const Vec2d& pos, const MouseKey key, Container<T
 
             flag = true;
         }
-        
 
-        float abs_width  = (float)(trf.scale.x * layout_box->getSize().x);
-        float abs_height = (float)(trf.scale.y * layout_box->getSize().y);
-
-        canvas_->correctCanvasRealPos(Vec2d(abs_width, abs_height));
+        Vec2d size = last_trf.getScale() * getLayoutBox().getSize();
+        canvas_->correctCanvasRealPos(size);
     }
     
     moveCenter();
@@ -697,7 +692,7 @@ bool Scrollbar::onMousePressed(const Vec2d& pos, const MouseKey key, Container<T
 bool Scrollbar::onMouseReleased(const Vec2d& pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
 
     hold_pos_ = Dot(0.0, 0.0);
 

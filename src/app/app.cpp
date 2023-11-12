@@ -132,7 +132,7 @@ void AppWindow::draw(sf::RenderTarget &target, Container<Transform> &stack_trans
     Window::draw(target, stack_transform);
    
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
 
     canvas_manager_.draw(target, stack_transform);
     
@@ -154,7 +154,7 @@ void AppWindow::draw(sf::RenderTarget &target, Container<Transform> &stack_trans
 bool AppWindow::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
 
     size_t size = widgets_.getSize(); 
     for (size_t it = 0; it < size; it++)
@@ -174,10 +174,10 @@ bool AppWindow::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_trans
 bool AppWindow::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     
     Transform last_trf = stack_transform.getBack();
-    Dot local_pos = last_trf.applyTransform(pos);
+    Dot local_pos = last_trf.apply(pos);
 
     bool flag = checkIn(local_pos);
     if (flag)
@@ -209,7 +209,7 @@ bool AppWindow::onMousePressed(const Vec2d &pos, const MouseKey key, Container<T
 bool AppWindow::onMouseReleased(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
 {
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
 
     size_t size = widgets_.getSize(); 
     for (size_t it = 0; it < size; it++)

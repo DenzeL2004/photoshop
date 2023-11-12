@@ -26,14 +26,14 @@ TextBox::TextBox(   const size_t limit_cnt_symbols, const size_t thicknesses, co
 void TextBox::draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {   
     Transform trf(getLayoutBox().getPosition(), scale_);
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     
     Transform last_trf = stack_transform.getBack();
-    sf::Vector2f pos = last_trf.rollbackTransform(Dot(0, 0));
-    
-    Vec2d abs_pos((double)pos.x, (double)pos.y);
+    Dot pos = last_trf.restore(Dot(0, 0));
 
-    sf::Text text(buf_, font_, thicknesses_ * last_trf.scale.y);
+    Vec2d scale = last_trf.getScale();
+
+    sf::Text text(buf_, font_, thicknesses_ * scale.y);
     text.setFillColor(color_);
     text.setPosition((float)pos.x, (float)pos.y);
 
@@ -47,8 +47,8 @@ void TextBox::draw(sf::RenderTarget &target, Container<Transform> &stack_transfo
         cursor_color = sf::Color::Transparent;
     }
 
-    drawRectangle(target,   Dot(abs_pos.x + width_symbol * cursor_.x      , abs_pos.y + thicknesses_ * last_trf.scale.y + 2), 
-                            Dot(abs_pos.x + width_symbol * (cursor_.x + 1), abs_pos.y + thicknesses_ * last_trf.scale.y + 5), cursor_color);
+    drawRectangle(target,   Dot(pos.x + width_symbol * cursor_.x      , pos.y + thicknesses_ * scale.y + 2), 
+                            Dot(pos.x + width_symbol * (cursor_.x + 1), pos.y + thicknesses_ * scale.y + 5), cursor_color);
   
 
     stack_transform.popBack();
@@ -71,18 +71,20 @@ bool TextBox::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Tra
     LayoutBox *layout_box = &getLayoutBox();
 
     Transform trf(layout_box->getPosition(), scale_);
-
-    stack_transform.pushBack(trf.applyPrev(stack_transform.getBack()));
+    stack_transform.pushBack(trf.combine(stack_transform.getBack()));
+    
     Transform last_trf = stack_transform.getBack();
-    Dot local_pos = last_trf.applyTransform(pos);
+    Dot local_pos = last_trf.apply(pos);
 
-    sf::Text text(buf_, font_, thicknesses_ * last_trf.scale.y);
+    Vec2d scale = last_trf.getScale();
+
+    sf::Text text(buf_, font_, thicknesses_ * scale.y);
     double width_symbol = text.getLocalBounds().width / cnt_symbols_;
 
     bool flag = false;
 
     if (local_pos.x > Eps && (int)(local_pos.x / width_symbol) <= (int)cnt_symbols_ &&
-        local_pos.y > Eps && local_pos.y  < thicknesses_ * last_trf.scale.y - Eps)
+        local_pos.y > Eps && local_pos.y  < thicknesses_ * scale.y - Eps)
     {
         cursor_.x = (int)(local_pos.x / width_symbol);
         flag = true;

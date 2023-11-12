@@ -1,26 +1,44 @@
 #include "transform.h"
 
-Transform Transform::applyPrev(const Transform &prev) const
+Vec2d Transform::getOffset() const
 {
-    Dot new_pos = prev.offset + Vec2d(prev.scale.x * offset.x, prev.scale.y * offset.y);
-    Transform res(new_pos, {scale.x * prev.scale.x, scale.y * prev.scale.y});
+    return offset_;
+}
+
+Vec2d Transform::setOffset(const Vec2d &offset)
+{
+    offset_ = offset;
+}
+
+Vec2d Transform::getScale() const
+{
+    return scale_;
+}
+
+Vec2d Transform::setScale(const Vec2d &scale)
+{
+    scale_ = scale;
+}
+
+Transform Transform::combine(const Transform &parent_transform)
+{
+    Dot new_pos = parent_transform.offset_ + Vec2d(parent_transform.scale_.x * offset_.x, parent_transform.scale_.y * offset_.y);
+    Transform res(new_pos, {scale_.x * parent_transform.scale_.x, scale_.y * parent_transform.scale_.y});
 
     return res;
 }
 
-Dot Transform::applyTransform(const Dot &pos) const
+Dot Transform::apply(const Vec2d &vec)
 {
-    Dot res = pos - offset;
+    Dot res = vec - offset_;
     
-    res.x /= scale.x;
-    res.y /= scale.y;
+    res.x /= scale_.x;
+    res.y /= scale_.y;
 
     return res;
 }
 
-sf::Vector2f Transform::rollbackTransform (const Dot &vec) const
+Vec2d Transform::restore(const Vec2d &vec)
 {
-    return sf::Vector2f(vec.x * scale.x + offset.x, vec.y * scale.y + offset.y);
+    return vec * scale_ + offset_;
 }
-
-//================================================================================

@@ -35,7 +35,6 @@ class Button : public Widget
             delete action_;
         }
 
-
         Button(const Button &other) = delete;
         Button& operator= (const Button &other) = delete;
 
@@ -66,7 +65,7 @@ class Button : public Widget
     private:
 
         const sf::Texture* defineTexture() const;
-        void getdrawFormat(sf::VertexArray &vertex_array, const Transform &transform) const;
+        void getdrawFormat(sf::VertexArray &vertex_array, Transform &transform) const;
 
         sf::Texture released_texture_, covered_texture_, 
                     pressed_texture_, disabled_texture_;

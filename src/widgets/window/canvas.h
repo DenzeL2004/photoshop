@@ -50,7 +50,7 @@ class Canvas : public Window
         FilterMask& getFilterMask();
 
     private:
-        void getDrawFormat(sf::VertexArray &vertex_array, const Transform &trf) const;
+        void getDrawFormat(sf::VertexArray &vertex_array, Transform &trf) const;
         Dot getCanvaseCoord(const Vec2d &pos) const;
 
         bool applyFilter(const KeyboardKey key);

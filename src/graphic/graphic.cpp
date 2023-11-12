@@ -18,23 +18,6 @@ void drawLine(sf::RenderTarget &window,
    
 }
 
-void drawLine(sf::RenderTarget &window, 
-              const sf::Vector2f &dot_begin, const sf::Vector2f &dot_end, const sf::Color color_line)
-{
-    sf::Vertex line[] =
-    {
-        sf::Vertex(dot_begin, color_line),
-        sf::Vertex(dot_end, color_line)
-    };
-
-    window.draw(line, 2, sf::Lines);
-
-    return;
-   
-}
-
-//================================================================================
-
 
 void drawCircle(sf::RenderTarget &window, const Dot &pos, 
                 const float radius, const sf::Color color)

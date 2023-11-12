@@ -93,11 +93,9 @@ class LineWidget : public Widget
         {
             
             Transform last_trf = stack_transform.getBack();
-            drawLine(targert, start_pos_ + last_trf.offset, end_pos_ + last_trf.offset, cur_color_);
+            drawLine(targert, start_pos_ + last_trf.getOffset(), end_pos_ + last_trf.getOffset(), cur_color_);
         }
     
-        
-
     private:
        const Dot &start_pos_;
        const Dot &end_pos_;
@@ -180,11 +178,9 @@ class SquareWidget : public Widget
         void draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform)
         {
             Transform last_trf = stack_transform.getBack();
-            drawRectangle(targert, start_pos_ + last_trf.offset, end_pos_ + last_trf.offset, cur_color_);     
+            drawRectangle(targert, start_pos_ + last_trf.getOffset(), end_pos_ + last_trf.getOffset(), cur_color_);     
         }
     
-        
-
     private:
        const Dot &start_pos_;
        const Dot &end_pos_;
@@ -272,15 +268,13 @@ class CircleWidget : public Widget
             
             Transform last_trf = stack_transform.getBack();
 
-            Dot center = start_pos_ + last_trf.offset;
-            Dot other  = end_pos_ + last_trf.offset;
+            Dot center = start_pos_ + last_trf.getOffset();
+            Dot other  = end_pos_ + last_trf.getOffset();
 
             double rad = (center - other).length();
 
             drawCircle(targert, center, (float)rad, cur_color_);
         }
-    
-        
 
     private:
        const Dot &start_pos_;
@@ -586,14 +580,11 @@ class PolyLineWidget : public Widget
             {
                 cur  = Dot(arr_[it].position.x, arr_[it].position.y);
                 next = Dot(arr_[it + 1].position.x, arr_[it + 1].position.y);
-                drawLine(targert, cur + last_trf.offset, next + last_trf.offset, cur_color_);
+                drawLine(targert, cur + last_trf.getOffset(), next + last_trf.getOffset(), cur_color_);
             }
 
-            drawLine(targert, next + last_trf.offset,  end_pos_ + last_trf.offset, cur_color_);
-
+            drawLine(targert, next + last_trf.getOffset(),  end_pos_ + last_trf.getOffset(), cur_color_);
         }
-    
-        
 
         sf::VertexArray arr_;
 

@@ -40,7 +40,6 @@ class Vec2d
 
         Vec2d& operator *= (const Vec2d &other);
         Vec2d& operator /= (const Vec2d &other);
-
 };
 
 double dot(const Vec2d &lhs, const Vec2d &rhs);
