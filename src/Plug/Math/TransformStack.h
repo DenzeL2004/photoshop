@@ -49,7 +49,6 @@ namespace plug
          * \brief Converts on-screen position to local position using top transform
         */
         virtual Vec2d restore   (const Vec2d &vec) const = 0;
-
     };
 };
 
