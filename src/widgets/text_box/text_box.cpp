@@ -29,7 +29,7 @@ void TextBox::draw(sf::RenderTarget &target, Container<Transform> &stack_transfo
     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     
     Transform last_trf = stack_transform.getBack();
-    Dot pos = last_trf.restore(Dot(0, 0));
+    Dot pos = last_trf.apply(Dot(0, 0));
 
     Vec2d scale = last_trf.getScale();
 
@@ -60,8 +60,6 @@ sf::Text TextBox::getText()
     return sf::Text(buf_, font_, thicknesses_);
 }
 
-
-
 //================================================================================
 
 bool TextBox::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
@@ -74,7 +72,7 @@ bool TextBox::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Tra
     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     
     Transform last_trf = stack_transform.getBack();
-    Dot local_pos = last_trf.apply(pos);
+    Dot local_pos = last_trf.restore(pos);
 
     Vec2d scale = last_trf.getScale();
 

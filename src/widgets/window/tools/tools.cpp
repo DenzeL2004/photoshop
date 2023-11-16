@@ -1,14 +1,6 @@
 #include "tools.h"
 
 
-static void correctPos(Vec2d &pos, const Canvas &canvas);
-
-static void correctPos(Vec2d &pos, const Canvas &canvas)
-{
-    pos += canvas.getRealPos();
-    pos.y = canvas.getCanvasSize().y - pos.y;
-}
-
 ToolPalette::ToolPalette():
         tools_(),
         active_tool_(ToolType::NOTHING), 
@@ -134,10 +126,9 @@ void LineTool::onConfirm (Canvas &canvas)
     if (!using_)
         return;
 
-    correctPos(start_pos_, canvas);
-    correctPos(end_pos_, canvas);
-
     drawLine(canvas.getBackground(), start_pos_, end_pos_, cur_color_);
+    canvas.getBackground().display();
+    
     start_pos_  = end_pos_ = Vec2d(0.0, 0.0);
 
     using_ = false;
@@ -219,11 +210,9 @@ void SquareTool::onConfirm (Canvas &canvas)
     if (!using_)
         return;
     
-    correctPos(start_pos_, canvas);
-    correctPos(end_pos_, canvas);
-
     drawRectangle(canvas.getBackground(), start_pos_, end_pos_, cur_color_);
-    
+    canvas.getBackground().display();
+
     start_pos_  = end_pos_ = Vec2d(0.0, 0.0);
 
     using_ = false;
@@ -316,11 +305,11 @@ void CircleTool::onConfirm (Canvas &canvas)
 
     double rad = (start_pos_ - end_pos_).length();
 
-    correctPos(start_pos_, canvas);
-
     drawCircle(canvas.getBackground(), start_pos_, (float)rad, cur_color_);
-    start_pos_  = end_pos_ = Vec2d(0.0, 0.0);
+    canvas.getBackground().display();
 
+    start_pos_  = end_pos_ = Vec2d(0.0, 0.0);
+    
     using_ = false;
 }
 
@@ -353,7 +342,6 @@ void BrushTool::onMainButton(ControlState state, const Dot &pos, Canvas &canvas)
     using_ = true;
 
     Vec2d tmp_pos = pos;
-    correctPos(tmp_pos, canvas);
 
     drawForm(tmp_pos, canvas);
 }
@@ -364,7 +352,6 @@ void BrushTool::onMove(const Dot &pos, Canvas &canvas)
         return;
 
     Vec2d tmp_pos = pos;
-    correctPos(tmp_pos, canvas);
     
     drawForm(tmp_pos, canvas);
 }
@@ -385,6 +372,7 @@ Widget* BrushTool::getWidget() const
 void BrushTool::drawForm (const Dot &pos, Canvas &canvas)
 {
     drawCircle(canvas.getBackground(), pos, 10, cur_color_);
+    canvas.getBackground().display();
 }
 
 //================================================================================
@@ -403,9 +391,9 @@ void PenTool::onMainButton(ControlState state, const Dot &pos, Canvas &canvas)
     using_ = true;
 
     prev_pos_ = pos;
-    correctPos(prev_pos_, canvas);
 
     drawPixel(canvas.getBackground(), prev_pos_, cur_color_);
+    canvas.getBackground().display();
 }
 
 void PenTool::onMove(const Dot &pos, Canvas &canvas)
@@ -414,9 +402,9 @@ void PenTool::onMove(const Dot &pos, Canvas &canvas)
         return;
 
     Vec2d tmp_pos = pos;
-    correctPos(tmp_pos, canvas);
 
     drawLine(canvas.getBackground(), prev_pos_, tmp_pos, cur_color_);
+    canvas.getBackground().display();
 
     prev_pos_ = tmp_pos;
 }
@@ -638,11 +626,10 @@ void PolyLineTool::onConfirm (Canvas &canvas)
         cur  = Dot(preview_->arr_[it].position.x, preview_->arr_[it].position.y);
         next = Dot(preview_->arr_[it + 1].position.x, preview_->arr_[it + 1].position.y);
         
-        correctPos(cur, canvas);
-        correctPos(next, canvas);
-        
         drawLine(canvas.getBackground(), cur,  next, cur_color_);
     }
+
+    canvas.getBackground().display();
 
     start_pos_ = end_pos_ = Vec2d(0.0, 0.0);
     preview_->arr_.clear();
@@ -688,15 +675,13 @@ void TextTool::onConfirm (Canvas &canvas)
         return;
     }
 
-    correctPos(start_pos_, canvas);
-
     sf::Text text = preview_->getText();
     text.setPosition(start_pos_.x, start_pos_.y);
     text.setColor(cur_color_);
 
-    text.scale(1.0f, -1.0f);
-
     canvas.getBackground().draw(text);
+    canvas.getBackground().display();
+
     preview_->clear();   
 }
 
