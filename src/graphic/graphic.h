@@ -5,10 +5,10 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
 
-
+#include <cassert>
 #include <unistd.h>
 
-#include "../vector/vector.h"
+#include "../Plug/Math.h"
         
 #include "../graphic/graphic_config.h"
 

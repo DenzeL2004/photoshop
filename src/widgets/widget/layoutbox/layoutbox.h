@@ -1,7 +1,7 @@
 #ifndef _LAYOUTBOX_H_
 #define _LAYOUTBOX_H_
 
-#include "../../../vector/vector.h"
+#include "../../../Plug/Math.h"
 
 class LayoutBox
 {

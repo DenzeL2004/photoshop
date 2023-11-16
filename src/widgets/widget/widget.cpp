@@ -51,7 +51,7 @@ void Widget::draw(sf::RenderTarget &target, Container<Transform> &stack_transfor
     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();
 
-    Vec2d pos = last_trf.restore(Dot(0, 0));
+    Vec2d pos = last_trf.apply(Dot(0, 0));
     
     Vec2d size = last_trf.getScale() * getLayoutBox().getSize();
 

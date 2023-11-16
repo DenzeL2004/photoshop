@@ -14,7 +14,7 @@ Frame::Frame(   const char *path_texture,
                 const Vec2d &origin, const Vec2d &scale):
                 Window(path_texture, size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale),  
                 title_(title), widgets_(),
-                state_(DEFAULT), hold_pos_({0.0, 0.0}), prev_pos_({0.0, 0.0}){}
+                state_(DEFAULT), hold_pos_(0.0, 0.0), prev_pos_(0.0, 0.0){}
 
 void Frame::draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
 {
@@ -29,7 +29,7 @@ void Frame::draw(sf::RenderTarget &target, Container<Transform> &stack_transform
 
     target.draw(vertex_array, &texture_);
 
-    Dot abs_pos = last_trf.restore(Dot(0.0, 0.0));
+    Dot abs_pos = last_trf.apply(Dot(0.0, 0.0));
 
     writeText(target, Dot(abs_pos.x + title_.pos_.x, abs_pos.y + title_.pos_.y), 
               title_.msg_, Oldtimer_font_path, Tittle_size, title_.color_);
@@ -52,7 +52,7 @@ bool Frame::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_transform
     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();    
 
-    Dot local_pos = last_trf.apply(pos);
+    Dot local_pos = last_trf.restore(pos);
 
     size_t cnt = widgets_.getSize();
     for (size_t it = 0; it < cnt; it++)
@@ -190,7 +190,7 @@ bool Frame::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Trans
     {
         Transform last_trf = stack_transform.getBack(); 
 
-        Dot local_pos = last_trf.apply(pos);
+        Dot local_pos = last_trf.restore(pos);
         flag = checkIn(local_pos); 
 
         if (flag)

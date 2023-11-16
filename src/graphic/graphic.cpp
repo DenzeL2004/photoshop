@@ -87,7 +87,7 @@ void writeText (sf::RenderTarget &window, const Dot &pos,
 
     if (!font.loadFromFile(font_path))
     {
-        PROCESS_ERROR(ERR_FILE_OPEN, "load font from file failed\n");
+        fprintf(stderr, "load font from file failed\n");
         return;
     }    
 

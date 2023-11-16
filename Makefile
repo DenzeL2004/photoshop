@@ -10,10 +10,10 @@ FLAGS = -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equa
 SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 
-run:		obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o 			\
+run:		obj/log_errors.o obj/generals.o obj/graphic.o obj/event.o obj/layout.o obj/widget.o 			\
 			obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/filter.o obj/tools.o obj/app.o obj/color_palette.o obj/text_box.o obj/main.o
 
-	g++   	obj/log_errors.o obj/generals.o obj/vector.o obj/graphic.o obj/event.o obj/transform.o obj/layout.o obj/widget.o 			\
+	g++   	obj/log_errors.o obj/generals.o obj/graphic.o obj/event.o obj/layout.o obj/widget.o 			\
 		 	obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/filter.o obj/tools.o obj/app.o obj/color_palette.o obj/text_box.o obj/main.o -o run  $(SFML_FLAGS)
 
 
@@ -27,10 +27,6 @@ obj/log_errors.o: 	src/log_info/log_errors.h src/log_info/log_errors.cpp
 
 obj/generals.o: src/generals_func/generals.cpp src/generals_func/generals.h
 		g++ 	src/generals_func/generals.cpp -c -o obj/generals.o $(FLAGS)
-
-
-obj/vector.o: 	src/vector/vector.cpp src/vector/vector.h
-		g++   	src/vector/vector.cpp -c -o obj/vector.o $(FLAGS)
 
 
 obj/graphic.o: 	src/graphic/graphic.cpp src/graphic/graphic.h src/graphic/graphic_config.h
@@ -50,9 +46,6 @@ obj/event.o:  	src/widgets/event/event.cpp src/widgets/event/event.h
 
 obj/layout.o:	src/widgets/widget/layoutbox/layoutbox.cpp src/widgets/widget/layoutbox/layoutbox.h
 		g++ 	src/widgets/widget/layoutbox/layoutbox.cpp -c -o obj/layout.o $(FLAGS)
-
-obj/transform.o: 	src/widgets/widget/transform/transform.cpp src/widgets/widget/transform/transform.h
-		g++    		src/widgets/widget/transform/transform.cpp -c -o obj/transform.o $(FLAGS)
 
 obj/widget.o:  	src/widgets/widget/widget.cpp src/widgets/widget/widget.h
 		g++		src/widgets/widget/widget.cpp -c -o obj/widget.o $(FLAGS)

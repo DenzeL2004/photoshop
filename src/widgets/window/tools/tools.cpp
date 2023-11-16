@@ -138,14 +138,14 @@ void LineTool::onConfirm (Canvas &canvas)
     correctPos(end_pos_, canvas);
 
     drawLine(canvas.getBackground(), start_pos_, end_pos_, cur_color_);
-    start_pos_  = end_pos_ = {0, 0};
+    start_pos_  = end_pos_ = Vec2d(0.0, 0.0);
 
     using_ = false;
 }
 
 void LineTool::onCancel ()
 {
-    start_pos_  = end_pos_ = {0, 0};
+    start_pos_  = end_pos_ = Vec2d(0.0, 0.0);
     using_ = false;
 }
 
@@ -224,14 +224,14 @@ void SquareTool::onConfirm (Canvas &canvas)
 
     drawRectangle(canvas.getBackground(), start_pos_, end_pos_, cur_color_);
     
-    start_pos_  = end_pos_ = {0, 0};
+    start_pos_  = end_pos_ = Vec2d(0.0, 0.0);
 
     using_ = false;
 }
 
 void SquareTool::onCancel ()
 {
-    start_pos_  = end_pos_ = {0, 0};
+    start_pos_  = end_pos_ = Vec2d(0.0, 0.0);
     using_ = false;
 }
 
@@ -319,14 +319,14 @@ void CircleTool::onConfirm (Canvas &canvas)
     correctPos(start_pos_, canvas);
 
     drawCircle(canvas.getBackground(), start_pos_, (float)rad, cur_color_);
-    start_pos_  = end_pos_ = {0, 0};
+    start_pos_  = end_pos_ = Vec2d(0.0, 0.0);
 
     using_ = false;
 }
 
 void CircleTool::onCancel ()
 {
-    start_pos_  = end_pos_ = {0, 0};
+    start_pos_  = end_pos_ = Vec2d(0.0, 0.0);
     using_ = false;
 }
 
@@ -644,7 +644,7 @@ void PolyLineTool::onConfirm (Canvas &canvas)
         drawLine(canvas.getBackground(), cur,  next, cur_color_);
     }
 
-    start_pos_ = end_pos_ = {0, 0};
+    start_pos_ = end_pos_ = Vec2d(0.0, 0.0);
     preview_->arr_.clear();
 }
 
@@ -653,7 +653,7 @@ void PolyLineTool::onCancel ()
     using_ = false;
 
     preview_->arr_.clear();
-    start_pos_ = end_pos_ = {0, 0};
+    start_pos_ = end_pos_ = Vec2d(0.0, 0.0);
 }
 
 Widget* PolyLineTool::getWidget() const

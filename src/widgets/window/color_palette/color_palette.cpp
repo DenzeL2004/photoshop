@@ -54,7 +54,7 @@ void ColorPalette::getDrawFormat(sf::VertexArray &vertex_array, Transform &trf) 
     vertex_array[2].texCoords = sf::Vector2f(texture_size.x, texture_size.y);
     vertex_array[3].texCoords = sf::Vector2f(0, texture_size.y);
     
-    Dot pos = trf.restore(Dot(0, 0));
+    Dot pos = trf.apply(Dot(0, 0));
     Vec2d size = trf.getScale() * getLayoutBox().getSize();
 
     vertex_array[0].position = sf::Vector2f(pos.x, pos.y);
@@ -74,7 +74,7 @@ bool ColorPalette::onMousePressed(const Vec2d &pos, const MouseKey key, Containe
     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();
     
-    Dot local_pos = last_trf.apply(pos);
+    Dot local_pos = last_trf.restore(pos);
 
     bool flag = checkIn(local_pos);
 

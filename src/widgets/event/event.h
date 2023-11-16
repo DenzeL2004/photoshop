@@ -4,6 +4,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
+#include "../../Plug/Math.h"
 
 enum class MouseKey
 {
@@ -45,7 +46,6 @@ const MouseKey Key_use_tool = MouseKey::LEFT;
 
 
 class Widget;
-class Transform;
 
 template< class ItemType> class Container;
 

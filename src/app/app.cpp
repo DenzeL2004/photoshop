@@ -177,7 +177,7 @@ bool AppWindow::onMousePressed(const Vec2d &pos, const MouseKey key, Container<T
     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     
     Transform last_trf = stack_transform.getBack();
-    Dot local_pos = last_trf.apply(pos);
+    Dot local_pos = last_trf.restore(pos);
 
     bool flag = checkIn(local_pos);
     if (flag)
@@ -305,7 +305,7 @@ void useApp()
 
     Widget widget(Vec2d(0, 0), Vec2d(WIDTH, HIEGHT), nullptr, Vec2d(WIDTH, HIEGHT));
 
-    Frame border(   Frame_Texture, Title({10.0, 10.0}, "window manager", sf::Color::Black), 
+    Frame border(   Frame_Texture, Title(Vec2d(10.0, 10.0), "window manager", sf::Color::Black), 
                     Vec2d(WIDTH, HIEGHT), Vec2d(0, 0), &widget);
 
     bool close_window = false;
@@ -321,7 +321,7 @@ void useApp()
     border.addWidget(app);
 
     Container<Transform> stack;
-    stack.pushBack(Transform({0.0, 0.0}, {1.0, 1.0}));
+    stack.pushBack(Transform(Vec2d(0.0, 0.0), Vec2d(1.0, 1.0)));
 
     border.onUpdate(widget.getLayoutBox());
 

@@ -41,7 +41,7 @@ void Window::getDrawFormat(sf::VertexArray &vertex_array, Transform &trf) const
     vertex_array[2].texCoords = sf::Vector2f(texture_size.x, texture_size.y);
     vertex_array[3].texCoords = sf::Vector2f(0, texture_size.y);
     
-    Dot pos = trf.restore(Vec2d(0, 0));
+    Dot pos = trf.apply(Vec2d(0, 0));
 
     Vec2d size = trf.getScale() * getLayoutBox().getSize();
 

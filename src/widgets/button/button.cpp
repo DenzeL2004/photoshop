@@ -73,7 +73,7 @@ void Button::getdrawFormat(sf::VertexArray &vertex_array, Transform &trf) const
     vertex_array[2].texCoords = sf::Vector2f(texture_size.x, texture_size.y);
     vertex_array[3].texCoords = sf::Vector2f(0, texture_size.y);
     
-    Vec2d pos = trf.restore(Dot(0, 0));
+    Vec2d pos = trf.apply(Dot(0, 0));
 
     Vec2d size = trf.getScale() * getLayoutBox().getSize();
 
@@ -116,7 +116,7 @@ bool Button::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_transfor
     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     
     Transform last_trf = stack_transform.getBack();
-    Dot local_pos = last_trf.apply(pos);
+    Dot local_pos = last_trf.restore(pos);
 
     bool flag = checkIn(local_pos);
 
@@ -152,7 +152,7 @@ bool Button::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Tran
     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();
     
-    Dot local_pos = last_trf.apply(pos);
+    Dot local_pos = last_trf.restore(pos);
 
     bool flag = checkIn(local_pos);
 
@@ -235,7 +235,7 @@ bool ButtonList::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_tran
     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     
     Transform last_trf = stack_transform.getBack();
-    Dot local_pos = last_trf.apply(pos);
+    Dot local_pos = last_trf.restore(pos);
 
     stack_transform.popBack();
 
@@ -309,7 +309,7 @@ bool ButtonList::onMousePressed(const Vec2d &pos, const MouseKey key, Container<
     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     
     Transform last_trf = stack_transform.getBack();
-    Dot local_pos = last_trf.apply(pos);
+    Dot local_pos = last_trf.restore(pos);
 
     flag = checkIn(local_pos);
     stack_transform.popBack();

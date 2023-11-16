@@ -67,7 +67,7 @@ void Canvas::getDrawFormat(sf::VertexArray &vertex_array, Transform &trf) const
     vertex_array[2].texCoords = sf::Vector2f(real_pos_.x + size.x - 1, real_pos_.y + size.y - 1);
     vertex_array[3].texCoords = sf::Vector2f(real_pos_.x, real_pos_.y + size.y - 1);
 
-    Vec2d pos = trf.restore(Dot(0, 0));
+    Vec2d pos = trf.apply(Dot(0, 0));
 
     vertex_array[0].position = sf::Vector2f(pos.x, pos.y);
     vertex_array[1].position = sf::Vector2f(pos.x + size.x, pos.y);
@@ -84,7 +84,7 @@ bool Canvas::onMouseMoved(const Vec2d& pos, Container<Transform> &stack_transfor
     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();    
 
-    Dot local_pos = last_trf.apply(pos);
+    Dot local_pos = last_trf.restore(pos);
 
     bool flag = checkIn(local_pos);
     if (flag)
@@ -107,7 +107,7 @@ bool Canvas::onMousePressed(const Vec2d& pos, const MouseKey key, Container<Tran
     
     Transform last_trf = stack_transform.getBack();    
 
-    Dot local_pos = last_trf.apply(pos);
+    Dot local_pos = last_trf.restore(pos);
 
     bool flag = checkIn(local_pos);
     if (flag && key == Key_use_tool)
@@ -557,7 +557,7 @@ bool Scrollbar::onMouseMoved(const Vec2d& pos, Container<Transform> &stack_trans
     bottom_button_->onMouseMoved(pos, stack_transform);
     center_button_->onMouseMoved(pos, stack_transform);
 
-    Dot local_pos = last_trf.apply(pos);
+    Dot local_pos = last_trf.restore(pos);
     
     if (center_button_->prev_state_ == Button::ButtonState::PRESSED || 
         center_button_->state_ == Button::ButtonState::PRESSED)
@@ -642,7 +642,7 @@ bool Scrollbar::onMousePressed(const Vec2d& pos, const MouseKey key, Container<T
     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     Transform last_trf = stack_transform.getBack();    
 
-    Dot local_pos = last_trf.apply(pos);
+    Dot local_pos = last_trf.restore(pos);
  
     prev_canvas_real_pos_ = canvas_->getRealPos();
 
