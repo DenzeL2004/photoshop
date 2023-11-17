@@ -3,44 +3,19 @@
 #ifndef _PLUGIN_H_
 #define _PLUGIN_H_
 
-#include "../widgets/widget/widget.h"
-#include "../widgets/window/canvas.h"
+#include "../widgets/window/filters/filter.h"
 
-enum class PluginGuid 
-{
-    PLUGIN  = 0,
-    TOOL    = 1,
-    FILTER  = 2
-};
+extern "C" Filter* loadPlugin();
 
-
-class PluginData 
+class FilterBlackWhite : public Filter
 {
     public:
-        
-    virtual const char *getName() const = 0;
-    virtual const char *getTexturePath() const = 0;
-};
+        FilterBlackWhite(){}
+        ~FilterBlackWhite() = default;
 
+        virtual void applyFilter(Canvas &canvas);
 
-class Plugin 
-{
-    public:
-
-    virtual Plugin *tryGetInterface(PluginGuid guid) = 0;
-    virtual void addRef() = 0;
-    virtual void release() = 0;
-    virtual const PluginData *getPluginData() const = 0;
-    virtual ~Plugin() = default;
-};
-
-
-class Filter : public Plugin 
-{
-    public:
-
-    virtual void applyFilter(Canvas &canvas) const = 0;
-    virtual Widget *getWidget() = 0;
+    private:
 };
 
 

@@ -68,36 +68,36 @@ class ChooseColor : public Action
         sf::Color color_;    
 };
 
-class ChangeBrightness : public Action
-{
-    public:
-        ChangeBrightness(FilterPalette *filter_palette, CanvasManager *manager, const float delta): 
-                    filter_palette_(*filter_palette), canvas_manager_(*manager), delta_(delta) {};
-        ~ChangeBrightness(){};
+// class ChangeBrightness : public Action
+// {
+//     public:
+//         ChangeBrightness(FilterPalette *filter_palette, CanvasManager *manager, const float delta): 
+//                     filter_palette_(*filter_palette), canvas_manager_(*manager), delta_(delta) {};
+//         ~ChangeBrightness(){};
 
-        void operator() () const
-        {
-             Canvas *active_canvas = canvas_manager_.getActiveCanvas();
-             if (active_canvas == nullptr) return;
+//         void operator() () const
+//         {
+//              Canvas *active_canvas = canvas_manager_.getActiveCanvas();
+//              if (active_canvas == nullptr) return;
 
-            FilterBrightness *filter  = (FilterBrightness*)filter_palette_.getFilter(FilterPalette::FilterType::LIGHT);
-            filter_palette_.setLastFilter(FilterPalette::FilterType::LIGHT);
+//             FilterBrightness *filter  = (FilterBrightness*)filter_palette_.getFilter(FilterPalette::FilterType::LIGHT);
+//             filter_palette_.setLastFilter(FilterPalette::FilterType::LIGHT);
 
-            filter->setDelta(delta_);
+//             filter->setDelta(delta_);
 
            
-            filter->applyFilter(*active_canvas, active_canvas->getFilterMask());
+//             filter->applyFilter(*active_canvas, active_canvas->getFilterMask());
 
-        }
+//         }
 
 
-    private:
-        FilterPalette &filter_palette_;
-        CanvasManager &canvas_manager_;
+//     private:
+//         FilterPalette &filter_palette_;
+//         CanvasManager &canvas_manager_;
        
-        float delta_;
+//         float delta_;
         
-};
+// };
 
 class UseFilter : public Action
 {
@@ -111,10 +111,10 @@ class UseFilter : public Action
              Canvas *active_canvas = canvas_manager_.getActiveCanvas();
              if (active_canvas == nullptr) return;
 
-            FilterBrightness *filter  = (FilterBrightness*)filter_palette_.getFilter(type_);
+            Filter *filter  = (Filter*)filter_palette_.getFilter(type_);
             filter_palette_.setLastFilter(type_);
            
-            if (filter) filter->applyFilter(*active_canvas, active_canvas->getFilterMask());
+            if (filter) filter->applyFilter(*active_canvas);
         }
 
 

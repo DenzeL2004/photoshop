@@ -12,7 +12,7 @@ Canvas::Canvas( ToolPalette *tool_palette, FilterPalette *filter_palette,
                 const Vec2d &origin, const Vec2d &scale):
                 Window(Debug_texture, size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale),
                 tool_palette_(*tool_palette), filter_palette_(*filter_palette), 
-                filter_mask_(*(new FilterMask(canvas_size.x, canvas_size.y))),
+               // filter_mask_(*(new FilterMask(canvas_size.x, canvas_size.y))),
                 background_(), canvas_size_(canvas_size), real_pos_(0, 0) 
 {
     background_.create((uint32_t)canvas_size.x, (uint32_t)canvas_size.y);
@@ -23,7 +23,7 @@ Canvas::Canvas( ToolPalette *tool_palette, FilterPalette *filter_palette,
 
     background_.draw(rec);
 
-    filter_mask_.fill(true);
+    //filter_mask_.fill(true);
 }
 
 //=======================================================================================
@@ -174,11 +174,11 @@ bool Canvas::applyFilter(const KeyboardKey key)
 {
     Filter *filter = nullptr;
 
-    if (getKeyCode(key) == Key_use_light_filter)
-    {
-        filter  = filter_palette_.getFilter(FilterPalette::FilterType::LIGHT);
-        filter_palette_.setLastFilter(FilterPalette::FilterType::LIGHT);
-    }
+    // if (getKeyCode(key) == Key_use_light_filter)
+    // {
+    //     filter  = filter_palette_.getFilter(FilterPalette::FilterType::LIGHT);
+    //     filter_palette_.setLastFilter(FilterPalette::FilterType::LIGHT);
+    // }
 
     if (getKeyCode(key) == Key_use_blackwhite_filter)
     {
@@ -186,18 +186,18 @@ bool Canvas::applyFilter(const KeyboardKey key)
         filter_palette_.setLastFilter(FilterPalette::FilterType::BLACKWHITE);
     }
 
-    if (getKeyCode(key) == Key_use_invert_filter)
-    {
-        filter  = filter_palette_.getFilter(FilterPalette::FilterType::INVERT);
-        filter_palette_.setLastFilter(FilterPalette::FilterType::INVERT);
-    }
+    // if (getKeyCode(key) == Key_use_invert_filter)
+    // {
+    //     filter  = filter_palette_.getFilter(FilterPalette::FilterType::INVERT);
+    //     filter_palette_.setLastFilter(FilterPalette::FilterType::INVERT);
+    // }
 
     if (getKeyCode(key) == Key_use_last_filter)
         filter  = filter_palette_.getLastFilter();
     
     if (filter && focused_)
     {
-        filter->applyFilter(*this, filter_mask_);
+        filter->applyFilter(*this);
         return true;
     }
 }
@@ -258,7 +258,7 @@ Vec2d Canvas::getCanvasSize () const
 
 FilterMask& Canvas::getFilterMask ()
 {
-    return filter_mask_;
+   // return filter_mask_;
 }
 
 void Canvas::correctCanvasRealPos(const Vec2d &abs_size)

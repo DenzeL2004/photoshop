@@ -83,40 +83,40 @@ AppWindow::AppWindow(   const char *path_texture,
         filters_button->action_ = new ShowButtonList(&(filters_button->buttons_)); 
 
 
-        filters_button->addButton(new Button(   "src/img/IncBrightReleased.png", "src/img/IncBrightPressed.png", 
-                                                "src/img/IncBrightPressed.png",  "src/img/IncBrightPressed.png", 
-                                                new ChangeBrightness(&filter_pallette_, &canvas_manager_, 0.05f), 
-                                                Button_Inclight_size, Button_Inclight_pos, filters_button));
+        // filters_button->addButton(new Button(   "src/img/IncBrightReleased.png", "src/img/IncBrightPressed.png", 
+        //                                         "src/img/IncBrightPressed.png",  "src/img/IncBrightPressed.png", 
+        //                                         new ChangeBrightness(&filter_pallette_, &canvas_manager_, 0.05f), 
+        //                                         Button_Inclight_size, Button_Inclight_pos, filters_button));
 
-        filters_button->addButton(new Button(   "src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
-                                                "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
-                                                new ChangeBrightness(&filter_pallette_, &canvas_manager_, -0.05f),
-                                                Button_Declight_size, Button_Declight_pos, filters_button));
+        // filters_button->addButton(new Button(   "src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
+        //                                         "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
+        //                                         new ChangeBrightness(&filter_pallette_, &canvas_manager_, -0.05f),
+        //                                         Button_Declight_size, Button_Declight_pos, filters_button));
 
         filters_button->addButton(new Button(   "src/img/BlackWhiteReleased.png", "src/img/BlackWhitePressed.png", 
                                                 "src/img/BlackWhitePressed.png",  "src/img/BlackWhitePressed.png", 
                                                 new UseFilter(&filter_pallette_, &canvas_manager_, FilterPalette::FilterType::BLACKWHITE),
                                                 Button_Blackwhite_size, Button_Blackwhite_pos, filters_button));
 
-        filters_button->addButton(new Button(   "src/img/InvertReleased.png", "src/img/InvertPressed.png", 
-                                                "src/img/InvertPressed.png",  "src/img/InvertPressed.png", 
-                                                new UseFilter(&filter_pallette_, &canvas_manager_, FilterPalette::FilterType::INVERT),
-                                                Button_Invert_size, Button_Invert_pos, filters_button));
+        // filters_button->addButton(new Button(   "src/img/InvertReleased.png", "src/img/InvertPressed.png", 
+        //                                         "src/img/InvertPressed.png",  "src/img/InvertPressed.png", 
+        //                                         new UseFilter(&filter_pallette_, &canvas_manager_, FilterPalette::FilterType::INVERT),
+        //                                         Button_Invert_size, Button_Invert_pos, filters_button));
 
-        filters_button->addButton(new Button(   "src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
-                                                "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
-                                                new UseFilter(&filter_pallette_, &canvas_manager_, FilterPalette::FilterType::RED),
-                                                Button_Redfilter_size, Button_Redfilter_pos, filters_button));
+        // filters_button->addButton(new Button(   "src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
+        //                                         "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
+        //                                         new UseFilter(&filter_pallette_, &canvas_manager_, FilterPalette::FilterType::RED),
+        //                                         Button_Redfilter_size, Button_Redfilter_pos, filters_button));
 
-        filters_button->addButton(new Button(   "src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
-                                                "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
-                                                new UseFilter(&filter_pallette_, &canvas_manager_, FilterPalette::FilterType::GREEN),
-                                                Button_Greenfilter_size, Button_Greenfilter_pos, filters_button));
+        // filters_button->addButton(new Button(   "src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
+        //                                         "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
+        //                                         new UseFilter(&filter_pallette_, &canvas_manager_, FilterPalette::FilterType::GREEN),
+        //                                         Button_Greenfilter_size, Button_Greenfilter_pos, filters_button));
 
-        filters_button->addButton(new Button(   "src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
-                                                "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
-                                                new UseFilter(&filter_pallette_, &canvas_manager_, FilterPalette::FilterType::BLUE),
-                                                Button_Bluefilter_size, Button_Bluefilter_pos, filters_button));
+        // filters_button->addButton(new Button(   "src/img/DecBrightReleased.png", "src/img/DecBrightPressed.png", 
+        //                                         "src/img/DecBrightPressed.png",  "src/img/DecBrightPressed.png", 
+        //                                         new UseFilter(&filter_pallette_, &canvas_manager_, FilterPalette::FilterType::BLUE),
+        //                                         Button_Bluefilter_size, Button_Bluefilter_pos, filters_button));
 
         size_t size = filters_button->buttons_.getSize();
         for (size_t it = 0; it < size; it++)

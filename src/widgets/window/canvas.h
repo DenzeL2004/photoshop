@@ -27,7 +27,7 @@ class Canvas : public Window
         
         virtual ~Canvas()
         {
-            delete &filter_mask_;
+           // delete &filter_mask_;
         }
 
         virtual bool onMousePressed     (const Vec2d& pos, const MouseKey key, Container<Transform> &stack_transform);
@@ -58,7 +58,7 @@ class Canvas : public Window
         sf::RenderTexture background_;
 
         ToolPalette &tool_palette_;
-        FilterMask &filter_mask_;
+       // FilterMask &filter_mask_;
 
         FilterPalette &filter_palette_;
 

@@ -4,30 +4,7 @@
 #include "../canvas.h"
 
 
-class FilterMask
-{
-    public:
-        FilterMask(size_t width, size_t height);
-        ~FilterMask()
-        {
-            delete [] pixels_;
-        }
 
-        size_t getWidth() const {return width_;}
-        size_t getHeight() const {return height_;}
-
-        bool getPixel(size_t x, size_t y) const;
-        void setPixel(size_t x, size_t y, bool value);
-
-        void fill(bool value);
-
-        void invert();
-
-    private: 
-        bool *pixels_;
-        size_t width_;
-        size_t height_;
-};
 
 class Filter
 {
@@ -35,57 +12,11 @@ class Filter
         Filter(){}
         ~Filter() = default;
 
-        virtual void applyFilter(Canvas &canvas, const FilterMask &mask) {};
+        virtual void applyFilter(Canvas &canvas) = 0;
 };
 
-class FilterBrightness : public Filter
-{
-    public:
-        FilterBrightness (const float delta):delta_(delta){}
-        ~FilterBrightness() = default;
+typedef Filter* plugint_t(void);
 
-        virtual void applyFilter(Canvas &canvas, const FilterMask &mask);
-
-        void setDelta(const float delta);
-
-    private:
-        float delta_;
-};
-
-class FilterBlackWhite : public Filter
-{
-    public:
-        FilterBlackWhite(){}
-        ~FilterBlackWhite() = default;
-
-        virtual void applyFilter(Canvas &canvas, const FilterMask &mask);
-
-    private:
-};
-
-
-class FilterInvert : public Filter
-{
-    public:
-        FilterInvert(){}
-        ~FilterInvert() = default;
-
-        virtual void applyFilter(Canvas &canvas, const FilterMask &mask);
-
-    private:
-};
-
-class FilterColorMask : public Filter
-{
-    public:
-        FilterColorMask(const sf::Color mask = sf::Color::White):mask_(mask){}
-        ~FilterColorMask() = default;
-
-        virtual void applyFilter(Canvas &canvas, const FilterMask &mask);
-
-    private:
-        sf::Color mask_;
-};
 
 class FilterPalette
 {
@@ -94,13 +25,7 @@ class FilterPalette
         enum FilterType
         {
             NOTHING     = -1,
-            LIGHT       = 0, 
-            BLACKWHITE  = 1, 
-            INVERT      = 2, 
-            RED         = 3,
-            GREEN       = 4,
-            BLUE        = 5,
-
+            BLACKWHITE  = 0, 
         };
 
         FilterPalette ();
