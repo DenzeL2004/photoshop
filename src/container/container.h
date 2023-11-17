@@ -1,8 +1,8 @@
 #ifndef _CONTAINER_H_
 #define _CONTAINER_H_
 
-#include "../generals_func/generals.h"
-#include "../log_info/log_errors.h"
+#include "generals_func/generals.h"
+#include "log_info/log_errors.h"
 
 static const size_t Init_container_capacity = 100;
 

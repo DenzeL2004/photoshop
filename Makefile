@@ -1,87 +1,55 @@
-all: mkdirectory run
 
-FLAGS = -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equal -Winline -Wunreachable-code -Wmissing-declarations 		\
-		-Wmissing-include-dirs -Wswitch-enum -Wswitch-default -Weffc++ -Wmain -Wextra -Wall -g -pipe -fexceptions -Wcast-qual -Wconversion	\
-		-Wctor-dtor-privacy -Wempty-body -Wformat-security -Wformat=2 -Wignored-qualifiers -Wlogical-op -Wmissing-field-initializers		\
-		-Wnon-virtual-dtor -Woverloaded-virtual -Wpointer-arith -Wsign-promo -Wstack-usage=8192 -Wstrict-aliasing -Wstrict-null-sentinel  	\
-		-Wtype-limits -Wwrite-strings -D_DEBUG -D_EJUDGE_CLIENT_SIDE
+COMPILER = g++
+
+
+FLAGS = -Wno-unused-parameter -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equal 						\
+ 		-Winline -Wunreachable-code -Wmissing-declarations -Wmissing-include-dirs -Wswitch-default -Weffc++ -Wmain 				\
+ 		-Wextra -Wall -g -pipe -fexceptions -Wcast-qual -Wctor-dtor-privacy -Wempty-body -Wformat-security 						\
+ 		-Wformat=2 -Wignored-qualifiers -Wlogical-op -Wmissing-field-initializers -Wnon-virtual-dtor -Woverloaded-virtual 		\
+ 		-Wpointer-arith -Wsign-promo -Wstack-usage=8192 -Wstrict-aliasing -Wstrict-null-sentinel -Wtype-limits -Wwrite-strings 	\
 
 
 SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
+OBJ_DIR = ./obj
+SRC_DIR = ./src
 
-run:		obj/log_errors.o obj/generals.o obj/graphic.o obj/event.o obj/layout.o obj/widget.o 			\
-			obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/filter.o obj/tools.o obj/app.o obj/color_palette.o obj/text_box.o obj/main.o
-
-	g++   	obj/log_errors.o obj/generals.o obj/graphic.o obj/event.o obj/layout.o obj/widget.o 			\
-		 	obj/window.o obj/button.o obj/decorator.o obj/canvas.o obj/filter.o obj/tools.o obj/app.o obj/color_palette.o obj/text_box.o obj/main.o -o run  $(SFML_FLAGS)
+OUT_NAME = run
 
 
-obj/main.o: main.cpp
-		g++ main.cpp -c -o obj/main.o $(FLAGS)
+CPP = $(shell find $(SRC_DIR) -type f -name "*.cpp")
+
+OBJ = $(CPP:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
 
+INC_FLAGS = -I$(SRC_DIR)
 
-obj/log_errors.o: 	src/log_info/log_errors.h src/log_info/log_errors.cpp
-		g++   		src/log_info/log_errors.cpp -c -o obj/log_errors.o $(FLAGS)
+DEP = $(OBJ:%.o=%.d)
 
-obj/generals.o: src/generals_func/generals.cpp src/generals_func/generals.h
-		g++ 	src/generals_func/generals.cpp -c -o obj/generals.o $(FLAGS)
-
-
-obj/graphic.o: 	src/graphic/graphic.cpp src/graphic/graphic.h src/graphic/graphic_config.h
-		g++    	src/graphic/graphic.cpp -c -o obj/graphic.o $(FLAGS) $(SFML_FLAGS)
+all : makedir build
+	./$(OUT_NAME)
 
 
+build : $(OUT_NAME)
+
+$(OUT_NAME) : $(OBJ)
+	@mkdir -p $(@D)
+	$(COMPILER) $^ -o $(OUT_NAME) $(SFML_FLAGS)
 
 
-obj/app.o:  	src/app/app.cpp src/app/app.h
-		g++		src/app/app.cpp -c -o obj/app.o $(FLAGS)
+-include $(DEP)
 
 
+$(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
+	@mkdir -p $(@D)
+	$(COMPILER) $(FLAGS) $(INC_FLAGS) $(D_FLAGS) -MMD -c $< -o $@
 
+.PHONY : makedir cleanup
 
-obj/event.o:  	src/widgets/event/event.cpp src/widgets/event/event.h
-		g++		src/widgets/event/event.cpp -c -o obj/event.o $(FLAGS)
-
-obj/layout.o:	src/widgets/widget/layoutbox/layoutbox.cpp src/widgets/widget/layoutbox/layoutbox.h
-		g++ 	src/widgets/widget/layoutbox/layoutbox.cpp -c -o obj/layout.o $(FLAGS)
-
-obj/widget.o:  	src/widgets/widget/widget.cpp src/widgets/widget/widget.h
-		g++		src/widgets/widget/widget.cpp -c -o obj/widget.o $(FLAGS)
-
-obj/window.o:  	src/widgets/window/window.cpp src/widgets/window/window.h
-		g++		src/widgets/window/window.cpp -c -o obj/window.o $(FLAGS)
-
-obj/button.o:  	src/widgets/button/button.cpp src/widgets/button/button.h
-		g++		src/widgets/button/button.cpp -c -o obj/button.o $(FLAGS)
-
-obj/decorator.o:  	src/widgets/decorator/decorator.cpp src/widgets/decorator/decorator.h
-		g++			src/widgets/decorator/decorator.cpp -c -o obj/decorator.o $(FLAGS)
-
-
-obj/canvas.o:  	src/widgets/window/canvas.cpp src/widgets/window/canvas.h
-		g++		src/widgets/window/canvas.cpp -c -o obj/canvas.o $(FLAGS)
-
-
-obj/tools.o:  	src/widgets/window/tools/tools.cpp src/widgets/window/tools/tools.h
-		g++		src/widgets/window/tools/tools.cpp -c -o obj/tools.o $(FLAGS)
-
-obj/filter.o:  	src/widgets/window/filters/filter.cpp src/widgets/window/filters/filter.h
-		g++		src/widgets/window/filters/filter.cpp -c -o obj/filter.o $(FLAGS)
-
-obj/color_palette.o:  	src/widgets/window/color_palette/color_palette.cpp src/widgets/window/color_palette/color_palatte.h
-		g++				src/widgets/window/color_palette/color_palette.cpp -c -o obj/color_palette.o $(FLAGS)
-
-obj/text_box.o:	src/widgets/text_box/text_box.cpp src/widgets/text_box/text_box.h
-		g++				src/widgets/text_box/text_box.cpp -c -o obj/text_box.o $(FLAGS)
-
-.PHONY: cleanup mkdirectory
-
-mkdirectory:
-	mkdir -p obj;
-	mkdir -p tmp;
+makedir:
+	@mkdir -p $(OBJ_DIR)
+	@mkdir -p tmp;
 	
 
-cleanup:
-	rm obj/*.o
+cleanup :
+	rm -rf $(OUT_NAME) $(OBJ_DIR)

@@ -1,8 +1,6 @@
 #include <stdio.h>
 
-
-
-#include "src/app/app.h"
+#include "app/app.h"
 
 const double WIDTH = 1600.0; 
 const double HEIGHT = 900.0;

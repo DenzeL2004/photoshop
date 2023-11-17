@@ -136,15 +136,16 @@ void FilterBrightness::applyFilter(Canvas &canvas, const FilterMask &mask)
             }
         }
     }
+       
+    canvas.getBackground().clear();
 
     sf::Texture texture;
     texture.loadFromImage(image);
     
     sf::Sprite sprite(texture);
-    sprite.setTextureRect(sf::IntRect(0, height, width, -height));
-    
-    canvas.getBackground().clear();
     canvas.getBackground().draw(sprite);
+   
+    canvas.getBackground().display();
 }
 
 void FilterBrightness::setDelta(const float delta)
@@ -181,15 +182,16 @@ void FilterBlackWhite::applyFilter(Canvas &canvas, const FilterMask &mask)
             }
         }
     }
+    
+    canvas.getBackground().clear();
 
     sf::Texture texture;
     texture.loadFromImage(image);
     
     sf::Sprite sprite(texture);
-    sprite.setTextureRect(sf::IntRect(0, height, width, -height));
-    
-    canvas.getBackground().clear();
     canvas.getBackground().draw(sprite);
+
+    canvas.getBackground().display();
 }
 
 //==========================================================================
@@ -220,14 +222,15 @@ void FilterInvert::applyFilter(Canvas &canvas, const FilterMask &mask)
         }
     }
 
+    canvas.getBackground().clear();
+
     sf::Texture texture;
     texture.loadFromImage(image);
     
     sf::Sprite sprite(texture);
-    sprite.setTextureRect(sf::IntRect(0, height, width, -height));
-    
-    canvas.getBackground().clear();
+
     canvas.getBackground().draw(sprite);
+    canvas.getBackground().display();
 }
 
 
@@ -257,14 +260,15 @@ void FilterColorMask::applyFilter(Canvas &canvas, const FilterMask &mask)
         }
     }
 
+        canvas.getBackground().clear();
+
     sf::Texture texture;
     texture.loadFromImage(image);
     
     sf::Sprite sprite(texture);
-    sprite.setTextureRect(sf::IntRect(0, height, width, -height));
-    
-    canvas.getBackground().clear();
     canvas.getBackground().draw(sprite);
+
+    canvas.getBackground().display();
 }
 
 //==========================================================================

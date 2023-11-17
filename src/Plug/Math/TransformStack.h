@@ -12,8 +12,8 @@
 #ifndef __PLUG_MATH_TRANSFORM_STACK_H
 #define __PLUG_MATH_TRANSFORM_STACK_H
 
-#include "Vec2d.h"
-#include "Transform.h"
+#include "Plug/Math/Vec2d.h"
+#include "Plug/Math/Transform.h"
 
 namespace plug 
 {
@@ -23,7 +23,7 @@ namespace plug
 
         TransformStack(){}
 
-        virtual ~TransformStack() = 0;
+        virtual ~TransformStack(){}
 
         /**
          * \brief Enter a transform to the top of the stack and pushes the new transform onto the top of the stack
@@ -49,7 +49,8 @@ namespace plug
          * \brief Converts on-screen position to local position using top transform
         */
         virtual Vec2d restore   (const Vec2d &vec) const = 0;
+
     };
-};
+}
 
 #endif

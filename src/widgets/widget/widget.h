@@ -1,14 +1,13 @@
 #ifndef _WIDGET_H_
 #define _WIDGET_H_
 
-#include "../../generals_func/generals.h"
-#include "../../log_info/log_errors.h"
+#include "generals_func/generals.h"
 
-#include "../../container/container.h"
+#include "container/container.h"
 
-#include "../../graphic/graphic.h"
+#include "graphic/graphic.h"
 
-#include "../../Plug/Math.h"
+#include "Plug/Math.h"
 #include "layoutbox/layoutbox.h"
 
 #include "../event/event.h"

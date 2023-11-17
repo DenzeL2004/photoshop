@@ -2,7 +2,7 @@
 #define __PLUG_MATH_TRANSFORM_H
 
 
-#include "Vec2d.h"
+#include "Plug/Math/Vec2d.h"
 
 
 namespace plug {
@@ -11,7 +11,7 @@ namespace plug {
             /**
              * \brief Creates transform with the given offset and scale
             */
-            Transform(const Vec2d &offset_ = Vec2d(), const Vec2d &scale_ = Vec2d(1, 1)) :
+            explicit Transform(const Vec2d &offset_ = Vec2d(), const Vec2d &scale_ = Vec2d(1, 1)) :
                 offset(offset_), scale(scale_) {}
 
             /**

@@ -12,13 +12,13 @@
 #ifndef __PLUG_MATH_H
 #define __PLUG_MATH_H
 
-#include "Math/Vec2d.h"
-#include "Math/Transform.h"
-#include "Math/TransformStack.h"
+#include "Plug/Math/Vec2d.h"
+#include "Plug/Math/Transform.h"
+#include "Plug/Math/TransformStack.h"
 
 using Vec2d = plug::Vec2d;
-using Dot = plug::Vec2d;
-using Transform = plug::Transform;
+using Dot   = plug::Vec2d;
 
+using Transform = plug::Transform;
 
 #endif /* Math.h */
