@@ -2,7 +2,7 @@
 #include <time.h>
 #include <stdarg.h>
 
-#include "LogInfo/LogErrors.h.h"
+#include "LogInfo/LogErrors.h"
 
 static FILE *fp_logs = nullptr;
 

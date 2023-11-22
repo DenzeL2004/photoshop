@@ -30,13 +30,7 @@ all : makedir build
 	./$(OUT_NAME)
 
 
-build : $(OUT_NAME) plugins/plugin.so
-
-plugins/plugin.so:
-	@mkdir -p $(@D)
-	@mkdir -p obj/plugin
-	gcc -Isrc/ -Wall -c -fPIC src/Plugin/Plugin.cpp -static -o obj/plugin/plugin.o
-	gcc -shared obj/plugin/plugin.o -o plugins/plugin.so
+build : $(OUT_NAME)
 
 $(OUT_NAME) : $(OBJ)
 	@mkdir -p $(@D)
