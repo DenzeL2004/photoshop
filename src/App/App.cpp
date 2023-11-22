@@ -272,7 +272,7 @@ void useApp()
     Widget base_widget(base);
 
     Frame frame(getPlugTexture("src/img/frame.png"),
-                 Title(Vec2d(App_width / 2 - 12 * 7, 5), "photostore", 1.9, plug::Color(0, 0, 0, 255)),
+                 Title(Vec2d(App_width / 2 - 10 * plug::Symbol_width, 5), "photostore", 1.9, plug::Color(0, 0, 0, 255)),
                  BaseLayoutBox(Vec2d(0, 0), Vec2d(App_width, App_height), base.getSize(), true, true), &base_widget);
 
 
@@ -318,6 +318,11 @@ void useApp()
         }
 
         frame.draw(context.stack, plug_window);
+        drawLine(plug_window, Vec2d(200, 200), Vec2d(400, 400));
+        drawRectangle(plug_window, Vec2d(200, 200), Vec2d(400, 400));
+        drawCircle(plug_window, Vec2d(200, 200), 50);
+        writeText(plug_window, Vec2d(200, 200), "1234567890./?!AbcdefghijklmnopQrstuvwxyz", 2);
+
         window.display();
     }
 }

@@ -10,7 +10,7 @@ static FILE *fp_logs = nullptr;
 
 int OpenLogsFile ()
 {    
-    fp_logs = fopen("temp/log_info.html", "a");
+    fp_logs = fopen("tmp/log_info.html", "a");
 
     if (!fp_logs)
     {
