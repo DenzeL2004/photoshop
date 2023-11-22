@@ -12,16 +12,14 @@
 #ifndef __PLUG_EVENT_KEY_CODE_H
 #define __PLUG_EVENT_KEY_CODE_H
 
-namespace plug
-{
+namespace plug {
 
 /**
  * @brief Keyboard button
  */
-enum class KeyCode
-{
+enum class KeyCode {
   Unknown = -1,
-  A       = 0,
+  A = 0,
   B,
   C,
   D,

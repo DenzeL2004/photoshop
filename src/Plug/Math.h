@@ -12,13 +12,15 @@
 #ifndef __PLUG_MATH_H
 #define __PLUG_MATH_H
 
-#include "Plug/Math/Vec2d.h"
 #include "Plug/Math/Transform.h"
 #include "Plug/Math/TransformStack.h"
+#include "Plug/Math/Vec2d.h"
 
+using Dot = plug::Vec2d;
 using Vec2d = plug::Vec2d;
-using Dot   = plug::Vec2d;
 
 using Transform = plug::Transform;
+static const double Eps = 1e-6;
+
 
 #endif /* Math.h */

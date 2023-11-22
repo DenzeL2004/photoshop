@@ -2,7 +2,6 @@
 #define _WINDOW_H_
 
 #include "Impl/Widget/Widget.h"
-#include "Impl/Graphics/Graphic.h"
 
 class Window : public Widget
 {

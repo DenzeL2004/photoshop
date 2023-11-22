@@ -16,7 +16,7 @@ void Frame::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 
     Vec2d abs_pos = stack.apply(Vec2d(0.0, 0.0)) + title_.pos;
 
-    writeText(target, abs_pos, title_.msg, title_.width, title_.color);
+    //writeText(target, abs_pos, title_.msg, title_.width, title_.color);
 
     size_t cnt = widgets_.getSize();
     for (size_t it = 0; it < cnt; it++)

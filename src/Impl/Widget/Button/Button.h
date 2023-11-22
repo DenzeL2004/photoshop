@@ -2,7 +2,7 @@
 #define _BUTTON_H_
 
 #include "Impl/Widget/Widget.h"
-#include "Impl/Graphics/Graphic.h"
+// #include "Impl/Graphics/Graphic.h"
 
 //================================================================================
 

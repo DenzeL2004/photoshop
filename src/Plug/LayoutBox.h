@@ -14,21 +14,19 @@
 
 #include "Plug/Math.h"
 
-namespace plug
-{
+namespace plug {
 
 /**
  * @brief Representation of widget move and resize policy
  */
-class LayoutBox
-{
+class LayoutBox {
 public:
   /**
    * @brief Update information about parent layout box
    *
    * @param[in] parent_box  Parent layout box
    */
-  virtual void updateParent(const LayoutBox& parent_box) = 0;
+  virtual void onParentUpdate(const LayoutBox &parent_box) = 0;
 
   /**
    * @brief Get current size (in screen units) of layout box
@@ -51,7 +49,7 @@ public:
    *
    * @return `true` if layout box size was updated, `false` otherwise
    */
-  virtual bool setSize(const Vec2d& size) = 0;
+  virtual bool setSize(const Vec2d &size) = 0;
 
   /**
    * @brief Update relative position of layout box
@@ -61,14 +59,14 @@ public:
    *
    * @return `true` if layout box position was updated, `false` otherwise
    */
-  virtual bool setPosition(const Vec2d& position) = 0;
+  virtual bool setPosition(const Vec2d &position) = 0;
 
   /**
    * @brief Create deep copy of layout box
    *
    * @return Pointer to allocated copy of layout box
    */
-  virtual LayoutBox* clone(void) const = 0;
+  virtual LayoutBox *clone(void) const = 0;
 
   virtual ~LayoutBox() = default;
 };

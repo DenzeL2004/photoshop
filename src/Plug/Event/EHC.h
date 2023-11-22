@@ -14,15 +14,13 @@
 
 #include "Plug/Math.h"
 
-namespace plug
-{
+namespace plug {
 
 /**
  * @brief Context of event handling
  */
-struct EHC
-{
-  TransformStack& stack; /*!< Current state of transform stack */
+struct EHC {
+  TransformStack &stack; /*!< Current state of transform stack */
 
   bool stopped; /*!< Event is intercepted and should not be handled further */
 

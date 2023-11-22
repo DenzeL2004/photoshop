@@ -3,8 +3,8 @@
 
 #include "Plug/Math.h"
 
-#include "Impl/Graphics/RenderTarget/SfmlRenderTarget/RenderTarget.h"
-#include "Impl/Graphics/Graphic.h"
+#include "Impl/RenderTarget/SfmlRenderTarget/RenderTarget.h"
+//#include "Impl/Graphics/Graphic.h"
 
 #include "Impl/Widget/Widget.h"
 
