@@ -1,14 +1,11 @@
 #include "App.h"
 
-
 static void runEvent(sf::Event &event, plug::EHC &context, Vec2d mouse_pos, plug::Widget &widget);
 
 static void defineModifierKey(sf::Event &event, bool &shift, bool &ctrl, bool &alt);
 
 static plug::Color   getPlugColor(const sf::Color &sf_color);
 static plug::Texture getPlugTexture (const char *texture_path);
-
-
 
 // AppWindow::AppWindow(   const char *path_texture,
 //                         const Vec2d &size, const Vec2d &pos, 
@@ -318,11 +315,6 @@ void useApp()
         }
 
         frame.draw(context.stack, plug_window);
-        drawLine(plug_window, Vec2d(200, 200), Vec2d(400, 400));
-        drawRectangle(plug_window, Vec2d(200, 200), Vec2d(400, 400));
-        drawCircle(plug_window, Vec2d(200, 200), 50);
-        writeText(plug_window, Vec2d(200, 200), "1234567890./?!AbcdefghijklmnopQrstuvwxyz", 2);
-
         window.display();
     }
 }
