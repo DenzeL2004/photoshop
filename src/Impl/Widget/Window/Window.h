@@ -16,14 +16,10 @@ class Window : public Widget
                 m_scale(scale),
                 m_texture(texture.width, texture.height, texture.data){}
                 
-
         Window(const Window &other) = delete;
         Window& operator= (const Window &other) = delete;
 
-        virtual ~Window()
-        {
-            delete[] m_texture.data;
-        }
+        virtual ~Window(){}
         
         virtual void draw (plug::TransformStack& stack, plug::RenderTarget& target);  
 

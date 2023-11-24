@@ -8,6 +8,22 @@ sf::Vector2f getSFMLVector2f(const plug::Vec2d &plug_vector) {
   return sf::Vector2f((float)plug_vector.x, (float)plug_vector.y);
 }
 
+plug::Color getPlugColor(const sf::Color &sf_color) {
+  return plug::Color(sf_color.r, sf_color.g, sf_color.b, sf_color.a);
+}
+
+plug::Vec2d getPlugVector(const sf::Vector2f &sf_vector) {
+  return plug::Vec2d(sf_vector.x, sf_vector.y);
+}
+
+plug::Vec2d getPlugVector(const sf::Vector2u &sf_vector) {
+  return plug::Vec2d(sf_vector.x, sf_vector.y);
+}
+
+plug::Vec2d getPlugVector(const sf::Vector2i &sf_vector) {
+  return plug::Vec2d(sf_vector.x, sf_vector.y);
+}
+
 void copyToSFMLVertex(sf::Vertex &sf_vertex, const plug::Vertex &plug_vertex) {
   sf_vertex.color = getSFMLColor(plug_vertex.color);
   sf_vertex.position = getSFMLVector2f(plug_vertex.position);

@@ -38,25 +38,20 @@ class Button : public Widget
                 const Widget *parent = nullptr,
                 const plug::Vec2d &scale = Vec2d(1.0, 1.0)):
                 Widget(box),
-                texture_released_(texture_released.width, texture_released.height, texture_released.data),
-                texture_covered_(texture_covered.width, texture_covered.height, texture_covered.data),
-                texture_pressed_(texture_pressed.width, texture_pressed.height, texture_pressed.data),
-                texture_disabled_(texture_disabled.width, texture_disabled.height, texture_disabled.data),
+                m_texture_released(texture_released.width, texture_released.height, texture_released.data),
+                m_texture_covered(texture_covered.width, texture_covered.height, texture_covered.data),
+                m_texture_pressed(texture_pressed.width, texture_pressed.height, texture_pressed.data),
+                m_texture_disabled(texture_disabled.width, texture_disabled.height, texture_disabled.data),
                 action_(action),
                 state_(RELEASED), prev_state_(RELEASED),
-                parent_(parent),             
-                scale_(scale),
-                covering_time_(0){}    
+                m_parent(parent),             
+                m_scale(scale),
+                m_covering_time(0){}    
 
 
         virtual ~Button()
         {
             delete action_;
-
-            delete texture_released_.data;
-            delete texture_covered_.data;
-            delete texture_pressed_.data;
-            delete texture_disabled_.data;
         }
 
         Button(const Button &other) = delete;
@@ -77,20 +72,18 @@ class Button : public Widget
         virtual void onMousePressed     (const plug::MousePressedEvent &event,plug::EHC &context);
         virtual void onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &context);
 
-        bool covers(plug::TransformStack &stack, const plug::Vec2d &position) const;
-
         void getDrawFormat(const plug::Texture &texture, plug::VertexArray &vertex_array, Transform &transform) const;
 
         const plug::Texture* defineTexture() const;
 
-        plug::Texture texture_released_, texture_covered_, 
-                      texture_pressed_, texture_disabled_;
+        plug::Texture m_texture_released, m_texture_covered, 
+                      m_texture_pressed, m_texture_disabled;
 
-        const plug::Widget *parent_;
+        const plug::Widget *m_parent;
 
-        plug::Vec2d scale_;
+        plug::Vec2d m_scale;
     
-        double covering_time_;
+        double m_covering_time;
 };
 
 

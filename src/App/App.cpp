@@ -4,7 +4,6 @@ static void runEvent(sf::Event &event, plug::EHC &context, Vec2d mouse_pos, plug
 
 static void defineModifierKey(sf::Event &event, bool &shift, bool &ctrl, bool &alt);
 
-static plug::Color   getPlugColor(const sf::Color &sf_color);
 static plug::Texture getPlugTexture (const char *texture_path);
 
 // AppWindow::AppWindow(   const char *path_texture,
@@ -280,10 +279,10 @@ void useApp()
                                         new Click(close_window_flag), &frame);
  
 
-    // AppWindow *app = new AppWindow("src/img/window.jpg",Vec2d(WIDTH - 20 , HIEGHT - 40), Vec2d(10, 30), &border); 
+    // // AppWindow *app = new AppWindow("src/img/window.jpg",Vec2d(WIDTH - 20 , HIEGHT - 40), Vec2d(10, 30), &border); 
 
     frame.addWidget(close_button);
-    // border.addWidget(app);
+    
 
     TransformStack stack;
     plug::EHC context = {(plug::TransformStack&)stack, false, false};
@@ -328,52 +327,43 @@ static void runEvent(sf::Event &event, plug::EHC &context, Vec2d mouse_pos, plug
     
     defineModifierKey(event, shift, ctrl, alt);    
 
-    plug::Event *plug_event = nullptr;
-
     if (event.type == sf::Event::MouseMoved)
     {   
-        plug_event = new plug::MouseMoveEvent(mouse_pos, shift, ctrl, alt);
+        widget.onEvent( plug::MouseMoveEvent(mouse_pos, shift, ctrl, alt), 
+                        context);
     }
     else if (event.type == sf::Event::MouseButtonPressed)
     {
-        plug_event = new plug::MousePressedEvent(static_cast<plug::MouseButton>(event.mouseButton.button), 
-                                                 mouse_pos, shift, ctrl, alt);
+        widget.onEvent( plug::MousePressedEvent(static_cast<plug::MouseButton>(event.mouseButton.button), 
+                        mouse_pos, shift, ctrl, alt), 
+                        context);
     }
     else if (event.type == sf::Event::MouseButtonReleased)
     {
-        plug_event = new plug::MouseReleasedEvent(static_cast<plug::MouseButton>(event.mouseButton.button), 
-                                                  mouse_pos, shift, ctrl, alt);
+        widget.onEvent( plug::MouseReleasedEvent(static_cast<plug::MouseButton>(event.mouseButton.button), 
+                        mouse_pos, shift, ctrl, alt), 
+                        context);
     }   
     else if (event.type == sf::Event::KeyReleased)
     {
-        plug_event = new plug::KeyboardReleasedEvent(static_cast<plug::KeyCode>(event.key.code), 
-                                                     shift, ctrl, alt);
+        widget.onEvent( plug::KeyboardReleasedEvent(static_cast<plug::KeyCode>(event.key.code), 
+                        shift, ctrl, alt), 
+                        context);
     }
     else if (event.type == sf::Event::KeyPressed)
     {
-        plug_event = new plug::KeyboardPressedEvent(static_cast<plug::KeyCode>(event.key.code), 
-                                                    shift, ctrl, alt);
+        widget.onEvent( plug::KeyboardPressedEvent(static_cast<plug::KeyCode>(event.key.code), 
+                        shift, ctrl, alt), 
+                        context);
     }
 
-    if (plug_event)
-    {
-        widget.onEvent(*plug_event, context);
-        delete plug_event;
-    }
-    
     {
         static sf::Clock timer;
 
-        plug_event = new plug::TickEvent(timer.getElapsedTime().asSeconds());
-
-        widget.onEvent(*plug_event, context);
-        
-        delete plug_event;
+        widget.onEvent(plug::TickEvent(timer.getElapsedTime().asSeconds()), context);
 
         timer.restart();
     }
-
-
 }
 
 static void defineModifierKey(  sf::Event &event, 
@@ -418,9 +408,4 @@ static plug::Texture getPlugTexture(const char *texture_path)
     }
     
     return plug::Texture(width, height, data);
-}
-
-static plug::Color getPlugColor(const sf::Color &sf_color)
-{
-    return plug::Color(sf_color.r, sf_color.g, sf_color.b, sf_color.a);
 }

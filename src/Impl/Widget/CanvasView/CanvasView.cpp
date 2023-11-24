@@ -10,10 +10,10 @@ const double Border_width = 10.0;
 
 void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), scale_);
+    plug::Transform trf(getLayoutBox().getPosition(), m_scale);
     stack.enter(trf);
 
-    plug::Texture canvas_texture = canvas_->getTexture();
+    plug::Texture canvas_texture = m_canvas->getTexture();
 
     plug::VertexArray vertex_array(plug::PrimitiveType::Quads, 4);
     
@@ -22,19 +22,18 @@ void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
     plug::Vec2d size = top_transform.getScale() * getLayoutBox().getSize();
     plug::Vec2d pos = top_transform.apply(plug::Vec2d(0, 0));
 
-    vertex_array[0].tex_coords = plug::Vec2d(canvas_pos_.x, canvas_pos_.y);
-    vertex_array[1].tex_coords = plug::Vec2d(canvas_pos_.x + size.x, canvas_pos_.y);
-    vertex_array[2].tex_coords = plug::Vec2d(canvas_pos_.x + size.x, canvas_pos_.y + size.y);
-    vertex_array[3].tex_coords = plug::Vec2d(canvas_pos_.x, canvas_pos_.y + size.y);
+    vertex_array[0].tex_coords = plug::Vec2d(m_canvas_pos.x, m_canvas_pos.y);
+    vertex_array[1].tex_coords = plug::Vec2d(m_canvas_pos.x + size.x, m_canvas_pos.y);
+    vertex_array[2].tex_coords = plug::Vec2d(m_canvas_pos.x + size.x, m_canvas_pos.y + size.y);
+    vertex_array[3].tex_coords = plug::Vec2d(m_canvas_pos.x, m_canvas_pos.y + size.y);
 
     vertex_array[0].position = plug::Vec2d(pos.x, pos.y);
     vertex_array[1].position = plug::Vec2d(pos.x + size.x, pos.y);
     vertex_array[2].position = plug::Vec2d(pos.x + size.x, pos.y + size.y);
     vertex_array[3].position = plug::Vec2d(pos.x, pos.y + size.y);
     
-    canvas_->draw(vertex_array, canvas_texture);
+    m_canvas->draw(vertex_array, canvas_texture);
 
-    delete canvas_texture.data;
     delete &canvas_texture;
 
     stack.leave();
@@ -42,7 +41,7 @@ void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 
 void CanvasView::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), scale_);    
+    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
     context.stack.enter(trf);
 
     
@@ -51,7 +50,7 @@ void CanvasView::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &conte
 
 void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), scale_);    
+    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
     context.stack.enter(trf);
 
     plug::Vec2d pos = context.stack.restore(event.pos);
@@ -68,7 +67,7 @@ void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC 
         alpha += step;
     }
 
-    canvas_->draw(circle);  
+    m_canvas->draw(circle);  
 
     context.stack.leave();
 }
@@ -77,7 +76,7 @@ void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC 
 
 void CanvasView::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), scale_);    
+    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
     context.stack.enter(trf);
 
     
@@ -89,7 +88,7 @@ void CanvasView::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EH
 
 void CanvasView::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), scale_);    
+    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
     context.stack.enter(trf);
 
     
@@ -103,7 +102,7 @@ void CanvasView::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug
 
 void CanvasView::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), scale_);    
+    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
     context.stack.enter(trf);
 
     context.stopped = false;
@@ -115,7 +114,7 @@ void CanvasView::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, pl
 
 void CanvasView::onTick(const plug::TickEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), scale_);    
+    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
     context.stack.enter(trf);
 
     context.stopped = false;

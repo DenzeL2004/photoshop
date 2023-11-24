@@ -14,16 +14,16 @@ class CanvasView: public Widget
                     const plug::LayoutBox& box, 
                     const plug::Vec2d &scale = Vec2d(1.0, 1.0)):
                     Widget(box), 
-                    canvas_(canvas), 
-                    scale_(scale), 
-                    canvas_pos_(0.0, 0.0){}
+                    m_canvas(canvas), 
+                    m_scale(scale), 
+                    m_canvas_pos(0.0, 0.0){}
                 
         virtual ~CanvasView(){}
 
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
 
-        void setCanvasPos(const plug::Vec2d &pos) {canvas_pos_ = pos;}
-        plug::Vec2d getCanvasPos(void) {return canvas_pos_;}
+        void setCanvasPos(const plug::Vec2d &pos) {m_canvas_pos = pos;}
+        plug::Vec2d getCanvasPos(void) {return m_canvas_pos;}
 
     protected:
 
@@ -37,10 +37,10 @@ class CanvasView: public Widget
         virtual void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &context);
     private:
     
-        plug::Canvas *canvas_;      
-        plug::Vec2d scale_;
+        plug::Canvas *m_canvas;      
+        plug::Vec2d m_scale;
 
-        plug::Vec2d canvas_pos_;
+        plug::Vec2d m_canvas_pos;
 };
 
 #endif

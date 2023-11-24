@@ -2,11 +2,9 @@
 
 #include <cstdio>
 
-//================================================================================
-
 void Button::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 {
-    Transform trf(getLayoutBox().getPosition(), scale_);
+    Transform trf(getLayoutBox().getPosition(), m_scale);
     stack.enter(trf);
     
     Transform top_trf = stack.top();    
@@ -51,16 +49,16 @@ const plug::Texture* Button::defineTexture() const
     switch (state_)
     {
         case  Button::ButtonState::RELEASED:
-            return &texture_released_;
+            return &m_texture_released;
 
         case  Button::ButtonState::PRESSED:
-            return &texture_pressed_;
+            return &m_texture_pressed;
     
         case  Button::ButtonState::DISABLED:
-            return &texture_disabled_;
+            return &m_texture_disabled;
 
         case  Button::ButtonState::COVERED:
-            return &texture_covered_;
+            return &m_texture_covered;
 
         default:
             break;
@@ -69,25 +67,12 @@ const plug::Texture* Button::defineTexture() const
     return nullptr;
 }
 
-bool Button::covers(plug::TransformStack &stack, const plug::Vec2d &pos) const
-{
-    Vec2d local_pos = stack.restore(pos);
-
-    Vec2d size = getLayoutBox().getSize() * stack.top().getScale();
-
-    bool horizontal = (Eps < local_pos.x && size.x - Eps > local_pos.x);
-    bool vertical   = (Eps < local_pos.y && size.y - Eps > local_pos.y);
-   
-    return horizontal & vertical;
-}
-
-
 void Button::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
 {
     if (state_ ==  Button::ButtonState::DISABLED)
         return;
 
-    Transform trf(getLayoutBox().getPosition(), scale_);    
+    Transform trf(getLayoutBox().getPosition(), m_scale);    
     context.stack.enter(trf);
 
     context.stopped = covers(context.stack, event.pos);
@@ -96,7 +81,7 @@ void Button::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
 
     if (!context.stopped)
     { 
-        covering_time_ = 0;
+        m_covering_time = 0;
         state_ = prev_state_;
     }
     else
@@ -109,13 +94,12 @@ void Button::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
     }
 }
 
-//================================================================================
 void Button::onMousePressed(const plug::MousePressedEvent &event,plug::EHC &context)
 {
     if (state_ == Button::ButtonState::DISABLED)
         return;
 
-    Transform trf(getLayoutBox().getPosition(), scale_);    
+    Transform trf(getLayoutBox().getPosition(), m_scale);    
     context.stack.enter(trf);
 
     context.stopped = covers(context.stack, event.pos);
@@ -137,8 +121,6 @@ void Button::onMousePressed(const plug::MousePressedEvent &event,plug::EHC &cont
     }
 }
 
-//================================================================================
-
 void Button::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &context)
 {
     if (state_ == Button::ButtonState::DISABLED)
@@ -152,7 +134,7 @@ void Button::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &c
 
 void Button::onTick(const plug::TickEvent &event, plug::EHC &context)
 {
-    covering_time_ += event.delta_time;
+    m_covering_time += event.delta_time;
 }
 
 //================================================================================
@@ -176,7 +158,7 @@ void Button::onTick(const plug::TickEvent &event, plug::EHC &context)
 //     if (state_ ==  Button::ButtonState::DISABLED)
 //         return false;
 
-//     Transform trf(getLayoutBox().getPosition(), scale_);
+//     Transform trf(getLayoutBox().getPosition(), m_scale);
 //     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     
 //     Transform last_trf = stack_transform.getBack();
@@ -188,7 +170,7 @@ void Button::onTick(const plug::TickEvent &event, plug::EHC &context)
 
 //     if (!flag)
 //     { 
-//         covering_time_ = 0;
+//         m_covering_time = 0;
 //         state_ = prev_state_;
 //     }
 //     else
@@ -250,7 +232,7 @@ void Button::onTick(const plug::TickEvent &event, plug::EHC &context)
    
 //     if (flag) return true;
 
-//     Transform trf(getLayoutBox().getPosition(), scale_);
+//     Transform trf(getLayoutBox().getPosition(), m_scale);
 //     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
     
 //     Transform last_trf = stack_transform.getBack();
@@ -304,7 +286,7 @@ void Button::onTick(const plug::TickEvent &event, plug::EHC &context)
 
 // bool ButtonList::onTick(const time_t delta_time)
 // {
-//     covering_time_ += delta_time;
+//     m_covering_time += delta_time;
 
 //     size_t size = buttons_.getSize();
 //     for (size_t it = 0; it < size; it++)

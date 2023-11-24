@@ -19,9 +19,9 @@ class Canvas : public plug::Canvas
 
         ~Canvas()
         {
-            delete render_texture_;
+            delete m_render_texture;
             delete render_target_;
-            delete selection_mask_;
+            delete m_selection_mask;
         }
 
         virtual void draw(const plug::VertexArray &vertex_array);
@@ -41,10 +41,10 @@ class Canvas : public plug::Canvas
         virtual const plug::Texture& getTexture(void) const = 0;
 
     private:
-        sf::RenderTexture *render_texture_;
+        sf::RenderTexture *m_render_texture;
         plug::RenderTarget *render_target_;
 
-        plug::SelectionMask *selection_mask_;
+        plug::SelectionMask *m_selection_mask;
 };
 
 
