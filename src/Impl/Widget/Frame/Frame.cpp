@@ -6,13 +6,11 @@ const double Tittle_size  = 1.9;
 
 const double Border_width = 10.0;
 
-//=================================================================================================
-
 void Frame::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 {
     Window::draw(stack, target);
     
-    Transform trf(getLayoutBox().getPosition(), m_scale);
+    plug::Transform trf(getLayoutBox().getPosition(), m_scale);
     stack.enter(trf);
 
     Vec2d abs_pos = stack.apply(Vec2d(0.0, 0.0)) + m_title.pos;
@@ -38,11 +36,9 @@ void Frame::onParentUpdate(const plug::LayoutBox &parent_box)
         m_widgets[it]->onParentUpdate(*layout_box);
 }
 
-//=================================================================================================
-
 void Frame::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
 {
-    Transform trf(getLayoutBox().getPosition(), m_scale);    
+    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
     context.stack.enter(trf);
 
     Vec2d local_pos = context.stack.restore(event.pos);
@@ -66,7 +62,6 @@ void Frame::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
     context.stack.leave();
 }
 
-//================================================================================
 void Frame::clickOnBorder()
 {
     Vec2d size = getLayoutBox().getSize();
@@ -138,7 +133,6 @@ void Frame::resizeFrame(const Vec2d &local_pos)
     }
 }
 
-
 void Frame::moveFrame(const Vec2d &local_pos)
 {
     plug::LayoutBox* layout_box = &getLayoutBox();
@@ -162,11 +156,9 @@ void Frame::moveFrame(const Vec2d &local_pos)
         layout_box->setPosition(new_pos);
 }
 
-//================================================================================
-
 void Frame::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &context)
 {
-    Transform trf(getLayoutBox().getPosition(), m_scale);    
+    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
     context.stack.enter(trf);
 
     context.stopped = false;
@@ -198,11 +190,9 @@ void Frame::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &cont
     context.stack.leave();
 }
 
-//================================================================================
-
 void Frame::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &context)
 {
-    Transform trf(getLayoutBox().getPosition(), m_scale);    
+    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
     context.stack.enter(trf);
 
     size_t cnt = m_widgets.getSize();
@@ -216,11 +206,9 @@ void Frame::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &co
     context.stack.leave();
 }
 
-//================================================================================
-
 void Frame::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
 {
-    Transform trf(getLayoutBox().getPosition(), m_scale);    
+    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
     context.stack.enter(trf);
 
     size_t cnt = m_widgets.getSize();
@@ -231,12 +219,10 @@ void Frame::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC
 
     context.stack.leave();
 }
-
-//================================================================================
 
 void Frame::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, plug::EHC &context)
 {
-    Transform trf(getLayoutBox().getPosition(), m_scale);    
+    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
     context.stack.enter(trf);
 
     size_t cnt = m_widgets.getSize();
@@ -248,11 +234,9 @@ void Frame::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, plug::E
     context.stack.leave();
 }
 
-//================================================================================
-
 void Frame::onTick(const plug::TickEvent &event, plug::EHC &context)
 {
-    Transform trf(getLayoutBox().getPosition(), m_scale);    
+    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
     context.stack.enter(trf);
 
     size_t cnt = m_widgets.getSize();
@@ -263,8 +247,6 @@ void Frame::onTick(const plug::TickEvent &event, plug::EHC &context)
 
     context.stack.leave();
 } 
-
-//================================================================================
 
 void Frame::addWidget(Widget* widget_ptr)
 {

@@ -279,10 +279,16 @@ void useApp()
                                         new Click(close_window_flag), &frame);
  
 
-    // // AppWindow *app = new AppWindow("src/img/window.jpg",Vec2d(WIDTH - 20 , HIEGHT - 40), Vec2d(10, 30), &border); 
+    Frame *canvas_frame = new Frame(getPlugTexture("src/img/frame2.png"),
+                 Title(Vec2d(500 / 2 - 10 * plug::Symbol_width, 5), "canvas", 1.5, plug::Color(0, 0, 0, 255)),
+                 BaseLayoutBox(Vec2d(0, 0), Vec2d(500, 500), frame.getLayoutBox().getSize(), true, true), &base_widget);
+
+    Canvas *canvas = new Canvas("src/img/pika.png");
+    CanvasView *canvas_view = new CanvasView(*canvas, BaseLayoutBox(Vec2d(25, 50), Vec2d(450, 425), canvas_frame->getLayoutBox().getSize(), true, true));
+    canvas_frame->addWidget(canvas_view);
 
     frame.addWidget(close_button);
-    
+    frame.addWidget(canvas_frame);
 
     TransformStack stack;
     plug::EHC context = {(plug::TransformStack&)stack, false, false};

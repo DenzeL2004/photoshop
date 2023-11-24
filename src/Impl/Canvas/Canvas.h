@@ -20,8 +20,9 @@ class Canvas : public plug::Canvas
         ~Canvas()
         {
             delete m_render_texture;
-            delete render_target_;
+            delete m_render_target;
             delete m_selection_mask;
+            delete m_texture;
         }
 
         virtual void draw(const plug::VertexArray &vertex_array);
@@ -32,19 +33,23 @@ class Canvas : public plug::Canvas
 
         virtual void setSize(const plug::Vec2d &size);
 
-        virtual plug::SelectionMask &getSelectionMask(void) = 0;
+        virtual plug::SelectionMask &getSelectionMask(void);
 
-        virtual plug::Color getPixel(size_t x, size_t y) const = 0;
+        virtual plug::Color getPixel(size_t x, size_t y) const;
 
-        virtual void setPixel(size_t x, size_t y, const plug::Color &color) = 0;
+        virtual void setPixel(size_t x, size_t y, const plug::Color &color);
 
-        virtual const plug::Texture& getTexture(void) const = 0;
+        virtual const plug::Texture& getTexture(void) const;
 
     private:
+        void defineTexture(void);
+
         sf::RenderTexture *m_render_texture;
-        plug::RenderTarget *render_target_;
+        plug::RenderTarget *m_render_target;
 
         plug::SelectionMask *m_selection_mask;
+
+        plug::Texture *m_texture;
 };
 
 
