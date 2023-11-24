@@ -12,9 +12,9 @@ class Window : public Widget
                 const Widget *parent = nullptr, 
                 const plug::Vec2d &scale = Vec2d(1.0, 1.0)):
                 Widget(box),
-                parent_(parent),
-                scale_(scale),
-                texture_(texture.width, texture.height, texture.data){}
+                m_parent(parent),
+                m_scale(scale),
+                m_texture(texture.width, texture.height, texture.data){}
                 
 
         Window(const Window &other) = delete;
@@ -22,28 +22,24 @@ class Window : public Widget
 
         virtual ~Window()
         {
-            delete[] texture_.data;
+            delete[] m_texture.data;
         }
         
         virtual void draw (plug::TransformStack& stack, plug::RenderTarget& target);  
 
     protected:
 
-        bool covers(plug::TransformStack &stack, const plug::Vec2d &position) const;
-
         void getDrawFormat(plug::VertexArray &vertex_array, Transform &transform) const;       
         
-        const plug::Widget *parent_;
+        const plug::Widget *m_parent;
 
-        plug::Vec2d scale_;
+        plug::Vec2d m_scale;
 
-        plug::Texture texture_;
+        plug::Texture m_texture;
         
     private:
 
         
 };
-
-
 
 #endif

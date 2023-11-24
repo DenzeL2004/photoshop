@@ -1,10 +1,8 @@
 #include "Window.h"
 
-//================================================================================
-
 void Window::draw(plug::TransformStack& stack, plug::RenderTarget& target)
 {
-    Transform trf(getLayoutBox().getPosition(), scale_);
+    Transform trf(getLayoutBox().getPosition(), m_scale);
     stack.enter(trf);
     
     Transform top_trf = stack.top();    
@@ -13,15 +11,15 @@ void Window::draw(plug::TransformStack& stack, plug::RenderTarget& target)
 
     getDrawFormat(vertex_array, top_trf);
 
-    target.draw(vertex_array, texture_);
+    target.draw(vertex_array, m_texture);
 
     stack.leave();
 }
 
 void Window::getDrawFormat(plug::VertexArray &vertex_array, Transform &transform) const
 {
-    double width  = (double)texture_.width;
-    double height = (double)texture_.height;
+    double width  = (double)m_texture.width;
+    double height = (double)m_texture.height;
 
     vertex_array[0].tex_coords = Vec2d(0, 0);
     vertex_array[1].tex_coords = Vec2d(width, 0);
@@ -38,16 +36,3 @@ void Window::getDrawFormat(plug::VertexArray &vertex_array, Transform &transform
     vertex_array[3].position = Vec2d(pos.x, pos.y + size.y);
 }
 
-//================================================================================
-
-bool Window::covers(plug::TransformStack &stack, const plug::Vec2d &pos) const
-{
-    Vec2d local_pos = stack.restore(pos);
-
-    Vec2d size = getLayoutBox().getSize() * stack.top().getScale();;
-
-    bool horizontal = (Eps < local_pos.x && size.x - Eps > local_pos.x);
-    bool vertical   = (Eps < local_pos.y && size.y - Eps > local_pos.y);
-   
-    return horizontal & vertical;
-}

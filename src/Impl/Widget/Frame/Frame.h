@@ -63,15 +63,15 @@ class Frame: public Window
                 const Widget *parent = nullptr, 
                 const plug::Vec2d &scale = Vec2d(1.0, 1.0)):
                 Window(texture, box, parent, scale),
-                title_(title),
-                widgets_(),
-                hold_pos_(0.0, 0.0), prev_pos_(0.0 ,0.0), state_(DEFAULT){}
+                m_title(title),
+                m_widgets(),
+                m_hold_pos(0.0, 0.0), m_prev_pos(0.0 ,0.0), state_(DEFAULT){}
                 
         virtual ~Frame()
         {
-            size_t cnt = widgets_.getSize();
+            size_t cnt = m_widgets.getSize();
             for (size_t it = 0; it < cnt; it++)
-                delete widgets_[it];
+                delete m_widgets[it];
         }
 
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
@@ -97,14 +97,14 @@ class Frame: public Window
         void resizeFrame    (const plug::Vec2d &new_coord);
         void moveFrame      (const plug::Vec2d &new_coord);
 
-        const Title title_;
+        const Title m_title;
 
-        Container<Widget*> widgets_;
+        Container<Widget*> m_widgets;
 
         size_t state_;
 
-        plug::Vec2d hold_pos_;
-        plug::Vec2d prev_pos_;
+        plug::Vec2d m_hold_pos;
+        plug::Vec2d m_prev_pos;
 };
 
 #endif
