@@ -38,8 +38,8 @@ public:
 
   void onParentUpdate(const plug::LayoutBox &parent_box) override;
 
-  plug::LayoutBox &getLayoutBox() override { return *box_; }
-  const plug::LayoutBox &getLayoutBox() const override { return *box_; }
+  plug::LayoutBox &getLayoutBox() override { return *m_box; }
+  const plug::LayoutBox &getLayoutBox() const override { return *m_box; }
   void setLayoutBox(const plug::LayoutBox &box) override;
 
 protected:
@@ -49,7 +49,7 @@ protected:
               const plug::Vec2d &position) const override;
 
 private:
-  plug::LayoutBox *box_;
+  plug::LayoutBox *m_box;
 };
 
 #endif

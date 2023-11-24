@@ -1,17 +1,17 @@
 #include "Widget.h"
 
-Widget::Widget(const plug::LayoutBox& box) : box_(box.clone()) {}
+Widget::Widget(const plug::LayoutBox& box) : m_box(box.clone()) {}
 
-Widget::Widget(const Widget& widget) : box_(widget.getLayoutBox().clone()) {}
+Widget::Widget(const Widget& widget) : m_box(widget.getLayoutBox().clone()) {}
 
 Widget& Widget::operator=(const Widget& widget)
 {
-  delete box_;
-  box_ = widget.box_->clone();
+  delete m_box;
+  m_box = widget.m_box->clone();
   return *this;
 }
 
-Widget::~Widget() { delete box_; }
+Widget::~Widget() { delete m_box; }
 
 void Widget::draw(plug::TransformStack& stack, plug::RenderTarget& target)
 {
@@ -75,19 +75,19 @@ void Widget::onEvent(const plug::Event& event, plug::EHC& context)
 
 void Widget::onParentUpdate(const plug::LayoutBox& parent_box)
 {
-  box_->onParentUpdate(parent_box);
+  m_box->onParentUpdate(parent_box);
 }
 
 void Widget::setLayoutBox(const plug::LayoutBox& box)
 {
-  delete box_;
-  box_ = box.clone();
+  delete m_box;
+  m_box = box.clone();
 }
 
 plug::Vec2d Widget::getCorner(Corner corner, const plug::TransformStack& stack) const
 {
   plug::Vec2d direction((corner & 1) ? 0.5 : -0.5, (corner & 2) ? -0.5 : 0.5);
-  plug::Vec2d corner_pos = box_->getPosition() + box_->getSize() * direction;
+  plug::Vec2d corner_pos = m_box->getPosition() + m_box->getSize() * direction;
 
   return stack.top().apply(corner_pos);
 }

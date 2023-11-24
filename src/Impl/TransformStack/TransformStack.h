@@ -9,7 +9,7 @@ class TransformStack : public plug::TransformStack
 {
     public:
 
-    TransformStack():stack_(){}
+    TransformStack():m_stack(){}
 
     virtual ~TransformStack(){}
 
@@ -23,7 +23,7 @@ class TransformStack : public plug::TransformStack
 
     private:
     
-    Container<Transform> stack_;
+    Container<Transform> m_stack;
 
 };
 
