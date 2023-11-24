@@ -25,7 +25,7 @@ namespace plug {
  */
 class Widget {
 public:
-  virtual ~Widget() = default;
+  virtual ~Widget() {}
 
   /**
    * @brief Draw widget

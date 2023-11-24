@@ -1,7 +1,5 @@
 #include "Canvas.h"
 
-plug::Canvas::~Canvas(){}
-
 Canvas::Canvas(const size_t width, const size_t height):
               render_texture_(nullptr), 
               render_target_(nullptr),
@@ -88,11 +86,6 @@ void Canvas::draw(const plug::VertexArray &vertex_array)
 void Canvas::draw(const plug::VertexArray &vertex_array, const plug::Texture &texture)
 {
     render_target_->draw(vertex_array, texture);
-}
-
-unsigned int Canvas::getNativeHandle(void) const
-{
-    return 0;
 }
 
 plug::Vec2d Canvas::getSize(void) const

@@ -44,7 +44,7 @@ public:
    */
   virtual const char *getTexturePath(void) const = 0;
 
-  virtual ~PluginData() = default;
+  virtual ~PluginData() {}
 };
 
 /**
@@ -80,7 +80,7 @@ public:
    */
   virtual const PluginData *getPluginData(void) const = 0;
 
-  virtual ~Plugin() = default;
+  virtual ~Plugin() {}
 };
 
 } // namespace plug

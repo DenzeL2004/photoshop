@@ -25,6 +25,7 @@ namespace plug {
  * @brief Interface for canvas tool plugin
  */
 class Tool : public Plugin {
+public:
   /**
    * @brief Set active color palette
    *

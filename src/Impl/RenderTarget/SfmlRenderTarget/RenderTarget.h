@@ -1,7 +1,7 @@
 #ifndef __IMPL_SFML_RENDER_TARGET_H
 #define __IMPL_SFML_RENDER_TARGET_H
 
-#include "Impl/ Util/Sfml.h"
+#include "Impl/Util/Sfml.h"
 #include "Plug/Graphics.h"
 
 class SfmlRenderTarget : public plug::RenderTarget {

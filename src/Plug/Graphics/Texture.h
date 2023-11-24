@@ -23,28 +23,36 @@ namespace plug {
  *
  */
 struct Texture {
-  Texture(size_t a_width, size_t a_height, const Color *a_data)
-      : data(a_data), width(a_width), height(a_height) {}
-
   Texture(size_t a_width, size_t a_height)
       : data((Color *)new Color[a_width * a_height]), width(a_width),
         height(a_height) {}
 
+  Texture(size_t a_width, size_t a_height, const Color *a_data)
+      : Texture(a_width, a_height) {
+    for (size_t i = 0; i < width * height; ++i) {
+      data[i] = a_data[i];
+    }
+  }
+
+  Texture(const Texture &other)
+      : Texture(other.width, other.height, other.data) {}
+
+  Texture &operator=(const Texture &other) = delete;
+
+  ~Texture(void) { delete[] data; }
+
   /**
    * @brief Image data
-   *
    */
-  const Color *data;
+  Color *const data;
 
   /**
    * @brief Image width (in pixels)
-   *
    */
   const size_t width;
 
   /**
    * @brief Image height (in pixels)
-   *
    */
   const size_t height;
 };

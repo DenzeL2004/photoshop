@@ -20,7 +20,7 @@ using Dot = plug::Vec2d;
 using Vec2d = plug::Vec2d;
 
 using Transform = plug::Transform;
-static const double Eps = 1e-6;
 
+static const double Eps = 1e-6;
 
 #endif /* Math.h */

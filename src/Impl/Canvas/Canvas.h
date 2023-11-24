@@ -28,8 +28,6 @@ class Canvas : public plug::Canvas
 
         virtual void draw(const plug::VertexArray &vertex_array, const plug::Texture &texture);
 
-        virtual unsigned int getNativeHandle(void) const;
-
         virtual plug::Vec2d getSize(void) const;
 
         virtual void setSize(const plug::Vec2d &size);

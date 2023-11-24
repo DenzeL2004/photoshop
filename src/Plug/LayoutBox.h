@@ -68,7 +68,7 @@ public:
    */
   virtual LayoutBox *clone(void) const = 0;
 
-  virtual ~LayoutBox() = default;
+  virtual ~LayoutBox() {}
 };
 
 } // namespace plug

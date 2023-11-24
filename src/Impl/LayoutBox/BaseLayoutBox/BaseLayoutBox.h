@@ -24,10 +24,10 @@ class BaseLayoutBox : public plug::LayoutBox
         virtual plug::LayoutBox* clone() const;
 
     private:
-        plug::Vec2d pos_;
-        plug::Vec2d size_, parent_size_;  
+        plug::Vec2d m_pos;
+        plug::Vec2d m_size, m_parent_size;  
         
-        bool resizable_, save_locals_;
+        bool m_resizable, m_save_locals;
  
 };
 
