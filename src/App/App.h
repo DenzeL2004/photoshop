@@ -18,7 +18,8 @@
 #include "Impl/Widget/Frame/Frame.h"
 #include "Impl/Widget/Button/Button.h"
 
-#include "Impl/Canvas/SelectionMask.h"
+#include "Impl/Canvas/Canvas.h"
+#include "Impl/Widget/CanvasView/CanvasView.h"
 
 void useApp();
 

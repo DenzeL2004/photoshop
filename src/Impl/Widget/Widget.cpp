@@ -97,22 +97,12 @@ static inline bool isSmall(double a) { return fabs(a) < 1e-6; }
 bool Widget::covers(plug::TransformStack& stack,
                     const plug::Vec2d&    position) const
 {
-  if (isSmall(box_->getSize().x) || isSmall(box_->getSize().y))
-  {
-    return false;
-  }
+  Vec2d local_pos = stack.restore(position);
 
-  // clang-format off
-  plug::Vec2d tl = getCorner(TopLeft,     stack);
-  plug::Vec2d tr = getCorner(TopRight,    stack);
-  plug::Vec2d br = getCorner(BottomRight, stack);
-  plug::Vec2d bl = getCorner(BottomLeft,  stack);
+  Vec2d size = getLayoutBox().getSize() * stack.top().getScale();;
 
-  bool top_check      = plug::cross(tl - tr, position - tr) <= 0.0;
-  bool right_check    = plug::cross(tr - br, position - br) <= 0.0;
-  bool bottom_check   = plug::cross(br - bl, position - bl) <= 0.0;
-  bool left_check     = plug::cross(bl - tl, position - tl) <= 0.0;
-  // clang-format on
-
-  return top_check && right_check && bottom_check && left_check;
+  bool horizontal = (Eps < local_pos.x && size.x - Eps > local_pos.x);
+  bool vertical   = (Eps < local_pos.y && size.y - Eps > local_pos.y);
+  
+  return horizontal & vertical;
 }

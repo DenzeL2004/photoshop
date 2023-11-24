@@ -7,8 +7,7 @@ class SelectionMask : public plug::SelectionMask
 {
     public:
         SelectionMask(const size_t width, const size_t height);
-        SelectionMask(const size_t width, const size_t height, const SelectionMask &other);
-
+        SelectionMask(const size_t width, const size_t height, const plug::SelectionMask &other);
 
         virtual ~SelectionMask()
         {

@@ -16,7 +16,7 @@ SelectionMask::SelectionMask(const size_t width, const size_t height):
     }
 }
 
-SelectionMask::SelectionMask(const size_t width, const size_t height, const SelectionMask &other):  
+SelectionMask::SelectionMask(const size_t width, const size_t height, const plug::SelectionMask &other):  
                             SelectionMask(width, height)
 {
     size_t min_width  = std::min(width_, other.getWidth());

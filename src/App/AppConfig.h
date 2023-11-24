@@ -1,8 +1,8 @@
 #ifndef _APP_CONFIG_H_
 #define _APP_CONFIG_H_
 
-static const double App_width  = 1800.0; 
-static const double App_height = 1000.0;
+static const double App_width  = 1840.0; 
+static const double App_height = 1035.0;
 
 static const char* Debug_texture = "src/img/YellowReleased.png";
 
