@@ -156,6 +156,30 @@ void CanvasView::onTick(const plug::TickEvent &event, plug::EHC &context)
 
 void CanvasView::onParentUpdate(const plug::LayoutBox &parent_box)
 {
+
     Widget::onParentUpdate(parent_box);
+
+    plug::Vec2d size = getLayoutBox().getSize();
+    plug::Vec2d canvas_size = m_canvas.getSize();
+
+    bool resize_canvas = false;
+
+    if (m_canvas_pos.x + size.x >= canvas_size.x)
+    {
+        canvas_size.x =  m_canvas_pos.x + size.x;
+        resize_canvas = true;
+    }
+
+    if (m_canvas_pos.y + size.y >= canvas_size.y)
+    {
+        canvas_size.y =  m_canvas_pos.y + size.y;
+        resize_canvas = true;
+    }
+    
+    if (resize_canvas)
+    {
+        m_canvas.setSize(canvas_size);
+    }
+
     m_update_texture = true;
 }

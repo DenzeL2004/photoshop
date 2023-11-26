@@ -35,7 +35,6 @@ Canvas::Canvas(const size_t width, const size_t height):
     defineTexture();
 }
 
-
 Canvas::Canvas(char const* filename):
               m_render_texture(nullptr), 
               m_render_target(nullptr),
@@ -116,11 +115,13 @@ void Canvas::setSize(const plug::Vec2d &size)
         return;
     }
 
+    printf("%lg %lg\n", size.x, size.y);
     new_render_texture->create(size.x, size.y);
-
-    sf::Sprite sprite(m_render_texture->getTexture());
-    new_render_texture->draw(sprite);
-    new_render_texture->display();
+    new_render_texture->clear(sf::Color::White);
+    
+     sf::Sprite sprite(m_render_texture->getTexture());
+     new_render_texture->draw(sprite);
+     new_render_texture->display();
 
     SfmlRenderTarget *new_render_target = new SfmlRenderTarget(*new_render_texture);
 

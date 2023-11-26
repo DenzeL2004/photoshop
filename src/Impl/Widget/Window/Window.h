@@ -25,8 +25,6 @@ class Window : public Widget
 
     protected:
 
-        void getDrawFormat(plug::VertexArray &vertex_array, Transform &transform) const;       
-        
         const plug::Widget *m_parent;
 
         plug::Vec2d m_scale;

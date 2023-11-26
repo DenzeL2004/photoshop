@@ -8,8 +8,6 @@
 #include "Impl/RenderTarget/SfmlRenderTarget/RenderTarget.h"
 #include "Impl/Canvas/SelectionMask.h"
 
-
-
 class Canvas : public plug::Canvas
 {
 
@@ -51,6 +49,5 @@ class Canvas : public plug::Canvas
 
         plug::Texture *m_texture;
 };
-
 
 #endif

@@ -14,11 +14,13 @@ SelectionMask::SelectionMask(const size_t width, const size_t height):
     }
 }
 
+#include <cstdio>
+
 SelectionMask::SelectionMask(const size_t width, const size_t height, const plug::SelectionMask &init_mask):  
                             SelectionMask(width, height)
 {
     size_t min_width  = std::min(m_width, init_mask.getWidth());
-    size_t min_height = std::min(m_width, init_mask.getWidth());
+    size_t min_height = std::min(m_height, init_mask.getHeight());
 
     for (size_t it = 0; it < min_height; it++)
     {
