@@ -58,3 +58,28 @@ void copyToSFMLTexture(sf::Texture &sf_texture,
 
   sf_texture.loadFromImage(img);
 }
+
+plug::Texture getPlugTexture(const char *texture_path)
+{
+    sf::Image img;
+    if (!img.loadFromFile(texture_path))
+    {
+        fprintf(stderr, "open file(\'%s\') to coppy sf::Image is failed!\n");
+        return {0, 0, nullptr};
+    }
+
+    size_t width  = img.getSize().x;
+    size_t height = img.getSize().y;
+
+    plug::Color *data = new plug::Color[width * height];
+
+    for (size_t it = 0; it < height; it++)
+    {
+        for (size_t jt = 0; jt < width; jt++)
+        {
+            data[it * width + jt] = getPlugColor(img.getPixel(jt, it));
+        }
+    }
+    
+    return plug::Texture(width, height, data);
+}

@@ -52,4 +52,6 @@ private:
   plug::LayoutBox *m_box;
 };
 
+static const plug::Vec2d Default_scale = plug::Vec2d(1.0, 1.0);
+
 #endif

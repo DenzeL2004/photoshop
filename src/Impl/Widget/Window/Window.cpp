@@ -2,7 +2,7 @@
 
 void Window::draw(plug::TransformStack& stack, plug::RenderTarget& target)
 {
-    Transform trf(getLayoutBox().getPosition(), m_scale);
+    Transform trf(getLayoutBox().getPosition(), Default_scale);
     stack.enter(trf);
     
     Transform top_trf = stack.top();    

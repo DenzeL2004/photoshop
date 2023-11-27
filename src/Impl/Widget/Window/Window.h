@@ -9,11 +9,9 @@ class Window : public Widget
 
         Window( plug::Texture texture,
                 const plug::LayoutBox& box, 
-                const Widget *parent = nullptr, 
-                const plug::Vec2d &scale = Vec2d(1.0, 1.0)):
+                const Widget *parent = nullptr):
                 Widget(box),
                 m_parent(parent),
-                m_scale(scale),
                 m_texture(texture.width, texture.height, texture.data){}
                 
         Window(const Window &other) = delete;
@@ -26,8 +24,6 @@ class Window : public Widget
     protected:
 
         const plug::Widget *m_parent;
-
-        plug::Vec2d m_scale;
 
         plug::Texture m_texture;
         

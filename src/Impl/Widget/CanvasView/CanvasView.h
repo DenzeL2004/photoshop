@@ -11,11 +11,9 @@ class CanvasView: public Widget
     public:
 
         CanvasView( plug::Canvas &canvas,
-                    const plug::LayoutBox& box, 
-                    const plug::Vec2d &scale = Vec2d(1.0, 1.0)):
+                    const plug::LayoutBox& box):
                     Widget(box), 
-                    m_canvas(canvas), 
-                    m_scale(scale), 
+                    m_canvas(canvas),
                     m_texture(nullptr),
                     m_update_texture(true),
                     m_canvas_pos(0.0, 0.0){}
@@ -29,8 +27,14 @@ class CanvasView: public Widget
 
         virtual void onParentUpdate(const plug::LayoutBox &parent_box);
 
-        void setCanvasPos(const plug::Vec2d &pos) {m_canvas_pos = pos;}
+        void setCanvasPos(const plug::Vec2d &pos)
+        {
+            m_canvas_pos = pos;
+            m_update_texture = true;
+        }
+
         plug::Vec2d getCanvasPos(void) {return m_canvas_pos;}
+        plug::Vec2d getCanvasSize(void) {return m_canvas.getSize();}
 
     protected:
 

@@ -2,6 +2,7 @@
 #define _APP_H_
 
 #include "Plug/Math.h"
+#include "Impl/Util/Sfml.h"
 
 #include "Impl/RenderTarget/SfmlRenderTarget/RenderTarget.h"
 #include "Impl/Graphic/Graphic.h"
@@ -20,6 +21,8 @@
 
 #include "Impl/Canvas/Canvas.h"
 #include "Impl/Widget/CanvasView/CanvasView.h"
+
+#include "Impl/Widget/Scrollbar/Scrollbar.h"
 
 void useApp();
 

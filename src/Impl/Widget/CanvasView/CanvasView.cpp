@@ -13,7 +13,7 @@ void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
         m_update_texture = false;
     }
 
-    plug::Transform trf(getLayoutBox().getPosition(), m_scale);
+    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
     stack.enter(trf);
 
     plug::VertexArray vertex_array(plug::PrimitiveType::Quads, 4);
@@ -43,6 +43,9 @@ void CanvasView::updateTexture(void)
     size_t width  = static_cast<size_t>(getLayoutBox().getSize().x);
     size_t height = static_cast<size_t>(getLayoutBox().getSize().y);
  
+    m_canvas_pos.x = std::max(Eps, std::min(m_canvas.getSize().x - width  + Eps, m_canvas_pos.x));
+    m_canvas_pos.y = std::max(Eps, std::min(m_canvas.getSize().y - height + Eps, m_canvas_pos.y));
+
     plug::Texture canvas_texture = m_canvas.getTexture(); 
 
     size_t offset_x = static_cast<size_t>(m_canvas_pos.x);
@@ -66,7 +69,7 @@ void CanvasView::updateTexture(void)
 
 void CanvasView::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
+    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
     context.stack.enter(trf);
 
     
@@ -75,7 +78,7 @@ void CanvasView::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &conte
 
 void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
+    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
     context.stack.enter(trf);
 
     context.stopped = covers(context.stack, event.pos);
@@ -108,7 +111,7 @@ void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC 
 
 void CanvasView::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
+    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
     context.stack.enter(trf);
 
     
@@ -120,7 +123,7 @@ void CanvasView::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EH
 
 void CanvasView::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
+    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
     context.stack.enter(trf);
 
     
@@ -134,7 +137,7 @@ void CanvasView::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug
 
 void CanvasView::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
+    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
     context.stack.enter(trf);
 
     context.stopped = false;
@@ -146,7 +149,7 @@ void CanvasView::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, pl
 
 void CanvasView::onTick(const plug::TickEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), m_scale);    
+    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
     context.stack.enter(trf);
 
     context.stopped = false;
@@ -156,7 +159,6 @@ void CanvasView::onTick(const plug::TickEvent &event, plug::EHC &context)
 
 void CanvasView::onParentUpdate(const plug::LayoutBox &parent_box)
 {
-
     Widget::onParentUpdate(parent_box);
 
     plug::Vec2d size = getLayoutBox().getSize();
@@ -166,13 +168,13 @@ void CanvasView::onParentUpdate(const plug::LayoutBox &parent_box)
 
     if (m_canvas_pos.x + size.x >= canvas_size.x)
     {
-        canvas_size.x =  m_canvas_pos.x + size.x;
+        canvas_size.x =  m_canvas_pos.x + size.x * 1.5;
         resize_canvas = true;
     }
 
     if (m_canvas_pos.y + size.y >= canvas_size.y)
     {
-        canvas_size.y =  m_canvas_pos.y + size.y;
+        canvas_size.y =  m_canvas_pos.y + size.y * 1.5;
         resize_canvas = true;
     }
     

@@ -1,197 +1,220 @@
 #include "Scrollbar.h"
 
-// void Scrollbar::draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
-// {
-//     Transform trf(getLayoutBox().getPosition(), scale_);
+#include <cstdio>
 
-//     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
-//     Transform last_trf = stack_transform.getBack();    
+void Scrollbar::draw(plug::TransformStack &stack, plug::RenderTarget &target)
+{
+    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
+    stack.enter(trf);
 
-//     Vec2d size = last_trf.getScale() * getLayoutBox().getSize();
-    
-//     canvas_->correctCanvasRealPos(size);
-    
-//     top_button_->draw(target, stack_transform);
-//     bottom_button_->draw(target, stack_transform);
-//     center_button_->draw(target, stack_transform);
+    if (m_update_center_button)
+    {
+        resizeCenter();
+        moveCenter();
 
-//     stack_transform.popBack();
+        m_update_center_button = false;
+    }
 
-//     return;
-// }
+    m_top_button->draw(stack, target);
+    m_bottom_button->draw(stack, target);
+    m_center_button->draw(stack, target);
 
-// bool Scrollbar::onMouseMoved(const Vec2d& pos, Container<Transform> &stack_transform)
-// {
-//     Transform trf(getLayoutBox().getPosition(), scale_);
+    stack.leave();
+}
 
-//     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
-//     Transform last_trf = stack_transform.getBack();    
+void Scrollbar::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
+{
+    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
+    context.stack.enter(trf);
 
-//     top_button_->onMouseMoved(pos, stack_transform);
-//     bottom_button_->onMouseMoved(pos, stack_transform);
-//     center_button_->onMouseMoved(pos, stack_transform);
+    context.stopped = false;
 
-//     Dot local_pos = last_trf.restore(pos);
-    
-//     if (center_button_->prev_state_ == Button::ButtonState::PRESSED || 
-//         center_button_->state_ == Button::ButtonState::PRESSED)
-//     {
-//         Dot real_pos = canvas_->getRealPos();
-//         Dot center_button_pos = center_button_->getLayoutBox().getPosition();
-        
-//         Vec2d scrollbar_size = getLayoutBox().getSize() - top_button_->getLayoutBox().getSize() - bottom_button_->getLayoutBox().getSize();
+    plug::Vec2d local_pos = context.stack.restore(event.pos);
 
-//         if (type_ == Scrollbar::Type::HORIZONTAL)
-//         {
-//             canvas_->setRealPos(Dot(prev_canvas_real_pos_.x + (local_pos.x - hold_pos_.x) / scrollbar_size.x * canvas_->getCanvasSize().x, real_pos.y));
-//             center_button_->getLayoutBox().setPosition(Dot(local_pos.x - hold_pos_.x, center_button_pos.y));
-//         }
+    if (m_center_button->m_prev_state == Button::ButtonState::PRESSED ||
+        m_center_button->m_state == Button::ButtonState::PRESSED)
+    {
+        plug::Vec2d canvas_pos = m_canvas_view.getCanvasPos();
 
-//         if (type_ == Scrollbar::Type::VERTICAL)
-//         {
-//             canvas_->setRealPos(Dot(real_pos.x, prev_canvas_real_pos_.y + (local_pos.y - hold_pos_.y) / scrollbar_size.y * canvas_->getCanvasSize().y));
-//             center_button_->getLayoutBox().setPosition(Dot(center_button_pos.x, local_pos.y - hold_pos_.y));
-//         }
+        plug::Vec2d scrollbar_size = getLayoutBox().getSize() - m_top_button->getLayoutBox().getSize() - m_bottom_button->getLayoutBox().getSize();
 
-//         Vec2d size = last_trf.getScale() * getLayoutBox().getSize();
+        plug::Vec2d offset = local_pos - m_hold_pos;
 
-//         canvas_->correctCanvasRealPos(size);
-//         moveCenter();
-//     }
-    
-//     stack_transform.popBack();
+        if (m_type == Scrollbar::Type::HORIZONTAL)
+        {
+            m_canvas_view.setCanvasPos(plug::Vec2d(m_prev_canvas_pos.x + offset.x * m_canvas_view.getCanvasSize().x / scrollbar_size.x, canvas_pos.y));
+            m_update_center_button = true;
+        }
 
-//     return true;
-// }
+        if (m_type == Scrollbar::Type::VERTICAL)
+        {
+            m_canvas_view.setCanvasPos(plug::Vec2d(canvas_pos.x, m_prev_canvas_pos.y + offset.y * m_canvas_view.getCanvasSize().y / scrollbar_size.y));
+            m_update_center_button = true;
+        }
+    }
 
-// void Scrollbar::moveCenter()
-// {
-//     Vec2d canvas_size = canvas_->getCanvasSize();
-//     Vec2d canvas_pos = canvas_->getRealPos();
+    if (!context.stopped)
+    {
+        m_top_button->onEvent(event, context);
+        m_bottom_button->onEvent(event, context);
+        m_center_button->onEvent(event, context);
+    }
 
-//     double cf_x = canvas_pos.x / canvas_size.x;
-//     double cf_y = canvas_pos.y / canvas_size.y;
-    
-//     Vec2d center_button_pos = center_button_->getLayoutBox().getPosition();
+    context.stack.leave();
+}
 
-//     Vec2d scrollbar_size = getLayoutBox().getSize() - top_button_->getLayoutBox().getSize() - bottom_button_->getLayoutBox().getSize();
+void Scrollbar::moveCenter(void)
+{
+    plug::Vec2d canvas_size = m_canvas_view.getCanvasSize();
+    plug::Vec2d canvas_pos = m_canvas_view.getCanvasPos();
 
-//     if (type_ == Scrollbar::Type::HORIZONTAL)
-//         center_button_pos = Vec2d(cf_x * scrollbar_size.x + top_button_->getLayoutBox().getSize().x, center_button_pos.y); 
+    double cf_x = canvas_pos.x / canvas_size.x;
+    double cf_y = canvas_pos.y / canvas_size.y;
 
-//     if (type_ == Scrollbar::Type::VERTICAL)
-//         center_button_pos = Vec2d(center_button_pos.x, cf_y * scrollbar_size.y + top_button_->getLayoutBox().getSize().y); 
-    
-//     center_button_->getLayoutBox().setPosition(center_button_pos);
-// }
+    plug::Vec2d center_button_pos = m_center_button->getLayoutBox().getPosition();
 
-// void Scrollbar::resizeCenter()
-// {
-//     Vec2d canvas_size = canvas_->getCanvasSize();
-    
-//     double cf_x = std::min(1.0, getLayoutBox().getSize().x / canvas_size.x);
-//     double cf_y = std::min(1.0, getLayoutBox().getSize().y / canvas_size.y);
-    
-//     Vec2d center_button_size = center_button_->getLayoutBox().getSize();
+    plug::Vec2d scrollbar_size = getLayoutBox().getSize() - m_top_button->getLayoutBox().getSize() - m_bottom_button->getLayoutBox().getSize();
 
-//     Vec2d scrollbar_size = getLayoutBox().getSize() - top_button_->getLayoutBox().getSize() - bottom_button_->getLayoutBox().getSize();
+    if (m_type == Scrollbar::Type::HORIZONTAL)
+        center_button_pos = plug::Vec2d(cf_x * scrollbar_size.x + m_top_button->getLayoutBox().getSize().x, center_button_pos.y);
 
-//     if (type_ == Scrollbar::Type::HORIZONTAL)
-//         center_button_size = Vec2d(cf_x * scrollbar_size.x, center_button_size.y); 
+    if (m_type == Scrollbar::Type::VERTICAL)
+        center_button_pos = plug::Vec2d(center_button_pos.x, cf_y * scrollbar_size.y + m_top_button->getLayoutBox().getSize().y);
 
-//     if (type_ == Scrollbar::Type::VERTICAL)
-//         center_button_size = Vec2d(center_button_size.x, cf_y * scrollbar_size.y); 
-    
-//     center_button_->getLayoutBox().setSize(center_button_size);
-// }
+    m_center_button->getLayoutBox().setPosition(center_button_pos);
+}
 
-// bool Scrollbar::onMousePressed(const Vec2d& pos, const MouseKey key, Container<Transform> &stack_transform)
-// {
-//     LayoutBox *layout_box =  &getLayoutBox();
+void Scrollbar::resizeCenter(void)
+{
+    plug::Vec2d canvas_size = m_canvas_view.getCanvasSize();
 
-//     Transform trf(layout_box->getPosition(), scale_);
+    double cf_x = std::min(1.0, getLayoutBox().getSize().x / canvas_size.x);
+    double cf_y = std::min(1.0, getLayoutBox().getSize().y / canvas_size.y);
 
-//     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
-//     Transform last_trf = stack_transform.getBack();    
+    plug::Vec2d center_button_size = m_center_button->getLayoutBox().getSize();
 
-//     Dot local_pos = last_trf.restore(pos);
- 
-//     prev_canvas_real_pos_ = canvas_->getRealPos();
+    plug::Vec2d scrollbar_size = getLayoutBox().getSize() - m_top_button->getLayoutBox().getSize() - m_bottom_button->getLayoutBox().getSize();
 
-//     bool flag = checkIn(local_pos);
+    if (m_type == Scrollbar::Type::HORIZONTAL)
+        center_button_size = plug::Vec2d(cf_x * scrollbar_size.x, center_button_size.y);
 
-//     if (flag)
-//     {
-//         flag = false;
-//         flag |= center_button_->onMousePressed(pos, key, stack_transform);
-//         flag |= top_button_->onMousePressed(pos, key, stack_transform);
-//         flag |= bottom_button_->onMousePressed(pos, key, stack_transform);
+    if (m_type == Scrollbar::Type::VERTICAL)
+        center_button_size = plug::Vec2d(center_button_size.x, cf_y * scrollbar_size.y);
 
-//         if (flag)
-//             hold_pos_ = local_pos;
+    m_center_button->getLayoutBox().setSize(center_button_size);
+}
 
-//         if (!flag)
-//         {
-//             Dot offset = local_pos - center_button_->getLayoutBox().getPosition();
+void Scrollbar::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &context)
+{
+    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
+    context.stack.enter(trf);
 
-//             if (type_ == Scrollbar::Type::HORIZONTAL)
-//                 offset.y = 0.0;
-//             if (type_ == Scrollbar::Type::VERTICAL)
-//                 offset.x = 0.0;
+    m_prev_canvas_pos = m_canvas_view.getCanvasPos();
 
-//             if (offset.x < -Eps || offset.y < -Eps)
-//                 (*top_button_->action_)();
-            
-//             if (offset.x > Eps || offset.y > Eps)
-//                 (*bottom_button_->action_)();
+    context.stopped = covers(context.stack, event.pos);
 
-//             flag = true;
-//         }
+    if (context.stopped)
+    {
+        context.stopped = false;
+        m_center_button->onEvent(event, context);
+        m_top_button->onEvent(event, context);
+        m_bottom_button->onEvent(event, context);
 
-//         Vec2d size = last_trf.getScale() * getLayoutBox().getSize();
-//         canvas_->correctCanvasRealPos(size);
-//     }
-    
-//     moveCenter();
+        plug::Vec2d local_pos = context.stack.restore(event.pos);
 
-//     stack_transform.popBack();
+        m_hold_pos = local_pos;
 
-//     return flag;
-// }
+        if (!context.stopped)
+        {
+            plug::Vec2d offset = local_pos - m_center_button->getLayoutBox().getPosition();
 
-// bool Scrollbar::onMouseReleased(const Vec2d& pos, const MouseKey key, Container<Transform> &stack_transform)
-// {
-//     Transform trf(getLayoutBox().getPosition(), scale_);
-//     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
+            if (m_type == Scrollbar::Type::HORIZONTAL)
+                offset.y = 0.0;
+            if (m_type == Scrollbar::Type::VERTICAL)
+                offset.x = 0.0;
 
-//     hold_pos_ = Dot(0.0, 0.0);
+            if (offset.x < -Eps || offset.y < -Eps)
+                m_top_button->doAction();
 
-//     top_button_->onMouseReleased(pos, key, stack_transform);
-//     bottom_button_->onMouseReleased(pos, key, stack_transform);
-//     center_button_->onMouseReleased(pos, key, stack_transform);
+            if (offset.x > Eps || offset.y > Eps)
+                m_bottom_button->doAction();
 
-//     stack_transform.popBack();
+            context.stopped = true;
+            m_update_center_button = true;
+        }
+    }
 
-//     return true;
-// }
+    context.stack.leave();
+}
 
-// void Scrollbar::onUpdate (const LayoutBox &parent_layout)
-// {
-//     LayoutBox *layout_box = &getLayoutBox();
-//     Vec2d size = layout_box->getSize();
+void Scrollbar::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &context)
+{
+    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
+    context.stack.enter(trf);
 
-//     layout_box->onParentUpdate(parent_layout);
+    m_hold_pos = plug::Vec2d(0.0, 0.0);
 
-//     if (type_ == Scrollbar::Type::VERTICAL)
-//         layout_box->setSize(Vec2d(size.x, layout_box->getSize().y));
+    m_top_button->onEvent(event, context);
+    m_bottom_button->onEvent(event, context);
+    m_center_button->onEvent(event, context);
 
-//     if (type_ == Scrollbar::Type::HORIZONTAL)
-//         layout_box->setSize(Vec2d(layout_box->getSize().x, size.y));
-    
-//     bottom_button_->onUpdate(*layout_box);
-//     center_button_->onUpdate(*layout_box);
-//     top_button_->onUpdate(*layout_box);
+    context.stopped = false;
 
-//     moveCenter();
-//     resizeCenter();
-// }
+    context.stack.leave();
+}
+
+void Scrollbar::onParentUpdate(const plug::LayoutBox &parent_box)
+{
+    plug::LayoutBox &box = getLayoutBox();
+    plug::Vec2d size = box.getSize();
+
+    box.onParentUpdate(parent_box);
+
+    if (m_type == Scrollbar::Type::VERTICAL)
+        box.setSize(plug::Vec2d(size.x, box.getSize().y));
+
+    if (m_type == Scrollbar::Type::HORIZONTAL)
+        box.setSize(plug::Vec2d(box.getSize().x, size.y));
+
+    m_top_button->onParentUpdate(box);
+    m_bottom_button->onParentUpdate(box);
+    m_center_button->onParentUpdate(box);
+
+    m_update_center_button = true;
+}
+
+void Scrollbar::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
+{
+    if (m_type == Scrollbar::Type::VERTICAL)
+    {
+        if (event.key_id == plug::KeyCode::Up)
+        {
+            m_top_button->doAction();
+            m_update_center_button = true;
+        }
+
+        if (event.key_id == plug::KeyCode::Down)
+        {
+            m_bottom_button->doAction();
+            m_update_center_button = true;
+        }
+    }
+
+    if (m_type == Scrollbar::Type::HORIZONTAL)
+    {
+        if (event.key_id == plug::KeyCode::Left)
+        {
+            m_top_button->doAction();
+            m_update_center_button = true;
+        }
+
+        if (event.key_id == plug::KeyCode::Right)
+        {
+            m_bottom_button->doAction();
+            m_update_center_button = true;
+        }
+    }
+}
+
+void Scrollbar::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, plug::EHC &context)
+{}

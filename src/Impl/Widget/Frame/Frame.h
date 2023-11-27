@@ -60,9 +60,8 @@ class Frame: public Window
         Frame(  plug::Texture texture,
                 const Title &title,
                 const plug::LayoutBox& box, 
-                const Widget *parent = nullptr, 
-                const plug::Vec2d &scale = Vec2d(1.0, 1.0)):
-                Window(texture, box, parent, scale),
+                const Widget *parent = nullptr):
+                Window(texture, box, parent),
                 m_title(title),
                 m_widgets(),
                 m_hold_pos(0.0, 0.0), m_prev_pos(0.0 ,0.0), state_(DEFAULT){}
@@ -85,7 +84,7 @@ class Frame: public Window
         virtual void onTick             (const plug::TickEvent &event, plug::EHC &context);
 
         virtual void onMouseMove        (const plug::MouseMoveEvent &event, plug::EHC &context);
-        virtual void onMousePressed     (const plug::MousePressedEvent &event,plug::EHC &context);
+        virtual void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &context);
         virtual void onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &context);
 
         virtual void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &context);

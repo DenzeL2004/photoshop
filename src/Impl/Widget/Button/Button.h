@@ -34,35 +34,31 @@ class Button : public Widget
         Button( plug::Texture texture_released, plug::Texture texture_covered,
                 plug::Texture texture_pressed,  plug::Texture texture_disabled,
                 const plug::LayoutBox& box,
-                const Action *action, 
-                const Widget *parent = nullptr,
-                const plug::Vec2d &scale = Vec2d(1.0, 1.0)):
+                const Action *action):
                 Widget(box),
                 m_texture_released(texture_released.width, texture_released.height, texture_released.data),
                 m_texture_covered(texture_covered.width, texture_covered.height, texture_covered.data),
                 m_texture_pressed(texture_pressed.width, texture_pressed.height, texture_pressed.data),
                 m_texture_disabled(texture_disabled.width, texture_disabled.height, texture_disabled.data),
-                action_(action),
-                state_(RELEASED), prev_state_(RELEASED),
-                m_parent(parent),             
-                m_scale(scale),
+                m_action(action),
+                m_state(RELEASED), m_prev_state(RELEASED),         
                 m_covering_time(0){}    
 
 
         virtual ~Button()
         {
-            delete action_;
+            delete m_action;
         }
 
         Button(const Button &other) = delete;
         Button& operator= (const Button &other) = delete;
 
-        Action const *action_;
-
-        ButtonState state_;
-        ButtonState prev_state_;
+        ButtonState m_state;
+        ButtonState m_prev_state;
 
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
+
+        void doAction(void);
 
     protected:
 
@@ -72,18 +68,14 @@ class Button : public Widget
         virtual void onMousePressed     (const plug::MousePressedEvent &event,plug::EHC &context);
         virtual void onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &context);
 
-        void getDrawFormat(const plug::Texture &texture, plug::VertexArray &vertex_array, Transform &transform) const;
-
         const plug::Texture* defineTexture() const;
 
         plug::Texture m_texture_released, m_texture_covered, 
                       m_texture_pressed, m_texture_disabled;
 
-        const plug::Widget *m_parent;
-
-        plug::Vec2d m_scale;
-    
         double m_covering_time;
+
+        Action const *m_action;
 };
 
 
@@ -106,7 +98,7 @@ class Button : public Widget
 //             for (size_t it = 0; it < size; it++)
 //                 delete buttons_[it];
 
-//             delete action_;
+//             delete m_action;
 //         }
 
 
@@ -128,7 +120,7 @@ class Button : public Widget
 //         void addButton                  (Button *button);
 
 
-//         const Action *action_;
+//         const Action *m_action;
 //         Container<Button*> buttons_;
         
 //     protected:
@@ -166,7 +158,7 @@ class Click : public Action
 //         {
 //             size_t size = buttons_->getSize();
 //             for (size_t it = 0; it < size; it++)
-//                 (*buttons_)[it]->state_ = (*buttons_)[it]->prev_state_;
+//                 (*buttons_)[it]->m_state = (*buttons_)[it]->m_prev_state;
 //         }
 
 //     private:

@@ -3,16 +3,7 @@
 #include <algorithm>
 
 SelectionMask::SelectionMask(const size_t width, const size_t height):
-                            m_width(width), m_height(height), m_data(new bool[width * height])
-{
-    for (size_t it = 0; it < m_height; it++)
-    {
-        for (size_t jt = 0; jt < m_width; jt++)
-        {
-            m_data[it * m_width + jt] = false;
-        }
-    }
-}
+                            m_width(width), m_height(height), m_data(new bool[width * height]){}
 
 #include <cstdio>
 
