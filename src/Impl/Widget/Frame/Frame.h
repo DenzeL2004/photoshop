@@ -6,8 +6,6 @@
 #include "Impl/Widget/Window/Window.h"
 #include "Container/Container.h"
 
-//=================================================================================================
-
 struct Title
 {
     Title():
@@ -64,7 +62,7 @@ class Frame: public Window
                 Window(texture, box, parent),
                 m_title(title),
                 m_widgets(),
-                m_hold_pos(0.0, 0.0), m_prev_pos(0.0 ,0.0), state_(DEFAULT){}
+                m_hold_pos(0.0, 0.0), m_prev_pos(0.0 ,0.0), m_state(DEFAULT){}
                 
         virtual ~Frame()
         {
@@ -79,6 +77,8 @@ class Frame: public Window
 
         void addWidget(Widget* widget);
 
+        void onEvent(const plug::Event &event, plug::EHC &context);
+
     protected:
 
         virtual void onTick             (const plug::TickEvent &event, plug::EHC &context);
@@ -91,7 +91,8 @@ class Frame: public Window
         virtual void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &context);
 
     private:
-        void clickOnBorder();
+
+        void clickOnBorder(void);
 
         void resizeFrame    (const plug::Vec2d &new_coord);
         void moveFrame      (const plug::Vec2d &new_coord);
@@ -100,7 +101,7 @@ class Frame: public Window
 
         Container<Widget*> m_widgets;
 
-        size_t state_;
+        size_t m_state;
 
         plug::Vec2d m_hold_pos;
         plug::Vec2d m_prev_pos;
