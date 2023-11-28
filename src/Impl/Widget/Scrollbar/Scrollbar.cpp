@@ -116,10 +116,10 @@ void Scrollbar::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &
     if (context.stopped)
     {
         context.stopped = false;
-        m_center_button->onEvent(event, context);
         m_top_button->onEvent(event, context);
         m_bottom_button->onEvent(event, context);
-
+        m_center_button->onEvent(event, context);
+        
         plug::Vec2d local_pos = context.stack.restore(event.pos);
 
         m_hold_pos = local_pos;
