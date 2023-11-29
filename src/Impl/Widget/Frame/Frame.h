@@ -8,26 +8,43 @@
 
 struct Title
 {
-    Title():
-            pos(plug::Vec2d(0.0, 0.0)), 
-            msg(""), 
-            width(0),
-            color(0, 0, 0, 255){}
 
     Title(  const plug::Vec2d &pos_, const char *msg_, const double width_, const plug::Color &color_):
             pos(pos_),
-            msg(msg_), 
+            msg(new char[strlen(msg_)]), 
             width(width_),
-            color(color_){}
+            color(color_)
+    {
+        size_t size = strlen(msg_);
+        for (size_t it = 0; it < size; it++)
+        {
+            msg[it] = msg_[it];
+        }
+    }
 
-    ~Title(){} 
+    ~Title()
+    {
+       delete[] msg;
+    } 
 
-    Title(const Title &other) = default;
-    Title &operator= (const Title &other) = default;
+    Title(  const Title &other):
+            pos(other.pos),
+            msg(new char[strlen(other.msg)]), 
+            width(other.width),
+            color(other.color)
+    {
+        size_t size = strlen(other.msg);
+        for (size_t it = 0; it < size; it++)
+        {
+            msg[it] = other.msg[it];
+        }
+    }
+
+    Title &operator= (const Title &other) = delete;
 
     plug::Vec2d pos;
 
-    const char* msg;
+    char* const msg;
     double width;
 
     const plug::Color color;

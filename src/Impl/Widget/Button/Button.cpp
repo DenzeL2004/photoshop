@@ -119,7 +119,7 @@ void Button::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &c
     m_state = Button::ButtonState::RELEASED;
     m_prev_state = Button::ButtonState::RELEASED;
     
-    context.stopped = true;
+    context.stopped = false;
 }
 
 void Button::onTick(const plug::TickEvent &event, plug::EHC &context)

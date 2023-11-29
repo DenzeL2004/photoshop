@@ -277,32 +277,12 @@ void useApp()
                                         new Click(close_window_flag));
  
 
-    Frame *canvas_frame = new Frame(getPlugTexture("src/img/frame2.png"),
-                 Title(Vec2d(5, 20), "canvas", 2, plug::Color(0, 0, 0, 255)),
-                 BaseLayoutBox(Vec2d(0, 0), Vec2d(510, 480), frame.getLayoutBox().getSize(), true, true), &base_widget);
-
-    Canvas *canvas = new Canvas("src/img/pika.png");
-    CanvasView *canvas_view = new CanvasView(*canvas, BaseLayoutBox(Vec2d(5, 80), Vec2d(470, 395), canvas_frame->getLayoutBox().getSize(), true, true));
-    canvas_frame->addWidget(canvas_view);
-
-    Scrollbar *scroll = new Scrollbar(  *canvas_view, Scrollbar::Type::VERTICAL, 
-                                        BaseLayoutBox(Vec2d(500 - 20, 80), Vec2d(25, 395), canvas_frame->getLayoutBox().getSize(), true, true),
-                                       "src/img/arrowUpReleased.png", "src/img/arrowUpPressed.png",
-                                        "src/img/arrowDownReleased.png", "src/img/arrowDownPressed.png",
-                                        "src/img/scroll.png", "src/img/scroll2.png");
-
-    Scrollbar *scroll2 = new Scrollbar(  *canvas_view, Scrollbar::Type::HORIZONTAL, 
-                                        BaseLayoutBox(Vec2d(5, 50), Vec2d(470, 25), canvas_frame->getLayoutBox().getSize(), true, true),
-                                       "src/img/arrowLeftReleased.png", "src/img/arrowLeftPressed.png",
-                                        "src/img/arrowRightReleased.png", "src/img/arrowRightPressed.png",
-                                        "src/img/scroll.png", "src/img/scroll2.png");
-
-    canvas_frame->addWidget(scroll);
-    canvas_frame->addWidget(scroll2);
-
+    CanvasManager *manager = new CanvasManager(BaseLayoutBox(Vec2d(5, 50), Vec2d(App_width - 10, App_height - 55), base.getSize(), true, true));
+    manager->createCanvas(nullptr);
+    manager->createCanvas("src/img/pika.png");
 
     frame.addWidget(close_button);
-    frame.addWidget(canvas_frame);
+    frame.addWidget(manager);
 
     TransformStack stack;
     plug::EHC context = {(plug::TransformStack&)stack, false, false};

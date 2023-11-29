@@ -1,9 +1,15 @@
 #ifndef _CANVAS_MANAGER_H_
 #define _CANVAS_MANAGER_H_
 
+#include "Container/Container.h"
+
 #include "Impl/Widget/Widget.h"
 #include "Impl/Widget/CanvasView/CanvasView.h"
-#include "Container/Container.h"
+#include "Impl/Widget/Frame/Frame.h"
+#include "Impl/Widget/Scrollbar/Scrollbar.h"
+#include "Impl/Widget/Button/Button.h"
+
+#include "App/AppConfig.h"
 
 class CanvasManager : public Widget
 {
@@ -31,7 +37,7 @@ class CanvasManager : public Widget
 
         virtual void onParentUpdate(const plug::LayoutBox &parent_box);
 
-        //void createCanvas(ToolPalette *tool_palette, FilterPalette *filter_palette);
+        void createCanvas(const char *file_path = nullptr);
 
         Canvas* getActiveCanvas(void);
 

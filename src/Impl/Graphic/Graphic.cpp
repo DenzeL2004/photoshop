@@ -49,7 +49,6 @@ void drawRectangle(plug::RenderTarget &target,
     target.draw(rectangle);
 }
 
-
 void writeText(plug::RenderTarget &target, const plug::Vec2d &pos, 
                const char *text, const double text_size,
                const plug::Color color)
@@ -109,6 +108,10 @@ static void getSymbolColorData(plug::Color *data, const char symbol, const plug:
 
         case '/':
             mask = plug::Slash;
+            break;
+        
+        case ' ':
+            mask = plug::Space;
             break;
         
         default:

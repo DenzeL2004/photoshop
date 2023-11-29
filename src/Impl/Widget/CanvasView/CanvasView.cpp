@@ -3,7 +3,6 @@
 
 #include <cstdio>
 
-//=================================================================================================
 
 void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 {
@@ -38,6 +37,23 @@ void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
     stack.leave();
 }
 
+void CanvasView::onEvent(const plug::Event &event, plug::EHC &context)
+{
+    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
+    context.stack.enter(trf);
+    
+    context.stopped = false;
+
+    if (event.getType() == plug::Focuse)
+    {
+        CanvasView::onFocuse((const plug::FocuseEvent&)event, context);
+    }
+
+    Widget::onEvent(event, context);
+
+    context.stack.leave();
+}
+
 void CanvasView::updateTexture(void)
 {
     size_t width  = static_cast<size_t>(getLayoutBox().getSize().x);
@@ -69,17 +85,16 @@ void CanvasView::updateTexture(void)
 
 void CanvasView::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
-    context.stack.enter(trf);
-
-    
-    context.stack.leave();
+  
 }
 
 void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
-    context.stack.enter(trf);
+    if (!m_focuse)
+    {
+        context.stopped = false;
+        return;
+    }
 
     context.stopped = covers(context.stack, event.pos);
 
@@ -103,59 +118,33 @@ void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC 
 
         m_update_texture = true;
     }
-
-    context.stack.leave();
+    
 }
-
-//================================================================================
 
 void CanvasView::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
-    context.stack.enter(trf);
-
-    
-
-    context.stack.leave();
+    context.stopped = false;
 }
-
-//================================================================================
 
 void CanvasView::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
-    context.stack.enter(trf);
-
-    
-
     context.stopped = false;
-
-    context.stack.leave();
 }
-
-//================================================================================
 
 void CanvasView::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
-    context.stack.enter(trf);
-
     context.stopped = false;
-
-    context.stack.leave();
 }
-
-//================================================================================
 
 void CanvasView::onTick(const plug::TickEvent &event, plug::EHC &context)
 {
-    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
-    context.stack.enter(trf);
-
     context.stopped = false;
-
-    context.stack.leave();
 } 
+
+void CanvasView::onFocuse(const plug::FocuseEvent &event, plug::EHC &context)
+{
+    m_focuse = event.focuse_flag;
+}
 
 void CanvasView::onParentUpdate(const plug::LayoutBox &parent_box)
 {

@@ -134,16 +134,16 @@ class Button : public Widget
 class Click : public Action
 {
     public:
-        Click(bool &ptr): flag_(ptr){};
+        Click(bool &ptr): m_flag(ptr){};
         ~Click(){};
 
         void operator() () const
         {
-            flag_ = true;
+            m_flag = true;
         }
 
     private:
-        bool &flag_; 
+        bool &m_flag; 
 };
 
 //================================================================================

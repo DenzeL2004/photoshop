@@ -5,6 +5,24 @@
 #include "Impl/Canvas/Canvas.h"
 #include "Impl/Graphic/Graphic.h"
 
+#include "Plug/Event/Event.h"
+
+
+namespace plug
+{
+
+const size_t Focuse = 25;
+
+struct FocuseEvent : public plug::Event 
+{
+    FocuseEvent(const bool flag)
+      : Event(Focuse), focuse_flag(flag){}
+      
+    bool focuse_flag;
+};
+
+}
+
 
 class CanvasView: public Widget
 {
@@ -16,6 +34,7 @@ class CanvasView: public Widget
                     m_canvas(canvas),
                     m_texture(nullptr),
                     m_update_texture(true),
+                    m_focuse(false),
                     m_canvas_pos(0.0, 0.0){}
                 
         virtual ~CanvasView()
@@ -26,6 +45,8 @@ class CanvasView: public Widget
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
 
         virtual void onParentUpdate(const plug::LayoutBox &parent_box);
+
+        virtual void onEvent(const plug::Event &event, plug::EHC &context);
 
         void setCanvasPos(const plug::Vec2d &pos)
         {
@@ -46,6 +67,8 @@ class CanvasView: public Widget
 
         virtual void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &context);
         virtual void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &context);
+
+        virtual void onFocuse           (const plug::FocuseEvent &event, plug::EHC &context);
     
     private:
 
@@ -59,6 +82,8 @@ class CanvasView: public Widget
         bool m_update_texture;
 
         plug::Vec2d m_canvas_pos;
+
+        bool m_focuse;
 };
 
 #endif

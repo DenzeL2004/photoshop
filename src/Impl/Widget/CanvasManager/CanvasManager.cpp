@@ -1,5 +1,6 @@
 #include "CanvasManager.h"
 
+#include <cstdio>
 
 void CanvasManager::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 {
@@ -37,12 +38,10 @@ void CanvasManager::onMousePressed(const plug::MousePressedEvent &event, plug::E
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
     context.stack.enter(trf);
 
-    
-
     int size = static_cast<int>(m_widgets.getSize());
-    for (int it = size - 1; it >= 0; it--)
+    for (int it = size - 2; it >= 0; it--)
     {
-        //m_widgets[it]->onEvent(false);
+        m_widgets[it]->onEvent(plug::FocuseEvent(false), context);
     }
 
     context.stopped = false;
@@ -53,8 +52,12 @@ void CanvasManager::onMousePressed(const plug::MousePressedEvent &event, plug::E
         
         if (context.stopped)
         {
+            m_widgets[size - 1]->onEvent(plug::FocuseEvent(false), context); 
+
             m_widgets.drown(it);
             m_canvases.drown(it);
+
+            m_widgets[size - 1]->onEvent(plug::FocuseEvent(true), context);            
             
             if (m_delete_canvas)
             {
@@ -138,78 +141,71 @@ void CanvasManager::onTick(const plug::TickEvent &event, plug::EHC &context)
     context.stack.leave();
 }
 
-// void CanvasManager::createCanvas(ToolPalette *tool_palette, FilterPalette *filter_palette)
-// {
-//     assert(tool_palette != nullptr && "tool_palette is nullptr");
-//     assert(filter_palette != nullptr && "filter_palette is nullptr");
+void CanvasManager::createCanvas(const char *file_path)
+{
+    // assert(tool_palette != nullptr && "tool_palette is nullptr");
+    // assert(filter_palette != nullptr && "filter_palette is nullptr");
 
-//     char *buf = (char*)calloc(BUFSIZ, sizeof(char));
-//     if (!buf)
-//     {
-//         PROCESS_ERROR(ERR_MEMORY_ALLOC, "allocate memory to buf failed\n");
-//         return;
-//     }
+    char *buf = new char[BUFSIZ];
+    if (!buf)
+    {
+        PROCESS_ERROR(ERR_MEMORY_ALLOC, "allocate memory to buf failed\n");
+        return;
+    }
 
-//     m_cnt_canvas++;
-//     sprintf(buf, "canvas %lu", m_cnt_canvas);
+    m_cnt_canvas++;
+    sprintf(buf, "CANVAS %lu", m_cnt_canvas);
 
-//     Frame *frame = new Frame(   "src/img/frame.png", Title(Title_offset, buf, sf::Color::Black), 
-//                                 Frame_size, Frame_pos, this);
+    Frame *frame = new Frame(   getPlugTexture(Canvas_frame_texture), 
+                                Title(Canvas_frame_title_pos, buf, 2.0, plug::Black), 
+                                BaseLayoutBox(Canvas_frame_pos, Canvas_frame_size, getLayoutBox().getSize(), true, true), this);
 
-//     Button *close_btn = new Button( Cross_Button_Release, Cross_Button_Covered, 
-//                                     Cross_Button_Release, Cross_Button_Covered, 
-//                                     new Click(&m_delete_canvas), 
-//                                     Close_button_size, Close_button_pos, frame);
+    delete[] buf;
 
-//     Canvas *canvas = new Canvas(    tool_palette, filter_palette, Canvas_size,
-//                                     Canvas_view_size, Canvas_pos, frame);
+    Button *close_btn = new Button( getPlugTexture(Cross_button_released), getPlugTexture(Cross_button_pressed), 
+                                    getPlugTexture(Cross_button_released), getPlugTexture(Cross_button_pressed), 
+                                    BaseLayoutBox(Vec2d(Canvas_frame_size.x - Cross_button_size.x, 0), Cross_button_size, Canvas_frame_size, false, true),
+                                    new Click(m_delete_canvas));
 
-//     m_canvases.pushBack(canvas);
+    Canvas *canvas = nullptr;
+
+    if (file_path)
+    {
+        canvas = new Canvas(file_path);
+    }
+    else
+    {
+        canvas = new Canvas(Default_canvas_width, Default_canvas_height);
+    }
+
+    m_canvases.pushBack(canvas);
 
     
-//     Scrollbar *scroll_hor = new Scrollbar(  canvas, Scrollbar::Type::HORIZONTAL, 
-//                                             Scroll_hor_size, Scroll_hor_pos, frame);
+    CanvasView *canvas_view = new CanvasView(  *canvas, 
+                                                BaseLayoutBox(Canvas_view_pos, Canvas_view_size, Canvas_frame_size, true, true));
 
-//     Button *left_btn = new Button(  Left_Scl_Rel, Left_Scl_Prs, Left_Scl_Rel, Left_Scl_Prs,
-//                                     new ScrollCanvas(Dot(-5.0, 0.0), canvas), 
-//                                     Buttons_scroll_size, Left_pos, scroll_hor);
+    Scrollbar *scroll_ver = new Scrollbar(  *canvas_view, Scrollbar::Type::VERTICAL, 
+                                            BaseLayoutBox(Vec2d(Canvas_frame_size.x - 30, 80), Vec2d(25, Canvas_view_size.y), Canvas_frame_size, true, true),
+                                            Scrollbar_up_released, Scrollbar_up_pressed,
+                                            Scrollbar_down_released, Scrollbar_down_pressed,
+                                            Scrollbar_released, Scrollbar_pressed);
 
-//     Button *right_btn = new Button( Right_Scl_Rel, Right_Scl_Prs, Right_Scl_Rel, Right_Scl_Prs, 
-//                                     new ScrollCanvas(Vec2d(5.0, 0.0), canvas), 
-//                                     Buttons_scroll_size, Right_pos, scroll_hor);
+    Scrollbar *scroll_hor = new Scrollbar(  *canvas_view, Scrollbar::Type::HORIZONTAL, 
+                                            BaseLayoutBox(Vec2d(5, 50), Vec2d(Canvas_view_size.x, 25), Canvas_frame_size, true, true),
+                                            Scrollbar_left_released, Scrollbar_left_pressed,
+                                            Scrollbar_right_released, Scrollbar_right_pressed,
+                                            Scrollbar_released, Scrollbar_pressed);
 
-//     Button *hor_btn = new Button(   Hor_Scl, Hor_Scl, Hor_Scl, Hor_Scl, 
-//                                     new ScrollCanvas(Dot(0, 0), canvas), 
-//                                     Buttons_scroll_size, Vec2d(0.0, 0.0), scroll_hor);
     
-//     Scrollbar *scroll_ver = new Scrollbar(  canvas, Scrollbar::Type::VERTICAL, 
-//                                             Scroll_ver_size, Scroll_ver_pos, frame);
+    frame->addWidget(canvas_view);
+    frame->addWidget(scroll_hor);
+    frame->addWidget(scroll_ver);
+    frame->addWidget(close_btn);
 
-//     Button *up_btn = new Button(    Up_Scl_Rel, Up_Scl_Prs, Up_Scl_Rel, Up_Scl_Prs, 
-//                                     new ScrollCanvas(Dot(0.0, -5.0), canvas), 
-//                                     Buttons_scroll_size, Up_pos, scroll_ver);
+    frame->onParentUpdate(getLayoutBox());
 
-//     Button *down_btn = new Button(  Down_Scl_Rel, Down_Scl_Prs, Down_Scl_Rel, Down_Scl_Prs, 
-//                                     new ScrollCanvas(Vec2d(0.0, 5.0), canvas), 
-//                                     Buttons_scroll_size, Down_pos, scroll_ver);
-
-//     Button *ver_btn = new Button(   Ver_Scl, Ver_Scl, Ver_Scl, Ver_Scl, 
-//                                     new ScrollCanvas(Dot(0, 0), canvas), 
-//                                     Buttons_scroll_size, Vec2d(0.0, 0.0), scroll_ver);
-
-
-//     scroll_hor->addButtons(left_btn, right_btn, hor_btn);
-//     scroll_ver->addButtons(up_btn, down_btn, ver_btn);
-
-//     frame->addWidget(close_btn);
-//     frame->addWidget(scroll_hor);
-//     frame->addWidget(scroll_ver);
-//     frame->addWidget(canvas);
-    
-//     frame->onUpdate(getLayoutBox());
-
-//     m_widgets.pushBack(frame);
-// }
+    m_widgets.pushBack(frame);
+}
 
 void CanvasManager::onParentUpdate(const plug::LayoutBox &parent_box)
 {

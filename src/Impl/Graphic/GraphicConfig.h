@@ -7,7 +7,7 @@
 namespace plug
 {
     static const plug::Color White  = plug::Color(255, 255, 255, 255);
-    static const plug::Color Black  = plug::Color(255, 255, 255, 255);
+    static const plug::Color Black  = plug::Color(0, 0, 0, 255);
 
     static const plug::Color Red    = plug::Color(255, 0, 0, 255);
     static const plug::Color Green  = plug::Color(0, 255, 0, 255);
@@ -174,6 +174,17 @@ namespace plug
                                     0, 0, 0, 1, 0, 0, 0,                                     
                                     0, 0, 1, 0, 0, 0, 0,                                     
                                     0, 0, 1, 0, 0, 0, 0  
+                                };
+
+    static const bool Space[Symbol_width * Symbol_height] = 
+                                {
+                                    0, 0, 0, 0, 0, 0, 0,                                     
+                                    0, 0, 0, 0, 0, 0, 0,                                     
+                                    0, 0, 0, 0, 0, 0, 0,                                     
+                                    0, 0, 0, 0, 0, 0, 0,                                     
+                                    0, 0, 0, 0, 0, 0, 0,                                     
+                                    0, 0, 0, 0, 0, 0, 0,                                     
+                                    0, 0, 0, 0, 0, 0, 0  
                                 };
 
     static const bool Letters[][Symbol_width * Symbol_height] = 

@@ -28,13 +28,13 @@ void Frame::onEvent(const plug::Event &event, plug::EHC &context)
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
     context.stack.enter(trf);
 
-    context.stopped = false;
     bool handel_event = false;
 
     size_t size = m_widgets.getSize();
 
     for (size_t it = 0; it < size; it++)
     {
+        context.stopped = false;
         m_widgets[it]->onEvent(event, context);
 
         if (context.stopped)
@@ -47,6 +47,8 @@ void Frame::onEvent(const plug::Event &event, plug::EHC &context)
     {
         Window::onEvent(event, context);
     }
+
+    context.stopped |= handel_event;
 
     context.stack.leave();
 }
@@ -194,7 +196,6 @@ void Frame::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &cont
 void Frame::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &context)
 {
     m_state = DecoratorState::DEFAULT;
-
     context.stopped = false;
 }
 
@@ -213,7 +214,7 @@ void Frame::onTick(const plug::TickEvent &event, plug::EHC &context)
     context.stopped = false;
 } 
 
-void Frame::addWidget(Widget* widget_ptr)
+void Frame::addWidget(Widget* widget)
 {
-    m_widgets.pushBack(widget_ptr);
+    m_widgets.pushBack(widget);
 }

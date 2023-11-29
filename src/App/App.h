@@ -24,6 +24,8 @@
 
 #include "Impl/Widget/Scrollbar/Scrollbar.h"
 
+#include "Impl/Widget/CanvasManager/CanvasManager.h"
+
 void useApp();
 
 #endif
