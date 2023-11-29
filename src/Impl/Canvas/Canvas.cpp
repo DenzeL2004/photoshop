@@ -1,6 +1,6 @@
 #include "Canvas.h"
 
-Canvas::Canvas(const size_t width, const size_t height):
+Canvas::Canvas(const size_t width, const size_t height, const plug::Color color):
               m_render_texture(nullptr), 
               m_render_target(nullptr),
               m_selection_mask(nullptr),
@@ -15,7 +15,7 @@ Canvas::Canvas(const size_t width, const size_t height):
     }
 
     m_render_texture->create(width, height);
-    m_render_texture->clear(sf::Color::White);
+    m_render_texture->clear(getSFMLColor(color));
 
     m_render_target = new SfmlRenderTarget(*m_render_texture);
 
@@ -82,7 +82,6 @@ Canvas::Canvas(char const* filename):
 
     defineTexture();
 }
-
 
 void Canvas::draw(const plug::VertexArray &vertex_array)
 {

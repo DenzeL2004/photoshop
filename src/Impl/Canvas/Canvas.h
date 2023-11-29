@@ -12,7 +12,7 @@ class Canvas : public plug::Canvas
 {
 
     public:
-        Canvas(const size_t width, const size_t height);
+        Canvas(const size_t width, const size_t height, const plug::Color color);
         Canvas(const char *filename);
 
         ~Canvas()

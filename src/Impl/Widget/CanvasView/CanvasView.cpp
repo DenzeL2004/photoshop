@@ -103,14 +103,16 @@ void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC 
         plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
 
         plug::VertexArray circle(plug::PrimitiveType::LineStrip, 0);
-        
+
+        plug::Color color = m_color_palette.getFGColor();
+
         const size_t cnt = 360;
         double step = 2.0 * M_PI / static_cast<double>(cnt);
 
         double alpha = 0;
         for (size_t it = 0; it <= cnt; it++)
         {
-            circle.appendVertex({plug::Vec2d(cos(alpha) * 50 + center.x, sin(alpha) * 20 + center.y), Vec2d(0, 0), plug::Red});
+            circle.appendVertex({plug::Vec2d(cos(alpha) * 50 + center.x, sin(alpha) * 20 + center.y), Vec2d(0, 0), color});
             alpha += step;
         }
 

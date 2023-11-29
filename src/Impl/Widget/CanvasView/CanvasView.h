@@ -7,6 +7,7 @@
 
 #include "Plug/Event/Event.h"
 
+#include "Impl/Tool/ColorPalette/ColorPalette.h"
 
 namespace plug
 {
@@ -23,19 +24,20 @@ struct FocuseEvent : public plug::Event
 
 }
 
-
 class CanvasView: public Widget
 {
     public:
 
         CanvasView( plug::Canvas &canvas,
+                    plug::ColorPalette &m_color_palette,
                     const plug::LayoutBox& box):
                     Widget(box), 
                     m_canvas(canvas),
                     m_texture(nullptr),
                     m_update_texture(true),
                     m_focuse(false),
-                    m_canvas_pos(0.0, 0.0){}
+                    m_canvas_pos(0.0, 0.0),
+                    m_color_palette(m_color_palette){}
                 
         virtual ~CanvasView()
         {
@@ -84,6 +86,8 @@ class CanvasView: public Widget
         plug::Vec2d m_canvas_pos;
 
         bool m_focuse;
+
+        plug::ColorPalette &m_color_palette;
 };
 
 #endif

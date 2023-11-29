@@ -278,8 +278,13 @@ void useApp()
  
 
     CanvasManager *manager = new CanvasManager(BaseLayoutBox(Vec2d(5, 50), Vec2d(App_width - 10, App_height - 55), base.getSize(), true, true));
-    manager->createCanvas(nullptr);
-    manager->createCanvas("src/img/pika.png");
+    
+    ColorPalette color_palette;
+    color_palette.setBGColor(plug::Red);
+    color_palette.setFGColor(plug::Blue);
+    
+    manager->createCanvas(color_palette, nullptr);
+    manager->createCanvas(color_palette, "src/img/pika.png");
 
     frame.addWidget(close_button);
     frame.addWidget(manager);

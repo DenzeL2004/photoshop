@@ -26,28 +26,30 @@ public:
    *
    * @return Active foreground color
    */
-  Color getFGColor(void) const;
+  virtual Color getFGColor(void) const = 0;
 
   /**
    * @brief Get active background color
    *
    * @return Active background color
    */
-  Color getBGColor(void) const;
+  virtual Color getBGColor(void) const = 0;
 
   /**
    * @brief Set new foreground color
    *
    * @param[in] new_fg_color  New value of background color
    */
-  void setFGColor(Color new_fg_color);
+  virtual void setFGColor(Color new_fg_color) = 0;
 
   /**
    * @brief Set new background color
    *
    * @param[in] new_bg_color  New value of background color
    */
-  void setBGColor(Color new_bg_color);
+  virtual void setBGColor(Color new_bg_color) = 0;
+
+  virtual ~ColorPalette() {}
 };
 
 } // namespace plug
