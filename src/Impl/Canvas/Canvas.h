@@ -40,8 +40,6 @@ class Canvas : public plug::Canvas
         virtual const plug::Texture& getTexture(void) const;
 
     private:
-        void defineTexture(void);
-
         sf::RenderTexture *m_render_texture;
         plug::RenderTarget *m_render_target;
 

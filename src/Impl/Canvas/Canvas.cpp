@@ -31,8 +31,6 @@ Canvas::Canvas(const size_t width, const size_t height, const plug::Color color)
         PROCESS_ERROR(ERR_MEMORY_ALLOC, "Failed to create selection mask");
         return;
     }
-
-    defineTexture();
 }
 
 Canvas::Canvas(char const* filename):
@@ -79,8 +77,6 @@ Canvas::Canvas(char const* filename):
         PROCESS_ERROR(ERR_MEMORY_ALLOC, "Failed to create selection mask");
         return;
     }
-
-    defineTexture();
 }
 
 void Canvas::draw(const plug::VertexArray &vertex_array)
@@ -88,15 +84,12 @@ void Canvas::draw(const plug::VertexArray &vertex_array)
     m_render_target->draw(vertex_array);
     m_render_texture->display();
 
-    defineTexture();
 }
 
 void Canvas::draw(const plug::VertexArray &vertex_array, const plug::Texture &texture)
 {
     m_render_target->draw(vertex_array, texture);
     m_render_texture->display();
-
-    defineTexture();
 }
 
 plug::Vec2d Canvas::getSize(void) const
@@ -113,7 +106,6 @@ void Canvas::setSize(const plug::Vec2d &size)
         PROCESS_ERROR(ERR_MEMORY_ALLOC, "Failed to create render texture");
         return;
     }
-
    
     new_render_texture->create(size.x, size.y);
     new_render_texture->clear(sf::Color::White);
@@ -144,8 +136,6 @@ void Canvas::setSize(const plug::Vec2d &size)
     m_render_texture = new_render_texture;
     m_render_target = new_render_target;
     m_selection_mask = new_selection_mask;
-
-    defineTexture();
 }
 
 plug::SelectionMask& Canvas::getSelectionMask(void)
@@ -155,7 +145,7 @@ plug::SelectionMask& Canvas::getSelectionMask(void)
 
 plug::Color Canvas::getPixel(size_t x, size_t y) const
 {
-    return m_texture->data[m_render_texture->getSize().x * y + x];
+    return getTexture().getPixel(x, y);
 }
 
 void Canvas::setPixel(size_t x, size_t y, const plug::Color &color)
@@ -166,16 +156,9 @@ void Canvas::setPixel(size_t x, size_t y, const plug::Color &color)
     vertex_array[0].color = color;
 
     draw(vertex_array);
-
-    m_texture->data[m_render_texture->getSize().x * y + x] = color;
 }
 
 const plug::Texture& Canvas::getTexture(void) const
-{
-    return *m_texture;
-}
-
-void Canvas::defineTexture(void)
 {
     sf::Image image = m_render_texture->getTexture().copyToImage();
 
@@ -193,10 +176,5 @@ void Canvas::defineTexture(void)
         }
     }
 
-    if (m_texture)
-    {
-        delete m_texture;
-    }
-
-    m_texture = new plug::Texture(width, height, pixels);
+    return *(new plug::Texture(width, height, pixels));
 }
