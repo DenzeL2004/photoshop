@@ -20,7 +20,6 @@ class Canvas : public plug::Canvas
             delete m_render_texture;
             delete m_render_target;
             delete m_selection_mask;
-            delete m_texture;
         }
 
         virtual void draw(const plug::VertexArray &vertex_array);
@@ -44,8 +43,6 @@ class Canvas : public plug::Canvas
         plug::RenderTarget *m_render_target;
 
         plug::SelectionMask *m_selection_mask;
-
-        plug::Texture *m_texture;
 };
 
 #endif

@@ -38,7 +38,7 @@ class ToolBrush : public plug::Tool
 
         virtual void onMove(const plug::Vec2d &position);
 
-        virtual void onConfirm(void){ m_active = false;}
+        virtual void onConfirm(void);
 
         virtual void onCancel(void){}
 

@@ -24,10 +24,12 @@ void ToolBrush::onMainButton(const plug::ControlState &state, const plug::Vec2d 
     if (state.state != plug::State::Pressed) return;
 
     if (!m_active) m_active = true;
+   
     plug::VertexArray vertex(plug::PrimitiveType::Points, 1);
 
     printf("vertex start\n");
 
+    m_hold_pos = pos;
     vertex[0].position = pos;
 
     printf("vertex midle\n");
@@ -46,19 +48,27 @@ void ToolBrush::onMove(const plug::Vec2d &pos)
 
     if (!m_active) return;
 
-    plug::VertexArray vertex(plug::PrimitiveType::Points, 1);
+    plug::VertexArray vertex(plug::PrimitiveType::Lines, 2);
 
     //printf("vertex start\n");
 
-    vertex[0].position = pos;
+    vertex[0].position = m_hold_pos;
+    vertex[1].position = pos;
+
+    m_hold_pos = pos;
 
     //printf("vertex midle\n");
 
-    vertex[0].color = m_color_palette->getFGColor();
+    vertex[0].color = vertex[1].color = m_color_palette->getFGColor();
 
     //printf("vertex finish\n");
 
     m_canvas->draw(vertex);
+}
+
+void ToolBrush::onConfirm(void)
+{ 
+    m_active = false;
 }
 
 // void ToolBrush::drawForm(const plug::Vec2d &pos)

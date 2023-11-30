@@ -3,8 +3,7 @@
 Canvas::Canvas(const size_t width, const size_t height, const plug::Color color):
               m_render_texture(nullptr), 
               m_render_target(nullptr),
-              m_selection_mask(nullptr),
-              m_texture(nullptr)
+              m_selection_mask(nullptr)
 {
     m_render_texture = new sf::RenderTexture();
 
@@ -36,8 +35,7 @@ Canvas::Canvas(const size_t width, const size_t height, const plug::Color color)
 Canvas::Canvas(char const* filename):
               m_render_texture(nullptr), 
               m_render_target(nullptr),
-              m_selection_mask(nullptr),
-              m_texture(nullptr)
+              m_selection_mask(nullptr)
 {
     assert(filename != nullptr && "filename is nullptr");
 
@@ -83,7 +81,6 @@ void Canvas::draw(const plug::VertexArray &vertex_array)
 {
     m_render_target->draw(vertex_array);
     m_render_texture->display();
-
 }
 
 void Canvas::draw(const plug::VertexArray &vertex_array, const plug::Texture &texture)
