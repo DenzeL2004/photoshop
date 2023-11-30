@@ -11,7 +11,7 @@ struct Title
 
     Title(  const plug::Vec2d &pos_, const char *msg_, const double width_, const plug::Color &color_):
             pos(pos_),
-            msg(new char[strlen(msg_)]), 
+            msg(new char[strlen(msg_) + 1]), 
             width(width_),
             color(color_)
     {
@@ -20,6 +20,8 @@ struct Title
         {
             msg[it] = msg_[it];
         }
+
+        msg[size] = '\0';
     }
 
     ~Title()
@@ -29,7 +31,7 @@ struct Title
 
     Title(  const Title &other):
             pos(other.pos),
-            msg(new char[strlen(other.msg)]), 
+            msg(new char[strlen(other.msg) + 1]), 
             width(other.width),
             color(other.color)
     {
@@ -38,6 +40,8 @@ struct Title
         {
             msg[it] = other.msg[it];
         }
+        
+        msg[size] = '\0';
     }
 
     Title &operator= (const Title &other) = delete;
