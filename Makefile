@@ -22,11 +22,11 @@ CPP = $(shell find $(SRC_DIR) -type f -name "*.cpp")
 OBJ = $(CPP:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
 
-INC_FLAGS = -I$(SRC_DIR)
+INC_FLAGS = -I $(SRC_DIR)
 
 DEP = $(OBJ:%.o=%.d)
 
-all : makedir build
+all : makedir build shared
 	./$(OUT_NAME)
 
 
@@ -42,7 +42,12 @@ $(OUT_NAME) : $(OBJ)
 
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
-	$(COMPILER) $(FLAGS) $(INC_FLAGS) $(D_FLAGS) -MMD -c $< -o $@
+	$(COMPILER) $(FLAGS) $(INC_FLAGS) -MMD -c $< -o $@
+
+shared:	src/Impl/Tool/Tools/ToolBrush.cpp src/Impl/Tool/ColorPalette/ColorPalette.h
+	@mkdir -p obj/Plugins
+	$(COMPILER) $(INC_FLAGS) -fPIE -c -fPIC src/Impl/Tool/Tools/ToolBrush.cpp -o obj/Plugins/ToolBrush.o
+	$(COMPILER) -shared -o obj/Plugins/ToolBrush.so obj/Plugins/ToolBrush.o
 
 .PHONY : makedir cleanup
 

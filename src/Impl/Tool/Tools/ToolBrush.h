@@ -1,7 +1,22 @@
 #ifndef _TOOL_BRUSH_H_
 #define _TOOL_BRUSH_H_
 
-#include "Plug/Tool/Tool.h"
+#include "Plug/Tool.h"
+
+class BrushData : public plug::PluginData
+{
+    public:
+        BrushData():
+            m_name("DENZEL_BRUSH"), 
+            m_texture_path("img/RedPressed.png"){}
+
+    virtual const char *getName(void) const { return m_name;}
+    virtual const char *getTexturePath(void) const { return m_texture_path; }
+
+    private:
+        const char* m_name;
+        const char* m_texture_path;
+};
 
 class ToolBrush : public plug::Tool
 {
@@ -23,20 +38,50 @@ class ToolBrush : public plug::Tool
 
         virtual void onMove(const plug::Vec2d &position);
 
-        virtual void onConfirm(void);
+        virtual void onConfirm(void){ m_active = false;}
 
         virtual void onCancel(void){}
 
         virtual plug::Widget *getWidget() { return nullptr; }
 
-        virtual plug::Plugin *tryGetInterface(size_t interface_id) {return nullptr;}
-        virtual void addReference(void){}
-        virtual void release(void){}
-        virtual const plug::PluginData *getPluginData(void) const {return nullptr;}
+        virtual plug::Plugin *tryGetInterface(size_t interface_id) 
+        {
+            switch (interface_id)
+            {
+                case static_cast<size_t>(plug::PluginGuid::Plugin):
+                {
+                    addReference();
+                    return static_cast<plug::Plugin*>(this);
+                }
+
+                case static_cast<size_t>(plug::PluginGuid::Tool):
+                {
+                    addReference();
+                    return static_cast<plug::Tool*>(this);
+                }
+
+                default:
+                    return nullptr;
+            }
+        }
+
+        virtual void addReference(void){m_cnt_reference++;}
+        virtual void release(void)
+        {
+            m_cnt_reference--;
+
+            if (m_cnt_reference <= 0)
+            {
+                delete this;
+            }
+        }
+
+        virtual const plug::PluginData *getPluginData(void) const 
+        {
+            return &m_data;
+        }
 
     private:
-
-        void drawForm(const plug::Vec2d &position);
 
         plug::ColorPalette *m_color_palette;
         plug::Canvas *m_canvas;
@@ -44,9 +89,12 @@ class ToolBrush : public plug::Tool
         plug::Vec2d m_hold_pos;
 
         bool m_active;
+
+        int m_cnt_reference;
+
+        const BrushData m_data;
 };
 
-
-
+extern "C" plug::Plugin* loadPlugin(void);
 
 #endif

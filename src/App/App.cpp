@@ -281,7 +281,7 @@ void useApp()
     
     ColorPalette color_palette;
     color_palette.setBGColor(plug::Red);
-    color_palette.setFGColor(plug::Blue);
+    color_palette.setFGColor(plug::Black);
     
     manager->createCanvas(color_palette, nullptr);
     manager->createCanvas(color_palette, "src/img/pika.png");

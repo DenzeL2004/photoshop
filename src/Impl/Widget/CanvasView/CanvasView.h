@@ -8,6 +8,9 @@
 #include "Plug/Event/Event.h"
 
 #include "Impl/Tool/ColorPalette/ColorPalette.h"
+#include "Impl/Tool/Tools/ToolBrush.h"
+
+#include "Impl/Tool/PluginUtil.h"
 
 namespace plug
 {
@@ -37,7 +40,11 @@ class CanvasView: public Widget
                     m_update_texture(true),
                     m_focuse(false),
                     m_canvas_pos(0.0, 0.0),
-                    m_color_palette(m_color_palette){}
+                    m_color_palette(m_color_palette),
+                    brush(nullptr)
+        {
+            brush = static_cast<plug::Tool*>(loadPlugin("obj/Plugins/ToolBrush.so"));
+        }
                 
         virtual ~CanvasView()
         {
@@ -88,6 +95,8 @@ class CanvasView: public Widget
         bool m_focuse;
 
         plug::ColorPalette &m_color_palette;
+
+        plug::Tool* brush;
 };
 
 #endif

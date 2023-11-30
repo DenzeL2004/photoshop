@@ -4,11 +4,12 @@
 #include <cstdio>
 
 
+
 void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 {
+    updateTexture();
     if (m_update_texture)
     {
-        updateTexture();
         m_update_texture = false;
     }
 
@@ -85,7 +86,24 @@ void CanvasView::updateTexture(void)
 
 void CanvasView::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
 {
-  
+    if (!m_focuse)
+    {
+        context.stopped = false;
+        return;
+    }
+
+    context.stopped = covers(context.stack, event.pos);
+
+    if (context.stopped)
+    {
+        plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
+
+        brush->onMove(center);
+
+        m_update_texture = true;
+    }
+
+    context.stopped = false;
 }
 
 void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &context)
@@ -101,31 +119,28 @@ void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC 
     if (context.stopped)
     {
         plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
-
-        plug::VertexArray circle(plug::PrimitiveType::LineStrip, 0);
-
-        plug::Color color = m_color_palette.getFGColor();
-
-        const size_t cnt = 360;
-        double step = 2.0 * M_PI / static_cast<double>(cnt);
-
-        double alpha = 0;
-        for (size_t it = 0; it <= cnt; it++)
-        {
-            circle.appendVertex({plug::Vec2d(cos(alpha) * 50 + center.x, sin(alpha) * 20 + center.y), Vec2d(0, 0), color});
-            alpha += step;
-        }
-
-        m_canvas.draw(circle);  
+        
+        brush->onMainButton({plug::State::Pressed}, center);
 
         m_update_texture = true;
     }
-    
 }
 
 void CanvasView::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &context)
 {
     context.stopped = false;
+    if (!m_focuse)
+    {
+        brush->onCancel();
+        return;
+    }
+
+    plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
+    
+    brush->onConfirm();
+
+    m_update_texture = true;
+    
 }
 
 void CanvasView::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
@@ -146,6 +161,9 @@ void CanvasView::onTick(const plug::TickEvent &event, plug::EHC &context)
 void CanvasView::onFocuse(const plug::FocuseEvent &event, plug::EHC &context)
 {
     m_focuse = event.focuse_flag;
+
+    brush->setActiveCanvas(m_canvas);
+    brush->setColorPalette(m_color_palette);
 }
 
 void CanvasView::onParentUpdate(const plug::LayoutBox &parent_box)
