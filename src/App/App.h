@@ -24,6 +24,8 @@
 
 #include "Impl/Tool/ColorPalette/ColorPalette.h"
 
+#include "Impl/Tool/Filters/FilterPalette.h"
+
 void useApp();
 
 #endif

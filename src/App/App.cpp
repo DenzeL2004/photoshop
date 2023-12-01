@@ -281,10 +281,12 @@ void useApp()
     
     ColorPalette color_palette;
     color_palette.setBGColor(plug::Red);
-    color_palette.setFGColor(plug::Black);
+    color_palette.setFGColor(plug::Green);
     
-    manager->createCanvas(color_palette, nullptr);
-    manager->createCanvas(color_palette, "src/img/pika.png");
+    FilterPalette filter_palette;
+
+    manager->createCanvas(filter_palette, color_palette, nullptr);
+    manager->createCanvas(filter_palette, color_palette, "src/img/pika.png");
 
     frame.addWidget(close_button);
     frame.addWidget(manager);

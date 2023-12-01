@@ -28,6 +28,4 @@ class SelectionMask : public plug::SelectionMask
         bool *m_data;
 };
 
-
-
 #endif

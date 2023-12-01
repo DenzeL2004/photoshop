@@ -1,9 +1,7 @@
-#include "CanvasView.h"
-#include "Impl/Graphic/Graphic.h"
-
 #include <cstdio>
 
-
+#include "CanvasView.h"
+#include "Impl/Graphic/Graphic.h"
 
 void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 {
@@ -98,7 +96,7 @@ void CanvasView::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &conte
     {
         plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
 
-        brush->onMove(center);
+        //brush->onMove(center);
 
         m_update_texture = true;
     }
@@ -120,7 +118,7 @@ void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC 
     {
         plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
         
-        brush->onMainButton({plug::State::Pressed}, center);
+        //brush->onMainButton({plug::State::Pressed}, center);
 
         m_update_texture = true;
     }
@@ -131,13 +129,13 @@ void CanvasView::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EH
     context.stopped = false;
     if (!m_focuse)
     {
-        brush->onCancel();
+        //brush->onCancel();
         return;
     }
 
     plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
     
-    brush->onConfirm();
+    //brush->onConfirm();
 
     m_update_texture = true;
     
@@ -146,6 +144,17 @@ void CanvasView::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EH
 void CanvasView::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
 {
     context.stopped = false;
+
+    if (event.ctrl)
+    {
+        plug::Filter* filter = m_filter_palette.getFilter(0ul);
+        assert(filter != nullptr);
+
+        filter->applyFilter(m_canvas);
+        filter->release();
+
+        context.stopped = true;
+    }
 }
 
 void CanvasView::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, plug::EHC &context)
@@ -162,8 +171,8 @@ void CanvasView::onFocuse(const plug::FocuseEvent &event, plug::EHC &context)
 {
     m_focuse = event.focuse_flag;
 
-    brush->setActiveCanvas(m_canvas);
-    brush->setColorPalette(m_color_palette);
+    // brush->setActiveCanvas(m_canvas);
+    // brush->setColorPalette(m_color_palette);
 }
 
 void CanvasView::onParentUpdate(const plug::LayoutBox &parent_box)

@@ -69,7 +69,6 @@ class ToolBrush : public plug::Tool
         virtual void release(void)
         {
             m_cnt_reference--;
-
             if (m_cnt_reference <= 0)
             {
                 delete this;
@@ -95,6 +94,6 @@ class ToolBrush : public plug::Tool
         const BrushData m_data;
 };
 
-extern "C" plug::Plugin* loadPlugin(void);
+// extern "C" plug::Plugin* loadPlugin(void);
 
 #endif

@@ -1,44 +1,49 @@
 #include "FilterPalette.h"
 
-// FilterPalette::FilterPalette():
-//         m_filters(),
-//         m_last_filter(FilterType::NOTHING)
-// {
-//     filters_.pushBack(new FilterBrightness(0.0));
-//     filters_.pushBack(new FilterBlackWhite());      
-//     filters_.pushBack(new FilterInvert());
-//     filters_.pushBack(new FilterColorMask(sf::Color::Red));
-//     filters_.pushBack(new FilterColorMask(sf::Color::Green));
-//     filters_.pushBack(new FilterColorMask(sf::Color::Blue));      
-// }
+plug::Filter* FilterPalette::getFilter(const size_t filter_id)
+{
+    if (filter_id >= m_filters.getSize()) 
+    {
+        PROCESS_ERROR(ERR_NULLPTR, "undefine ID: %lu\n", filter_id);
+        return nullptr;
+    }
 
-// FilterPalette::~FilterPalette()
-// {
-//     size_t size = filters_.getSize();
-//     for (size_t it = 0; it < size; it++)
-//         delete filters_[it];
-// }
+    plug::Plugin *ret_filter = m_filters[filter_id]->tryGetInterface(static_cast<size_t>(plug::PluginGuid::Filter));
+    return reinterpret_cast<plug::Filter*>(ret_filter);
+}
 
-// Filter* FilterPalette::getFilter(size_t filter_id)
-// {
-//     if (filter_id == FilterPalette::FilterType::NOTHING || filter_id >= filters_.getSize()) 
-//         return nullptr;
+plug::Filter* FilterPalette::getFilter(const char* filter_name)
+{
+    assert(filter_name != nullptr && "filter_name is nullptr");
     
-//     return filters_[filter_id];;
-// }
+    size_t size = m_filters.getSize();
+    for (size_t it = 0; it < size; it++)
+    {
+        if (!strcmp(filter_name, m_filters[it]->getPluginData()->getName()))
+        {
+            plug::Plugin *ret_filter = m_filters[it]->tryGetInterface(static_cast<size_t>(plug::PluginGuid::Filter));
+            return reinterpret_cast<plug::Filter*>(ret_filter);
+        }
+    }
 
-// Filter* FilterPalette::getLastFilter()
-// {
-//     return getFilter(last_filter_);
-// }
+    PROCESS_ERROR(ERR_NULLPTR, "undefine filter by name: %s\n", filter_name);
+    return nullptr;
+}
 
+plug::Filter* FilterPalette::getLastFilter()
+{
+    return getFilter(m_last_filter);
+}
 
-// void FilterPalette::setLastFilter(size_t filter_id)
-// {
-//     last_filter_ = filter_id;
-// }
+void FilterPalette::setLastFilter(const size_t filter_id)
+{
+    m_last_filter = filter_id;
+}
 
-// void FilterPalette::addFilter(Filter *ptr)
-// {
-//     filters_.pushBack(ptr);
-// }
+size_t FilterPalette::addFilter(plug::Filter* filter)
+{
+    assert(filter != nullptr && "adding filter is nullptr");
+    
+    m_filters.pushBack(filter);
+    return m_filters.getSize();
+}

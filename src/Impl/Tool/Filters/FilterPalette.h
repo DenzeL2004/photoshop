@@ -3,35 +3,39 @@
 
 #include "Container/Container.h"
 #include "Plug/Filter.h"
+#include "Impl/Tool/PluginUtil.h"
 
-// class FilterPalette
-// {
-//     public:
+class FilterPalette
+{
+    public:
 
-//         enum FilterType
-//         {
-//             NOTHING     = -1,
-//             LIGHT       = 0, 
-//             BLACKWHITE  = 1, 
-//             INVERT      = 2, 
-//             RED         = 3,
-//             GREEN       = 4,
-//             BLUE        = 5,
-
-//         };
-
-//         FilterPalette();
-//         ~FilterPalette();
-
-//         plug::Filter* getLastFilter();
-//         void setLastFilter(const size_t filter_id);
-
-//         plug::Filter* getFilter(const size_t filter_id);
+        FilterPalette():    m_filters(), m_last_filter(UINT64_MAX)
+        {
+            plug::Plugin* plugin = loadPlugin("obj/Plugins/test_filter.so")->tryGetInterface(static_cast<size_t>(plug::PluginGuid::Filter));
+            addFilter(static_cast<plug::Filter*>(plugin));
+        }
         
-//     private:
-//         Container<Filter*>  m_filters;
-//         size_t m_last_filter;
+        ~FilterPalette()
+        {
+            size_t size = m_filters.getSize();
+            for (size_t it = 0; it < size; it++)
+            {
+                m_filters[it]->release();
+            }
+        }
 
-// };
+        plug::Filter* getLastFilter();
+        void setLastFilter(const size_t filter_id);
+
+        plug::Filter* getFilter(const size_t filter_id);
+        plug::Filter* getFilter(const char* filter_name);
+
+        size_t addFilter(plug::Filter*);
+        
+    private:
+        Container<plug::Filter*> m_filters;
+        size_t m_last_filter;
+
+};
 
 #endif

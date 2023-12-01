@@ -3,7 +3,8 @@
 Canvas::Canvas(const size_t width, const size_t height, const plug::Color color):
               m_render_texture(nullptr), 
               m_render_target(nullptr),
-              m_selection_mask(nullptr)
+              m_selection_mask(nullptr),
+              m_texture(nullptr)
 {
     m_render_texture = new sf::RenderTexture();
 
@@ -30,12 +31,20 @@ Canvas::Canvas(const size_t width, const size_t height, const plug::Color color)
         PROCESS_ERROR(ERR_MEMORY_ALLOC, "Failed to create selection mask");
         return;
     }
+
+    m_texture = new plug::Texture(width, height);
+    if (!m_selection_mask)
+    {   
+        PROCESS_ERROR(ERR_MEMORY_ALLOC, "Failed to create texture");
+        return;
+    }
 }
 
 Canvas::Canvas(char const* filename):
               m_render_texture(nullptr), 
               m_render_target(nullptr),
-              m_selection_mask(nullptr)
+              m_selection_mask(nullptr),
+              m_texture(nullptr)
 {
     assert(filename != nullptr && "filename is nullptr");
 
@@ -50,7 +59,10 @@ Canvas::Canvas(char const* filename):
         return;
     }
 
-    m_render_texture->create(image.getSize().x, image.getSize().y);
+    size_t width  = image.getSize().x;
+    size_t height = image.getSize().y;
+
+    m_render_texture->create(width, height);
     m_render_texture->clear(sf::Color::White);
     
     sf::Texture tmp_texture;
@@ -69,10 +81,17 @@ Canvas::Canvas(char const* filename):
         return;
     }
 
-    m_selection_mask = new SelectionMask(image.getSize().x, image.getSize().y);
+    m_selection_mask = new SelectionMask(width, height);
     if (!m_selection_mask)
     {   
         PROCESS_ERROR(ERR_MEMORY_ALLOC, "Failed to create selection mask");
+        return;
+    }
+
+    m_texture = new plug::Texture(width, height);
+    if (!m_selection_mask)
+    {   
+        PROCESS_ERROR(ERR_MEMORY_ALLOC, "Failed to create texture");
         return;
     }
 }
@@ -112,7 +131,6 @@ void Canvas::setSize(const plug::Vec2d &size)
     new_render_texture->display();
 
     SfmlRenderTarget *new_render_target = new SfmlRenderTarget(*new_render_texture);
-
     if (!new_render_target)
     {   
         PROCESS_ERROR(ERR_MEMORY_ALLOC, "Failed to create render target");
@@ -124,19 +142,26 @@ void Canvas::setSize(const plug::Vec2d &size)
     {   
         PROCESS_ERROR(ERR_MEMORY_ALLOC, "Failed to create selection mask");
         return;
-    }    
+    }   
+
+    plug::Texture *new_texture = new plug::Texture(size.x, size.y);
 
     delete m_render_texture;
     delete m_render_target;
     delete m_selection_mask;
+    delete m_texture;
 
-    m_render_texture = new_render_texture;
-    m_render_target = new_render_target;
-    m_selection_mask = new_selection_mask;
+    m_render_texture    = new_render_texture;
+    m_render_target     = new_render_target;
+    m_selection_mask    = new_selection_mask;
+    m_texture           = new_texture;
+
+    getTexture();
 }
 
 plug::SelectionMask& Canvas::getSelectionMask(void)
 {
+    m_selection_mask->fill(true);
     return *m_selection_mask;
 }
 
@@ -157,21 +182,21 @@ void Canvas::setPixel(size_t x, size_t y, const plug::Color &color)
 
 const plug::Texture& Canvas::getTexture(void) const
 {
+    assert(m_texture != nullptr && "texture is nullptr");
+
     sf::Image image = m_render_texture->getTexture().copyToImage();
 
     size_t width  = image.getSize().x;
     size_t height = image.getSize().y;
-
-    plug::Color *pixels = new plug::Color[width * height];
-
-    for (size_t jt = 0; jt < height; jt++)
+    
+    for (size_t y = 0; y < height; y++)
     {
-        for (size_t it = 0; it < width; it++)
+        for (size_t x = 0; x < width; x++)
         {
-            sf::Color color = image.getPixel(it, jt);
-            pixels[jt * width + it] = plug::Color(color.r, color.g, color.b, color.a);
+            sf::Color color = image.getPixel(x, y);
+            m_texture->setPixel(x, y, plug::Color(color.r, color.g, color.b, color.a));
         }
     }
 
-    return *(new plug::Texture(width, height, pixels));
+    return *m_texture;
 }

@@ -25,7 +25,7 @@ public:
                     const Texture &texture) = 0;
 
   /**
-   * \brief Return sise of canvas
+   * \brief Return size of canvas
    */
   virtual Vec2d getSize(void) const = 0;
 

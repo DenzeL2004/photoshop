@@ -11,6 +11,9 @@
 #include "Impl/Tool/Tools/ToolBrush.h"
 
 #include "Impl/Tool/PluginUtil.h"
+#include "Impl/Tool/Filters/FilterPalette.h"
+
+#include "App/AppConfig.h"
 
 namespace plug
 {
@@ -32,6 +35,7 @@ class CanvasView: public Widget
     public:
 
         CanvasView( plug::Canvas &canvas,
+                    FilterPalette &filter_palette,
                     plug::ColorPalette &m_color_palette,
                     const plug::LayoutBox& box):
                     Widget(box), 
@@ -41,9 +45,10 @@ class CanvasView: public Widget
                     m_focuse(false),
                     m_canvas_pos(0.0, 0.0),
                     m_color_palette(m_color_palette),
+                    m_filter_palette(filter_palette),
                     brush(nullptr)
         {
-            brush = static_cast<plug::Tool*>(loadPlugin("obj/Plugins/ToolBrush.so"));
+            brush = nullptr;// static_cast<plug::Tool*>(loadPlugin("obj/Plugins/ToolBrush.so"));
         }
                 
         virtual ~CanvasView()
@@ -95,6 +100,7 @@ class CanvasView: public Widget
         bool m_focuse;
 
         plug::ColorPalette &m_color_palette;
+        FilterPalette &m_filter_palette;
 
         plug::Tool* brush;
 };

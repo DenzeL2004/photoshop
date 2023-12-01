@@ -141,10 +141,10 @@ void CanvasManager::onTick(const plug::TickEvent &event, plug::EHC &context)
     context.stack.leave();
 }
 
-void CanvasManager::createCanvas(plug::ColorPalette &color_palette, const char *file_path)
+void CanvasManager::createCanvas(FilterPalette &filter_palette,
+                                 plug::ColorPalette &color_palette, const char *file_path)
 {
     // assert(tool_palette != nullptr && "tool_palette is nullptr");
-    // assert(filter_palette != nullptr && "filter_palette is nullptr");
 
     char *buf = new char[BUFSIZ];
     if (!buf)
@@ -181,7 +181,7 @@ void CanvasManager::createCanvas(plug::ColorPalette &color_palette, const char *
     m_canvases.pushBack(canvas);
 
     
-    CanvasView *canvas_view = new CanvasView(  *canvas, color_palette,
+    CanvasView *canvas_view = new CanvasView(  *canvas, filter_palette, color_palette,
                                                 BaseLayoutBox(Canvas_view_pos, Canvas_view_size, Canvas_frame_size, true, true));
 
     Scrollbar *scroll_ver = new Scrollbar(  *canvas_view, Scrollbar::Type::VERTICAL, 

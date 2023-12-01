@@ -37,7 +37,8 @@ class CanvasManager : public Widget
 
         virtual void onParentUpdate(const plug::LayoutBox &parent_box);
 
-        void createCanvas(plug::ColorPalette &color_palette, const char *file_path = nullptr);
+        void createCanvas(  FilterPalette &filter_palette,
+                            plug::ColorPalette &color_palette, const char *file_path = nullptr);
 
         Canvas* getActiveCanvas(void);
 

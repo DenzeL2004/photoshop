@@ -99,7 +99,7 @@ void ToolBrush::onConfirm(void)
 //     m_canvas->draw(circle, texture);
 // }
 
-plug::Plugin* loadPlugin(void)
-{
-    return new ToolBrush();
-}
+// plug::Plugin* loadPlugin(void)
+// {
+//     return new ToolBrush();
+// }

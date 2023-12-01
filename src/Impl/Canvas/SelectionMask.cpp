@@ -5,8 +5,6 @@
 SelectionMask::SelectionMask(const size_t width, const size_t height):
                             m_width(width), m_height(height), m_data(new bool[width * height]){}
 
-#include <cstdio>
-
 SelectionMask::SelectionMask(const size_t width, const size_t height, const plug::SelectionMask &init_mask):  
                             SelectionMask(width, height)
 {
