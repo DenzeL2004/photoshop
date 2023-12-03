@@ -58,9 +58,11 @@ static const plug::Vec2d Dialog_button_size = plug::Vec2d(80, 25);
 
 static const char *Dialog_button_no_released = "src/img/DialogButtonNoReleased.png";
 static const char *Dialog_button_no_pressed  = "src/img/DialogButtonNoPressed.png";
-static const plug::Vec2d Dialog_button_no_pos = plug::Vec2d(60, 140);
+static const plug::Vec2d Dialog_button_no_pos = plug::Vec2d(Dialog_window_size.x / 4 - Dialog_button_size.x / 2, Dialog_window_size.y * 0.6);
 
-static const plug::Vec2d Dialog_button_yes_pos = plug::Vec2d(100, 140);
+static const char *Dialog_button_yes_released = "src/img/DialogButtonYesReleased.png";
+static const char *Dialog_button_yes_pressed  = "src/img/DialogButtonYesPressed.png";
+static const plug::Vec2d Dialog_button_yes_pos = plug::Vec2d(Dialog_window_size.x * 0.75 - Dialog_button_size.x / 2, Dialog_window_size.y * 0.6);
 
 
 //================================================================

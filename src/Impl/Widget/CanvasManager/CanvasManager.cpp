@@ -264,3 +264,14 @@ plug::Canvas* CanvasManager::getActiveCanvas(void)
 
     return m_canvases[size - 1];
 }
+
+void CloseCanvasWithoutSave::operator()()
+
+{
+    if (m_canvas_manage.m_delete_canvas)
+    {
+        m_canvas_manage.m_widgets.popBack();
+        m_canvas_manage.m_canvases.popBack();
+        m_canvas_manage.m_delete_canvas = false;
+    }
+}

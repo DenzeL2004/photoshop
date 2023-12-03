@@ -1,7 +1,6 @@
 #include "Impl/Graphic/Graphic.h"
 
 #include <cmath>
-#include <cstring>
 
 static void getSymbolColorData(plug::Color *data, const char symbol, const plug::Color color);
 
@@ -50,12 +49,10 @@ void drawRectangle(plug::RenderTarget &target,
 }
 
 void writeText(plug::RenderTarget &target, const plug::Vec2d &pos, 
-               const char *text, const double text_size,
+               const std::string &text, const double thikness,
                const plug::Color color)
 {
-    assert(text       != nullptr && "msg is nullptr");
-
-    size_t len = strlen(text);
+    size_t len = text.size();
 
     if (len == 0) return;
 
@@ -67,7 +64,7 @@ void writeText(plug::RenderTarget &target, const plug::Vec2d &pos,
 
     plug::Color *data = new plug::Color[plug::Symbol_width * plug::Symbol_height];
 
-    double offset = plug::Symbol_width * text_size;
+    double offset = plug::Symbol_width * thikness;
 
     for (size_t it = 0; it < len; it++)
     {
@@ -75,7 +72,7 @@ void writeText(plug::RenderTarget &target, const plug::Vec2d &pos,
 
         plug::Texture texture(plug::Symbol_width, plug::Symbol_height, data);
 
-        plug::Vec2d size = Vec2d(text_size * plug::Symbol_width, text_size * plug::Symbol_height);
+        plug::Vec2d size = Vec2d(thikness * plug::Symbol_width, thikness * plug::Symbol_height);
 
         vertex_array[0].position = Vec2d(pos.x + it * offset, pos.y);
         vertex_array[1].position = Vec2d(pos.x + it * offset + size.x, pos.y);

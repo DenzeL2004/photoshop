@@ -1,6 +1,8 @@
 #ifndef _CANVASVIEW_H_
 #define _CANVASVIEW_H_
 
+#include <cstring>
+
 #include "Impl/Widget/Widget.h"
 #include "Impl/Canvas/Canvas.h"
 #include "Impl/Graphic/Graphic.h"
@@ -26,6 +28,16 @@ struct FocuseEvent : public plug::Event
       : Event(Focuse), focuse_flag(flag){}
       
     bool focuse_flag;
+};
+
+const size_t Save = 26;
+
+struct SaveEvent : public plug::Event 
+{
+    SaveEvent(const std::string &path)
+      : Event(Save), file_path(path){}
+      
+    const std::string &file_path;
 };
 
 }
@@ -83,6 +95,7 @@ class CanvasView: public Widget
         virtual void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &context);
 
         virtual void onFocuse           (const plug::FocuseEvent &event, plug::EHC &context);
+        virtual void onSave             (const plug::SaveEvent &event, plug::EHC &context);
     
     private:
 

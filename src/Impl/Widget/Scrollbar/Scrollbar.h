@@ -14,7 +14,7 @@ class ScrollCanvas : public Action
                 m_offset(offset), m_canvas_view(canvas_view){};
         ~ScrollCanvas(){};
 
-        void operator() () const
+        void operator() ()
         {
             m_canvas_view.setCanvasPos(m_offset + m_canvas_view.getCanvasPos());
         }

@@ -12,9 +12,24 @@
 
 #include "App/AppConfig.h"
 
+class CanvasManager;
+
+class CloseCanvasWithoutSave : public Action
+{
+    public:
+        CloseCanvasWithoutSave(CanvasManager &manager): m_canvas_manage(manager){}
+        ~CloseCanvasWithoutSave(){};
+
+        void operator() ();        
+
+    private:
+        CanvasManager &m_canvas_manage; 
+};
+
 class CanvasManager : public Widget
 {
     public:
+        friend class CloseCanvasWithoutSave;
 
         CanvasManager(  const plug::LayoutBox& box):
                         Widget(box),
@@ -30,13 +45,25 @@ class CanvasManager : public Widget
                                         Title(Close_canvas_title_pos, "Do you want to save it?", Dialog_title_scale, Canvas_dialog_title_color),
                                         BaseLayoutBox(plug::Vec2d(0, 0), Dialog_window_size, box.getSize(), false, false));
 
-            Button *close_btn = new Button( getPlugTexture(Cross_button_released), getPlugTexture(Cross_button_pressed), 
+            Button *cancel_btn = new Button(getPlugTexture(Cross_button_released), getPlugTexture(Cross_button_pressed), 
                                             getPlugTexture(Cross_button_released), getPlugTexture(Cross_button_pressed), 
                                             BaseLayoutBox(Vec2d(Dialog_window_size.x - Cross_button_size.x, 0), Cross_button_size, Dialog_window_size, false, true),
                                             new Click(m_delete_canvas));
 
+            Button *close_btn = new Button( getPlugTexture(Dialog_button_no_released), getPlugTexture(Dialog_button_no_pressed), 
+                                            getPlugTexture(Dialog_button_no_released), getPlugTexture(Dialog_button_no_pressed), 
+                                            BaseLayoutBox(Dialog_button_no_pos, Dialog_button_size, Dialog_window_size, false, true),
+                                            new CloseCanvasWithoutSave(*this));
+
+            Button *confirm_btn = new Button( getPlugTexture(Dialog_button_yes_released), getPlugTexture(Dialog_button_yes_pressed), 
+                                            getPlugTexture(Dialog_button_yes_released), getPlugTexture(Dialog_button_yes_pressed), 
+                                            BaseLayoutBox(Dialog_button_yes_pos, Dialog_button_size, Dialog_window_size, false, true),
+                                            new CloseCanvasWithoutSave(*this));
+
             m_dialog_window->insertWidget(window);
+            m_dialog_window->insertWidget(cancel_btn);
             m_dialog_window->insertWidget(close_btn);
+            m_dialog_window->insertWidget(confirm_btn);
         }
     
         ~CanvasManager()

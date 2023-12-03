@@ -9,11 +9,11 @@
 class Action
 {
     public:
-        Action(){};
+        Action(){}
         
-        virtual ~Action(){};
+        virtual ~Action(){}
 
-        virtual void operator() () const = 0;
+        virtual void operator() () = 0;
     
 };
 
@@ -34,7 +34,7 @@ class Button : public Widget
         Button( plug::Texture texture_released, plug::Texture texture_covered,
                 plug::Texture texture_pressed,  plug::Texture texture_disabled,
                 const plug::LayoutBox& box,
-                const Action *action):
+                Action *action):
                 Widget(box),
                 m_texture_released(texture_released.width, texture_released.height, texture_released.data),
                 m_texture_covered(texture_covered.width, texture_covered.height, texture_covered.data),
@@ -75,7 +75,7 @@ class Button : public Widget
 
         double m_covering_time;
 
-        Action const *m_action;
+        Action *m_action;
 };
 
 
@@ -137,7 +137,7 @@ class Click : public Action
         Click(bool &ptr): m_flag(ptr){};
         ~Click(){};
 
-        void operator() () const
+        void operator() ()
         {
             m_flag ^= true;
         }

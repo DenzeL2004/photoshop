@@ -194,6 +194,27 @@ void CanvasView::onFocuse(const plug::FocuseEvent &event, plug::EHC &context)
     // brush->setColorPalette(m_color_palette);
 }
 
+void CanvasView::onSave(const plug::SaveEvent &event, plug::EHC &context)
+{
+    plug::Texture canvas_texture = m_canvas.getTexture(); 
+
+    sf::Image img;
+    img.create(canvas_texture.width, canvas_texture.height);
+    
+    for (size_t y = 0; y < canvas_texture.height; y++)
+    {
+        for (size_t x = 0; x < canvas_texture.height; x++)
+        {
+            img.setPixel(x, y, getSFMLColor(canvas_texture.getPixel(x, y)));
+        }
+    }
+
+    if (!img.saveToFile(event.file_path))
+    {
+        PROCESS_ERROR(ERR_FILE_OPEN, "failed save img by path(%s)", event.file_path);
+    }
+}
+
 void CanvasView::onParentUpdate(const plug::LayoutBox &parent_box)
 {
     Widget::onParentUpdate(parent_box);

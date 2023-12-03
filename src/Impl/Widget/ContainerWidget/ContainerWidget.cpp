@@ -41,6 +41,14 @@ void ContainerWidget::onEvent(const plug::Event &event, plug::EHC &context)
     context.stack.leave();
 }
 
+plug::Widget* ContainerWidget::getWidget(const size_t id)
+{
+    if (id >= m_widgets.getSize())
+        return nullptr;
+    
+    return m_widgets[id];
+}
+
 void ContainerWidget::insertWidget(plug::Widget* widget)
 {
     m_widgets.pushBack(widget);
