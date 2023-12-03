@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Impl/Graphic/Graphic.h"
 
 void Window::draw(plug::TransformStack& stack, plug::RenderTarget& target)
 {
@@ -24,6 +25,10 @@ void Window::draw(plug::TransformStack& stack, plug::RenderTarget& target)
     vertex_array[3].position = Vec2d(pos.x, pos.y + size.y);
 
     target.draw(vertex_array, m_texture);
+
+    plug::Vec2d abs_pos = stack.apply(plug::Vec2d(0.0, 0.0)) + m_title.pos;
+
+    writeText(target, abs_pos, m_title.msg, m_title.width, m_title.color);
 
     stack.leave();
 }

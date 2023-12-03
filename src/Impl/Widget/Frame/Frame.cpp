@@ -10,10 +10,6 @@ void Frame::draw(plug::TransformStack &stack, plug::RenderTarget &target)
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
     stack.enter(trf);
 
-    plug::Vec2d abs_pos = stack.apply(plug::Vec2d(0.0, 0.0)) + m_title.pos;
-
-    writeText(target, abs_pos, m_title.msg, m_title.width, m_title.color);
-
     size_t cnt = m_widgets.getSize();
     for (size_t it = 0; it < cnt; it++)
     {
@@ -58,8 +54,8 @@ void Frame::onParentUpdate(const plug::LayoutBox &parent_box)
     plug::LayoutBox *layout_box =  &getLayoutBox();
     layout_box->onParentUpdate(parent_box);
     
-    size_t cnt = m_widgets.getSize();
-    for (size_t it = 0; it < cnt; it++)
+    size_t size = m_widgets.getSize();
+    for (size_t it = 0; it < size; it++)
         m_widgets[it]->onParentUpdate(*layout_box);
 }
 
@@ -214,7 +210,7 @@ void Frame::onTick(const plug::TickEvent &event, plug::EHC &context)
     context.stopped = false;
 } 
 
-void Frame::addWidget(Widget* widget)
+void Frame::addWidget(plug::Widget* widget)
 {
     m_widgets.pushBack(widget);
 }

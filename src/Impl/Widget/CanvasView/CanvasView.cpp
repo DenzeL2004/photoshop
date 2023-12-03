@@ -147,14 +147,33 @@ void CanvasView::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug
 
     if (event.ctrl)
     {
-        plug::Filter* filter = m_filter_palette.getFilter(FilterPalette::FilterType::NEGATIVE);
-        assert(filter != nullptr);
+        context.stopped = useFilter(event.key_id);
+    }
+}
 
+bool CanvasView::useFilter(const plug::KeyCode key_id)
+{
+    plug::Filter* filter = nullptr;
+
+    switch (key_id)
+    {
+        case Last_filter_use:
+            filter = m_filter_palette.getLastFilter();
+            break;
+        
+        default:
+            break;
+    }
+
+    if (filter)
+    {
         filter->applyFilter(m_canvas);
         filter->release();
 
-        context.stopped = true;
+        return true;
     }
+
+    return false;
 }
 
 void CanvasView::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, plug::EHC &context)

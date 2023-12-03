@@ -13,12 +13,13 @@ class FilterPalette
 
         enum FilterType
         {
+            UNKNOWN = -1,
             NEGATIVE,
         };
 
-        FilterPalette():    m_filters(Filters_cout_max), m_last_filter(UINT64_MAX)
+        FilterPalette():    m_filters(Filters_cout_max), m_last_filter(FilterType::NEGATIVE)
         {
-            saveFilter(static_cast<plug::Filter*>(loadPlugin("obj/Plugins/Negative.so")->tryGetInterface(static_cast<size_t>(plug::PluginGuid::Filter))), FilterType::NEGATIVE);
+            saveFilter(static_cast<plug::Filter*>(loadPlugin("Plugins/Negative/Negative.so")->tryGetInterface(static_cast<size_t>(plug::PluginGuid::Filter))), FilterType::NEGATIVE);
         }
         
         ~FilterPalette()

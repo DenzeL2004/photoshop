@@ -11,7 +11,7 @@
 #include "Impl/Tool/Tools/ToolBrush.h"
 
 #include "Impl/Tool/PluginUtil.h"
-#include "Impl/Tool/Filters/FilterPalette.h"
+#include "Impl/Tool/FilterPalette/FilterPalette.h"
 
 #include "App/AppConfig.h"
 
@@ -87,6 +87,7 @@ class CanvasView: public Widget
     private:
 
         void updateTexture(void);
+        bool useFilter(const plug::KeyCode key_id);
 
         plug::Canvas &m_canvas;      
         plug::Vec2d m_scale;

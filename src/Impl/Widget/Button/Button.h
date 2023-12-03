@@ -139,7 +139,7 @@ class Click : public Action
 
         void operator() () const
         {
-            m_flag = true;
+            m_flag ^= true;
         }
 
     private:

@@ -85,9 +85,9 @@ void Button::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
     }
 }
 
-void Button::onMousePressed(const plug::MousePressedEvent &event,plug::EHC &context)
+void Button::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &context)
 {
-    if (m_state == Button::ButtonState::DISABLED)
+    if (m_state == Button::ButtonState::DISABLED || context.stopped)
         return;
 
     Transform trf(getLayoutBox().getPosition(), Default_scale);    

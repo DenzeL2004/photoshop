@@ -1,65 +1,62 @@
 
 COMPILER = g++
 
-
-FLAGS = -Wno-unused-parameter -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equal  -ggdb3						\
- 		-Winline -Wunreachable-code -Wmissing-declarations -Wmissing-include-dirs -Wswitch-default -Weffc++ -Wmain 				\
- 		-Wextra -Wall -g -pipe -fexceptions -Wcast-qual -Wctor-dtor-privacy -Wempty-body -Wformat-security 						\
- 		-Wformat=2 -Wignored-qualifiers -Wlogical-op -Wmissing-field-initializers -Wnon-virtual-dtor -Woverloaded-virtual 		\
- 		-Wpointer-arith -Wsign-promo -Wstack-usage=8192 -Wstrict-aliasing -Wstrict-null-sentinel -Wtype-limits -Wwrite-strings 	\
-
-
-SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+FLAGS = \
+ -Wno-unused-parameter -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equal 						\
+ -Winline -Wunreachable-code -Wmissing-declarations -Wmissing-include-dirs -Wswitch-default -Weffc++ -Wmain 			\
+ -Wextra -Wall -g -pipe -fexceptions -Wcast-qual -Wctor-dtor-privacy -Wempty-body -Wformat-security 					\
+ -Wformat=2 -Wignored-qualifiers -Wlogical-op -Wmissing-field-initializers -Wnon-virtual-dtor -Woverloaded-virtual 		\
+ -Wpointer-arith -Wsign-promo -Wstack-usage=8192 -Wstrict-aliasing -Wstrict-null-sentinel -Wtype-limits -Wwrite-strings \
 
 OBJ_DIR = ./obj
 SRC_DIR = ./src
 
-OUT_NAME = run
+PLUGIN_DIR = Plugins
+
+BIN = run
+
+INC_FLAGS = -I$(SRC_DIR)
 
 
-CPP = $(shell find $(SRC_DIR) -type f -name "*.cpp")
+DLL = $(shell find $(SRC_DIR)/$(PLUGIN_DIR) -type f -name "*.cpp")
+
+CPP := $(shell find $(SRC_DIR) -type f -name "*.cpp")
+CPP := $(filter-out $(DLL), $(CPP))
 
 OBJ = $(CPP:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
+DLL_OBJ = $(DLL:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
-INC_FLAGS = -I $(SRC_DIR)
+DLL_SO = $(DLL:$(SRC_DIR)/%.cpp=%.so)
+
 
 DEP = $(OBJ:%.o=%.d)
 
-all : makedir build shared
-	./$(OUT_NAME)
+all : build plugins
+	@./$(BIN)
 
 
-build : $(OUT_NAME)
+.PHONY : build
+build : $(BIN)
 
-$(OUT_NAME) : $(OBJ)
+$(BIN) : $(OBJ) $(DLL_OBJ)
 	@mkdir -p $(@D)
-	$(COMPILER) $^ -o $(OUT_NAME) $(SFML_FLAGS) $(FLAGS)
+	@$(COMPILER) $(OBJ) -o $(BIN) -lsfml-graphics -lsfml-window -lsfml-system
 
+.PHONY : plugins
+plugins : $(DLL_SO)
 
 -include $(DEP)
 
-
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
-	$(COMPILER) $(FLAGS) $(INC_FLAGS) -MMD -c $< -o $@
+	@$(COMPILER) $(FLAGS) $(INC_FLAGS) $(D_FLAGS) -MMD -fPIC -c $< -o $@
 
-# shared:	src/Impl/Tool/Tools/ToolBrush.cpp
-# 	@mkdir -p obj/Plugins
-# 	$(COMPILER) $(INC_FLAGS) -fPIE -c -fPIC src/Impl/Tool/Tools/ToolBrush.cpp -o obj/Plugins/ToolBrush.o
-# 	$(COMPILER) -shared -o obj/Plugins/ToolBrush.so obj/Plugins/ToolBrush.o
+$(PLUGIN_DIR)/%.so : $(OBJ_DIR)/$(PLUGIN_DIR)/%.o
+	@mkdir -p $(@D)
+	@$(COMPILER) -shared -z defs -o $@ $^ 
 
-shared:	src/Impl/Tool/Filters/Negative/Negative.cpp
-	@mkdir -p obj/Plugins
-	$(COMPILER) $(INC_FLAGS) -fPIE -c -fPIC src/Impl/Tool/Filters/Negative/Negative.cpp -o obj/Plugins/Negative.o
-	$(COMPILER) -shared -o obj/Plugins/Negative.so obj/Plugins/Negative.o
 
-.PHONY : makedir cleanup
-
-makedir:
-	@mkdir -p $(OBJ_DIR)
-	@mkdir -p tmp;
-	
-
+.PHONY : cleanup
 cleanup :
-	rm -rf $(OUT_NAME) $(OBJ_DIR)
+	@rm -rf $(BIN) $(OBJ_DIR) $(PLUGIN_DIR)

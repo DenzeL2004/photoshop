@@ -5,3 +5,9 @@ run
 src/container/list.h
 .vscode/settings.json
 /source
+*.d
+src/img/DialogFrame.kra
+src/img/DialogButtonNoRelease.png~
+*~
+*.kra
+*.png~
