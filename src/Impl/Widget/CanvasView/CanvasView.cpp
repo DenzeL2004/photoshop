@@ -147,7 +147,7 @@ void CanvasView::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug
 
     if (event.ctrl)
     {
-        plug::Filter* filter = m_filter_palette.getFilter(0ul);
+        plug::Filter* filter = m_filter_palette.getFilter(FilterPalette::FilterType::NEGATIVE);
         assert(filter != nullptr);
 
         filter->applyFilter(m_canvas);

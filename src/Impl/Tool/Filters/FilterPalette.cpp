@@ -40,10 +40,24 @@ void FilterPalette::setLastFilter(const size_t filter_id)
     m_last_filter = filter_id;
 }
 
-size_t FilterPalette::addFilter(plug::Filter* filter)
+bool FilterPalette::saveFilter(plug::Filter* filter, const size_t filter_id)
 {
-    assert(filter != nullptr && "adding filter is nullptr");
+    if (!filter)
+        return PROCESS_ERROR(false, "add filer is nullptr");
     
-    m_filters.pushBack(filter);
-    return m_filters.getSize();
+    if (filter_id >= Filters_cout_max)
+        return PROCESS_ERROR(false, "Can't save filter by ID(%lu). Max filters count(%lu)\n", filter_id, Filters_cout_max);        
+
+    if (!m_filters[filter_id])
+    {
+        m_filters[filter_id] = filter;
+    }
+    else
+    {
+        PROCESS_ERROR(true, "release plugin(%s) by ptr(%p)\n", m_filters[filter_id]->getPluginData()->getName(), m_filters[filter_id]);
+        m_filters[filter_id]->release();
+        m_filters[filter_id] = filter;
+    }
+
+    return true;
 }

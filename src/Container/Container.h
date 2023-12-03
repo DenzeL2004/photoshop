@@ -13,9 +13,8 @@ template<typename ItemType>
 class Container 
 {
     public:
-        Container(const size_t capacity):m_data(nullptr),  m_size(0), m_capacity(0)
+        Container(const size_t capacity):m_data(nullptr),  m_size(capacity), m_capacity(capacity)
         {
-            m_capacity = capacity;
 
             m_data = (ItemType*) calloc(m_capacity, sizeof(ItemType));
             if (m_data == nullptr)
@@ -27,7 +26,7 @@ class Container
             return;
         }
         
-        Container():Container(Init_container_capacity){}
+        Container():Container(Init_container_capacity){ m_size = 0; }
 
 
         ~Container()
@@ -101,17 +100,15 @@ class Container
             return m_data[m_size - 1];
         }
 
-        
-
-        ItemType& operator[](const size_t index) const
+        ItemType& operator[](const size_t index)
         {
-            if (index < m_size)
+            if (index < m_capacity)
                 return m_data[index];
         }
 
-        const ItemType& operator[](const size_t index)
+        const ItemType& operator[](const size_t index) const 
         {
-            if (index < m_size)
+            if (index < m_capacity)
                 return m_data[index];
         }
         

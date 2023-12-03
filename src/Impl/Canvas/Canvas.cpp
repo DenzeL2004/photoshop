@@ -38,6 +38,8 @@ Canvas::Canvas(const size_t width, const size_t height, const plug::Color color)
         PROCESS_ERROR(ERR_MEMORY_ALLOC, "Failed to create texture");
         return;
     }
+
+    m_selection_mask->fill(true);
 }
 
 Canvas::Canvas(char const* filename):
@@ -94,6 +96,8 @@ Canvas::Canvas(char const* filename):
         PROCESS_ERROR(ERR_MEMORY_ALLOC, "Failed to create texture");
         return;
     }
+
+    m_selection_mask->fill(true);
 }
 
 void Canvas::draw(const plug::VertexArray &vertex_array)
@@ -156,18 +160,19 @@ void Canvas::setSize(const plug::Vec2d &size)
     m_selection_mask    = new_selection_mask;
     m_texture           = new_texture;
 
+    m_selection_mask->fill(true);
+
     getTexture();
 }
 
 plug::SelectionMask& Canvas::getSelectionMask(void)
 {
-    m_selection_mask->fill(true);
     return *m_selection_mask;
 }
 
 plug::Color Canvas::getPixel(size_t x, size_t y) const
 {
-    return getTexture().getPixel(x, y);
+    return m_texture->getPixel(x, y);
 }
 
 void Canvas::setPixel(size_t x, size_t y, const plug::Color &color)
