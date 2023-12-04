@@ -186,7 +186,6 @@ void Frame::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &cont
             if (!m_state) m_state = Borders::TOP;
         }
     }
-    
 }
 
 void Frame::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &context)

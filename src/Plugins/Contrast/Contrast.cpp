@@ -8,7 +8,7 @@ void ContrastFilter::applyFilter(plug::Canvas &canvas) const
 
     const plug::Texture &canvas_texture = canvas.getTexture();
 
-    double lab = 0;
+    int lab = 0;
 
     for (size_t y = 0; y < canvas_texture.height; y++)
     {
@@ -16,11 +16,11 @@ void ContrastFilter::applyFilter(plug::Canvas &canvas) const
         {
             plug::Color color = canvas_texture.getPixel(x, y);
 
-            lab += static_cast<double>(color.r * Cf_r + color.g * Cf_g + color.b * Cf_b);
+            lab += static_cast<int>(color.r * Cf_r + color.g * Cf_g + color.b * Cf_b);
         }
     }
 
-    lab /= static_cast<double>(canvas_texture.height * canvas_texture.width);   
+    lab /= canvas_texture.height * canvas_texture.width;   
 
     const int Color_limit = 256;
     uint8_t color_palette[Color_limit];
@@ -29,13 +29,13 @@ void ContrastFilter::applyFilter(plug::Canvas &canvas) const
 
     for (int i = 0; i < Color_limit; i++)
     {
-        int delta = static_cast<int>(i - lab);
-        int new_color = static_cast<int>(lab + correction_cf * delta);
+        int delta = i - lab;
+        int new_color = lab + correction_cf * delta;
 
         if (new_color < 0) new_color = 0;
-        if (new_color >= Color_limit) new_color %= Color_limit;
+        if (new_color >= Color_limit) new_color = Color_limit - 1;
     
-        color_palette[i] = static_cast<uint16_t>(new_color);
+        color_palette[i] = static_cast<uint8_t>(new_color);
     }
 
     plug::Texture new_texture(canvas_texture.width, canvas_texture.height);
@@ -67,5 +67,5 @@ void ContrastFilter::applyFilter(plug::Canvas &canvas) const
 
 plug::Plugin* loadPlugin(void)
 {
-    return new ContrastFilter(-);
+    return new ContrastFilter(5);
 }

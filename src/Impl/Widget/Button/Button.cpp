@@ -133,169 +133,180 @@ void Button::doAction(void)
         (*m_action)();
 }
 
-//================================================================================
+// ================================================================================
 
-// void ButtonList::draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
-// {
-//     Button::draw(target, stack_transform);
+void ButtonList::draw(plug::TransformStack &stack, plug::RenderTarget &target)
+{
+    Button::draw(stack, target);
+
+    Transform trf(getLayoutBox().getPosition(), Default_scale);
+    stack.enter(trf);
     
-//     size_t size = buttons_.getSize();
-//     for (size_t it = 0; it < size; it++)
-//     {
-//         if (buttons_[it]->m_state != Button::ButtonState::DISABLED)
-//             buttons_[it]->draw(target, stack_transform); 
-//     }
-// }
+    size_t size = m_buttons.getSize();
+    for (size_t it = 0; it < size; it++)
+    {
+        m_buttons[it]->draw(stack, target);
+    }
 
-//================================================================================
+    stack.leave();
+}
 
-// bool ButtonList::onMouseMoved(const Vec2d &pos, Container<Transform> &stack_transform)
-// {
-//     if (m_state ==  Button::ButtonState::DISABLED)
-//         return false;
+void ButtonList::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
+{
+    if (m_state ==  Button::ButtonState::DISABLED)
+    {
+        context.stopped = false;
+        return;
+    }
 
-//     Transform trf(getLayoutBox().getPosition(), Default_scale);
-//     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
+    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
+    context.stack.enter(trf);
+
+    context.stopped = covers(context.stack, event.pos);
+
+    if (!context.stopped)
+    { 
+        m_covering_time = 0;
+        m_state = m_prev_state;
+    }
+    else
+    {
+        if (m_state !=  Button::ButtonState::COVERED)
+        {
+            m_prev_state = m_state;
+            m_state =  Button::ButtonState::COVERED;
+        }
+    }
+
+    size_t size = m_buttons.getSize();
+    for (size_t it = 0; it < size; it++)
+    {
+        if (m_prev_state == Button::ButtonState::PRESSED || 
+            m_state == Button::ButtonState::COVERED)
+        {
+            m_buttons[it]->m_state = m_buttons[it]->m_prev_state;
+            m_buttons[it]->onEvent(event, context);
+        }
+        else
+        {
+            m_buttons[it]->m_state = Button::ButtonState::DISABLED;
+        }
+    }
     
-//     Transform last_trf = stack_transform.getBack();
-//     Dot local_pos = last_trf.restore(pos);
+    context.stack.leave();
+}
 
-//     stack_transform.popBack();
+void ButtonList::onMousePressed(const plug::MousePressedEvent &event,plug::EHC &context)
+{
+    if (m_state == Button::ButtonState::DISABLED) return;
 
-//     bool flag = checkIn(local_pos);
+    if (context.stopped)
+    {
+        m_state      = Button::ButtonState::RELEASED;
+        m_prev_state = Button::ButtonState::RELEASED;
+        return;
+    }
 
-//     if (!flag)
-//     { 
-//         m_covering_time = 0;
-//         m_state = m_prev_state;
-//     }
-//     else
-//     {
-//         if (m_state !=  Button::ButtonState::COVERED)
-//         {
-//             m_prev_state = m_state;
-//             m_state =  Button::ButtonState::COVERED;
-//         }
-//     }
+    context.stopped = false;
 
-//     size_t size = buttons_.getSize();
-//     for (size_t it = 0; it < size; it++)
-//     {
-//         if (m_prev_state == Button::ButtonState::PRESSED)
-//         {
-//             buttons_[it]->m_state = buttons_[it]->m_prev_state;
-//             buttons_[it]->onMouseMoved(pos, stack_transform);
-//         }
-//         else
-//             buttons_[it]->m_state = Button::ButtonState::DISABLED;
-//     }
-    
-//     return flag;
-// }
-
-// //================================================================================
-
-// bool ButtonList::onMousePressed(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
-// {
-//     if (m_state == Button::ButtonState::DISABLED)
-//         return false;
-    
-//     bool flag = false;
-    
-//     if (m_state == Button::ButtonState::PRESSED)
-//     {
-//         size_t size = buttons_.getSize();
-
-//         int last_presed = -1;
-//         for (size_t it = 0; it < size; it++)
-//         {
-//             if (buttons_[it]->m_state == Button::ButtonState::PRESSED) last_presed = it;
-//             flag |= buttons_[it]->onMousePressed(pos, key, stack_transform);
-            
-
-//             buttons_[it]->m_prev_state = buttons_[it]->m_state;
-//             buttons_[it]->m_state = Button::ButtonState::DISABLED;
-//         }
-
-//         if (!flag && last_presed != -1)
-//             buttons_[last_presed]->m_prev_state = Button::ButtonState::PRESSED;
-
-
-//         m_state      = Button::ButtonState::RELEASED;
-//         m_prev_state = Button::ButtonState::RELEASED;
-        
-//     }
+    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
+    context.stack.enter(trf);
    
-//     if (flag) return true;
+    if (m_prev_state == Button::ButtonState::PRESSED || m_state == Button::ButtonState::PRESSED)
+    {
+        size_t size = static_cast<int>(m_buttons.getSize());
 
-//     Transform trf(getLayoutBox().getPosition(), Default_scale);
-//     stack_transform.pushBack(trf.combine(stack_transform.getBack()));
+        int last_presed = -1;
+        int current_pressed = -1;
+        for (int it = 0; it < size; it++)
+        {
+            context.stopped = false;
+            if (m_buttons[it]->m_prev_state == Button::ButtonState::PRESSED) 
+            {
+                last_presed = it;
+            }
+
+            m_buttons[it]->onEvent(event, context);
+            if (context.stopped) 
+            {
+                current_pressed = it;
+            }
+            
+            m_buttons[it]->m_prev_state = m_buttons[it]->m_state;
+            m_buttons[it]->m_state = Button::ButtonState::DISABLED;
+        }
+
+
+        if (current_pressed == -1 && last_presed >= 0)
+        {
+            m_buttons[last_presed]->m_prev_state = Button::ButtonState::PRESSED;
+        }
+
+        if (current_pressed >= 0)
+        {
+            m_buttons[current_pressed]->m_prev_state = Button::ButtonState::PRESSED;
+        }
+
+        context.stopped = (current_pressed != -1);
+
+        m_state      = Button::ButtonState::RELEASED;
+        m_prev_state = Button::ButtonState::RELEASED;
+    }
+    else
+    {
+        context.stopped = covers(context.stack, event.pos);
+
+        if (context.stopped)
+        {
+            size_t size = m_buttons.getSize();
+            for (size_t it = 0; it < size; it++)
+            {
+                m_buttons[it]->m_state = m_buttons[it]->m_prev_state;
+            }
+
+            m_state      = Button::ButtonState::PRESSED;
+            m_prev_state = Button::ButtonState::PRESSED;
+        }
+    }
+
+    context.stack.leave();
+}
+
+void ButtonList::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &context)
+{
+    if (m_state == Button::ButtonState::DISABLED)
+        return;
+        
+    context.stopped = false;
+}
+
+void ButtonList::onTick(const plug::TickEvent &event, plug::EHC &context)
+{
+    Button::onTick(event, context);
+
+    size_t size = m_buttons.getSize();
+    for (size_t it = 0; it < size; it++)
+    {
+        m_buttons[it]->onEvent(event, context);
+    }
+}
+
+void ButtonList::onParentUpdate(const plug::LayoutBox &parent_box)
+{
+    plug::LayoutBox &layout_box = getLayoutBox();
+    layout_box.onParentUpdate(parent_box);
     
-//     Transform last_trf = stack_transform.getBack();
-//     Dot local_pos = last_trf.restore(pos);
-
-//     flag = checkIn(local_pos);
-//     stack_transform.popBack();
-
-//     if (flag && m_state != Button::ButtonState::PRESSED)
-//     {
-//         if (key == MouseKey::LEFT)
-//         {
-//             if (m_action != nullptr) (*m_action)();
-//             m_state =  Button::ButtonState::PRESSED;
-//         }
-//     }
-//     else
-//         m_state =  Button::ButtonState::RELEASED;
-    
-//     return flag;
-// }
-
-// //================================================================================
+    size_t size = m_buttons.getSize();
+    for (size_t it = 0; it < size; it++)
+    {
+        m_buttons[it]->onParentUpdate(layout_box);
+    }
+}
 
 
-// bool ButtonList::onMouseReleased(const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform)
-// {
-//     if (m_state == Button::ButtonState::DISABLED)
-//         return false;
-
-//     return true;
-// }
-
-// //================================================================================
-
-// bool ButtonList::onKeyboardPressed(const KeyboardKey key)
-// {
-//     printf("ButtonList: mouse keyboard kye pressed\n");
-//     return false;
-// }
-
-// //================================================================================
-
-// bool ButtonList::onKeyboardReleased(const KeyboardKey key)
-// {
-//     printf("ButtonList: mouse keyboard kye released\n");
-//     return false;
-// }
-
-// //================================================================================
-
-// bool ButtonList::onTick(const time_t delta_time)
-// {
-//     m_covering_time += delta_time;
-
-//     size_t size = buttons_.getSize();
-//     for (size_t it = 0; it < size; it++)
-//     {
-//         buttons_[it]->onTick(delta_time);
-//     }
-
-//     return false;
-// }
-
-// //================================================================================
-
-// void ButtonList::addButton(Button *button)
-// {
-//     buttons_.pushBack(button);
-// }
+void ButtonList::addButton(Button *button)
+{
+    button->m_state      = Button::DISABLED;
+    button->m_prev_state = Button::RELEASED;
+    m_buttons.pushBack(button);
+}

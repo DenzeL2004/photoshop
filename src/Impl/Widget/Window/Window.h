@@ -77,6 +77,8 @@ class Window : public Widget
         virtual void draw (plug::TransformStack& stack, plug::RenderTarget& target);  
 
     protected:
+
+        void onMousePressed(const plug::MousePressedEvent &event, plug::EHC &context);
         
         plug::Texture m_texture;
 

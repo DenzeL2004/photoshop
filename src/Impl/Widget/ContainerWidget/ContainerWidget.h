@@ -36,8 +36,6 @@ class ContainerWidget: public Widget
     protected:
 
         Container<plug::Widget*> m_widgets;
-
-    private:
 };
 
 #endif

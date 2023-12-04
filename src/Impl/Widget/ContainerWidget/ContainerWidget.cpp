@@ -17,13 +17,13 @@ void ContainerWidget::draw(plug::TransformStack &stack, plug::RenderTarget &targ
 
 void ContainerWidget::onParentUpdate(const plug::LayoutBox &parent_box)
 {
-    plug::LayoutBox *layout_box =  &getLayoutBox();
-    layout_box->onParentUpdate(parent_box);
+    plug::LayoutBox &layout_box = getLayoutBox();
+    layout_box.onParentUpdate(parent_box);
     
     size_t size = m_widgets.getSize();
     for (size_t it = 0; it < size; it++)
     {
-        m_widgets[it]->onParentUpdate(*layout_box);
+        m_widgets[it]->onParentUpdate(layout_box);
     }
 }
 
@@ -32,10 +32,19 @@ void ContainerWidget::onEvent(const plug::Event &event, plug::EHC &context)
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
     context.stack.enter(trf);
 
-    int size = static_cast<int>(m_widgets.getSize());
-    for (int it = size - 1; it >= 0; it--)
+    bool flag = true;
+    if (event.getType() == plug::EventType::MousePressed)
     {
-        m_widgets[it]->onEvent(event, context);
+        flag = covers(context.stack, static_cast<const plug::MousePressedEvent&>(event).pos);
+    }
+
+    if (flag)
+    {
+        int size = static_cast<int>(m_widgets.getSize());
+        for (int it = size - 1; it >= 0; it--)
+        {
+            m_widgets[it]->onEvent(event, context);   
+        }
     }
 
     context.stack.leave();

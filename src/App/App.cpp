@@ -23,15 +23,38 @@ AppWidget::AppWidget():
                                                   box.getSize(), 
                                                   true, true)));
 
+    m_widgets.pushBack( new Window( getPlugTexture(Config_bar_texture), 
+                                    Title(),
+                                    BaseLayoutBox(Config_bar_pos, 
+                                                  Config_bar_size, 
+                                                  box.getSize(), 
+                                                  true, true)));
+
+    ButtonList *file_button = new ButtonList(getPlugTexture(Menu_file_released), getPlugTexture(Menu_file_pressed), 
+                                             getPlugTexture(Menu_file_pressed),  getPlugTexture(Menu_file_pressed), 
+                                             BaseLayoutBox(File_button_pos, File_button_size, box.getSize(), false, false));
+
+    Button *dum1 = new Button(getPlugTexture(Menu_file_released), getPlugTexture(Menu_file_pressed), 
+                                             getPlugTexture(Menu_file_pressed), getPlugTexture(Empty_texture), 
+                                             BaseLayoutBox(File_button_pos + Menu_button_size, File_button_size, file_button->getLayoutBox().getSize(), false, false), nullptr);
+
+
+    Button *dum2 = new Button(getPlugTexture(Menu_file_released), getPlugTexture(Menu_file_pressed), 
+                                            getPlugTexture(Menu_file_pressed), getPlugTexture(Empty_texture), 
+                                            BaseLayoutBox(File_button_pos + 2 * Menu_button_size, File_button_size, file_button->getLayoutBox().getSize(), false, false), nullptr);
+    file_button->addButton(dum1);
+    file_button->addButton(dum2);
+
+    m_widgets.pushBack(file_button);
+
     CanvasManager* manager = new CanvasManager(BaseLayoutBox(Canvase_manager_pos, Canvase_manager_size, box.getSize(), false, false));
 
 
     manager->createCanvas(m_filter_palette, m_color_palette, nullptr);
     manager->createCanvas(m_filter_palette, m_color_palette, "src/img/pika.png");
 
+    
     m_widgets.pushBack(manager);
-
-    m_widgets.pushBack(new TextBox(100, 2.0, BaseLayoutBox(Canvase_manager_pos, Canvase_manager_size, box.getSize(), false, true)));
 
     // widgets_.pushBack(new Button("src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
     //                             "src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
@@ -123,39 +146,30 @@ void AppWidget::onEvent(const plug::Event &event, plug::EHC &context)
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
     context.stack.enter(trf);
 
-    bool handel_event = false;
+    context.stopped = false;
 
-    size_t size = m_widgets.getSize();
-
-    for (size_t it = 0; it < size; it++)
+    int size = static_cast<int>(m_widgets.getSize());
+    for (int it = size - 1; it >= 0; it--)
     {
-        context.stopped = false;
-        m_widgets[it]->onEvent(event, context);
-
-        if (context.stopped)
-        {
-            handel_event = true;
-        }
+        m_widgets[it]->onEvent(event, context);   
     }
 
-    if (!handel_event)
+    if (!context.stopped)
     {
         Widget::onEvent(event, context);
     }
-
-    context.stopped |= handel_event;
 
     context.stack.leave();
 }
 
 void AppWidget::onParentUpdate(const plug::LayoutBox &parent_box)
 {
-    plug::LayoutBox *layout_box =  &getLayoutBox();
-    layout_box->onParentUpdate(parent_box);
+    plug::LayoutBox &layout_box = getLayoutBox();
+    layout_box.onParentUpdate(parent_box);
     
-    size_t cnt = m_widgets.getSize();
-    for (size_t it = 0; it < cnt; it++)
-        m_widgets[it]->onParentUpdate(*layout_box);
+    size_t size = m_widgets.getSize();
+    for (size_t it = 0; it < size; it++)
+        m_widgets[it]->onParentUpdate(layout_box);
 }
 
 void AppWidget::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)

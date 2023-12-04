@@ -32,3 +32,8 @@ void Window::draw(plug::TransformStack& stack, plug::RenderTarget& target)
 
     stack.leave();
 }
+
+void Window::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &context)
+{
+    context.stopped = context.overlapped = covers(context.stack, event.pos); 
+}

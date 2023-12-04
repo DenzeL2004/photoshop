@@ -44,8 +44,8 @@ void CanvasManager::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &co
 
 void CanvasManager::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &context)
 {
-    context.stopped = false;
-    
+    if (context.stopped) return;
+
     int size = static_cast<int>(m_widgets.getSize());
 
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
