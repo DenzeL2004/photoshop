@@ -156,7 +156,7 @@ char TextBox::defineSymbol(const plug::KeyboardPressedEvent &event) const
         symbol = '/';
     }
 
-    if (key_code == plug::KeyCode::Comma)
+    if (key_code == plug::KeyCode::Period)
     {
        
         symbol = '.';

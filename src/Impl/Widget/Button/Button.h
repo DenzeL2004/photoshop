@@ -31,8 +31,8 @@ class Button : public Widget
             DISABLED,
         };
 
-        Button( plug::Texture texture_released, plug::Texture texture_covered,
-                plug::Texture texture_pressed,  plug::Texture texture_disabled,
+        Button( const plug::Texture &texture_released, const plug::Texture &texture_covered,
+                const plug::Texture &texture_pressed,  const plug::Texture &texture_disabled,
                 const plug::LayoutBox& box,
                 Action *action):
                 Widget(box),

@@ -59,7 +59,7 @@ class Window : public Widget
 {
     public:
 
-        Window( plug::Texture texture,
+        Window( const plug::Texture &texture,
                 const Title &title,
                 const plug::LayoutBox& box, 
                 const Widget *parent = nullptr):

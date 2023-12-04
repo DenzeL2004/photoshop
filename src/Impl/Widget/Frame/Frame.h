@@ -24,7 +24,7 @@ class Frame: public Window
             BOTTOM  = 1 << 4,
         };
 
-        Frame(  plug::Texture texture,
+        Frame(  const plug::Texture &texture,
                 const Title &title,
                 const plug::LayoutBox& box, 
                 const Widget *parent = nullptr):
