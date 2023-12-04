@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-static void getSymbolColorData(plug::Color *data, const char symbol, const plug::Color color);
+static void getSymbolTexture(plug::Color *data, const char symbol, const plug::Color color);
 
 void drawLine(plug::RenderTarget &target, 
               const plug::Vec2d &begin, const plug::Vec2d &end, const plug::Color color)
@@ -49,10 +49,10 @@ void drawRectangle(plug::RenderTarget &target,
 }
 
 void writeText(plug::RenderTarget &target, const plug::Vec2d &pos, 
-               const std::string &text, const double thicknesses,
+               const char *text, const double thicknesses,
                const plug::Color color)
 {
-    size_t len = text.size();
+    size_t len = strlen(text);
 
     if (len == 0) return;
 
@@ -68,7 +68,7 @@ void writeText(plug::RenderTarget &target, const plug::Vec2d &pos,
 
     for (size_t it = 0; it < len; it++)
     {
-        getSymbolColorData(data, text[it], color);
+        getSymbolTexture(data, text[it], color);
 
         plug::Texture texture(plug::Symbol_width, plug::Symbol_height, data);
 
@@ -85,7 +85,7 @@ void writeText(plug::RenderTarget &target, const plug::Vec2d &pos,
     delete[] data;
 }
 
-static void getSymbolColorData(plug::Color *data, const char symbol, const plug::Color color)
+static void getSymbolTexture(plug::Color *data, const char symbol, const plug::Color color)
 {
     const bool *mask = plug::Unknown;
 

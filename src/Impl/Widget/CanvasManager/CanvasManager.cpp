@@ -25,8 +25,7 @@ void CanvasManager::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &co
 {
     context.stopped = false;
     
-    int size = static_cast<int>(m_widgets.getSize());
-    if (size == 0) return;
+    
 
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
     context.stack.enter(trf);
@@ -37,6 +36,7 @@ void CanvasManager::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &co
         return;
     }
 
+    int size = static_cast<int>(m_widgets.getSize());
     m_widgets[size - 1]->onEvent(event, context);
 
     context.stack.leave();
@@ -47,7 +47,6 @@ void CanvasManager::onMousePressed(const plug::MousePressedEvent &event, plug::E
     context.stopped = false;
     
     int size = static_cast<int>(m_widgets.getSize());
-    if (size == 0) return;
 
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
     context.stack.enter(trf);
@@ -66,7 +65,6 @@ void CanvasManager::onMousePressed(const plug::MousePressedEvent &event, plug::E
     context.stopped = false;
     for (int it = size - 1; it >= 0; it--)
     {
-        //m_delete_canvas = false;
         m_widgets[it]->onEvent(event, context);
         
         if (context.stopped)
@@ -77,12 +75,6 @@ void CanvasManager::onMousePressed(const plug::MousePressedEvent &event, plug::E
             m_canvases.drown(it);
 
             m_widgets[size - 1]->onEvent(plug::FocuseEvent(true), context);            
-            
-            // if (m_delete_canvas)
-            // {
-            //     m_widgets.popBack();
-            //     m_canvases.popBack();
-            // }
 
             context.stopped = true;
 
@@ -96,9 +88,6 @@ void CanvasManager::onMousePressed(const plug::MousePressedEvent &event, plug::E
 void CanvasManager::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &context)
 {
     context.stopped = false;
-    
-    int size = static_cast<int>(m_widgets.getSize());
-    if (size == 0) return;
 
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
     context.stack.enter(trf);
@@ -109,6 +98,7 @@ void CanvasManager::onMouseReleased(const plug::MouseReleasedEvent &event, plug:
         return;
     }
 
+    int size = static_cast<int>(m_widgets.getSize());
     for (int it = size - 1; it >= 0; it--)
     {
         m_widgets[it]->onEvent(event, context);
@@ -120,9 +110,6 @@ void CanvasManager::onMouseReleased(const plug::MouseReleasedEvent &event, plug:
 void CanvasManager::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
 {
     context.stopped = false;
-    
-    int size = static_cast<int>(m_widgets.getSize());
-    if (size == 0) return;
 
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
     context.stack.enter(trf);
@@ -133,6 +120,7 @@ void CanvasManager::onKeyboardPressed(const plug::KeyboardPressedEvent &event, p
         return;
     }
 
+    int size = static_cast<int>(m_widgets.getSize());
     m_widgets[size - 1]->onEvent(event, context);
 
     context.stack.leave();
@@ -141,9 +129,6 @@ void CanvasManager::onKeyboardPressed(const plug::KeyboardPressedEvent &event, p
 void CanvasManager::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, plug::EHC &context)
 {
     context.stopped = false;
-    
-    int size = static_cast<int>(m_widgets.getSize());
-    if (size == 0) return;
 
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
     context.stack.enter(trf);
@@ -154,6 +139,7 @@ void CanvasManager::onKeyboardReleased(const plug::KeyboardReleasedEvent &event,
         return;
     }
 
+    int size = static_cast<int>(m_widgets.getSize());
     m_widgets[size - 1]->onEvent(event, context);
 
     context.stack.leave();
@@ -162,9 +148,6 @@ void CanvasManager::onKeyboardReleased(const plug::KeyboardReleasedEvent &event,
 void CanvasManager::onTick(const plug::TickEvent &event, plug::EHC &context)
 {
     context.stopped = false;
-    
-    int size = static_cast<int>(m_widgets.getSize());
-    if (size == 0) return;
 
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
     context.stack.enter(trf);
@@ -175,9 +158,28 @@ void CanvasManager::onTick(const plug::TickEvent &event, plug::EHC &context)
         return;
     }
 
+    int size = static_cast<int>(m_widgets.getSize());
     m_widgets[size - 1]->onEvent(event, context);
 
     context.stack.leave();
+}
+
+
+void CanvasManager::onEvent(const plug::Event &event, plug::EHC &context)
+{
+    context.stopped = false;
+    size_t size = m_widgets.getSize(); 
+
+    if (size == 0) return;
+
+    if (event.getType() == plug::Save)
+    {
+        m_widgets[size - 1]->onEvent(event, context);
+    }
+    else
+    {
+        Widget::onEvent(event, context);
+    }
 }
 
 void CanvasManager::createCanvas(FilterPalette &filter_palette,
@@ -256,22 +258,75 @@ void CanvasManager::onParentUpdate(const plug::LayoutBox &parent_box)
     }
 }
 
-plug::Canvas* CanvasManager::getActiveCanvas(void)
+plug::Widget* CanvasManager::getActiveCanvas(void)
 {
-    size_t size = m_canvases.getSize();
+    size_t size = m_widgets.getSize();
     if (size == 0)
         return nullptr;
 
-    return m_canvases[size - 1];
+    return m_widgets[size - 1];
 }
 
 void CloseCanvasWithoutSave::operator()()
-
 {
-    if (m_canvas_manage.m_delete_canvas)
+    if (m_canvas_manager.m_delete_canvas)
     {
-        m_canvas_manage.m_widgets.popBack();
-        m_canvas_manage.m_canvases.popBack();
-        m_canvas_manage.m_delete_canvas = false;
+        m_canvas_manager.m_widgets.popBack();
+        m_canvas_manager.m_canvases.popBack();
+        m_canvas_manager.m_delete_canvas = false;
     }
+}
+
+void CloseCanvasWithSave::operator()()
+{
+    ContainerWidget *entry_window = new ContainerWidget(BaseLayoutBox(plug::Vec2d(0, 0), Dialog_window_size, 
+                                                        m_canvas_manager.m_dialog_window->getLayoutBox().getSize(), false, false));
+
+    Window *window = new Window(getPlugTexture(Entry_window_texture),
+                                Title(Filt_path_title_pos, File_path_name, Entry_title_scale, Canvas_dialog_title_color),
+                                BaseLayoutBox(Entry_window_pos, Entry_window_size, entry_window->getLayoutBox().getSize(), false, false));
+
+    Window *entry_field = new Window(getPlugTexture(Entry_field_texture),
+                                Title(),
+                                BaseLayoutBox(Entry_field_pos, Entry_field_size, entry_window->getLayoutBox().getSize(), false, false));
+
+
+    Button *cancel_btn = new Button(getPlugTexture(Dialog_button_cancel_released), getPlugTexture(Dialog_button_cancel_pressed), 
+                                    getPlugTexture(Dialog_button_cancel_released), getPlugTexture(Dialog_button_cancel_pressed), 
+                                    BaseLayoutBox(Entry_button_cancel_pos, Dialog_button_size, Dialog_window_size, false, true),
+                                    new EraseLastWidget(*m_canvas_manager.m_dialog_window));
+
+    Button *confirm_btn = new Button(getPlugTexture(Dialog_button_confirm_released), getPlugTexture(Dialog_button_confirm_pressed), 
+                                    getPlugTexture(Dialog_button_confirm_released), getPlugTexture(Dialog_button_confirm_pressed), 
+                                    BaseLayoutBox(Entry_button_confirm_pos, Dialog_button_size, Dialog_window_size, false, true),
+                                    new CloseCanvasWithSave::SaveCanvas(m_canvas_manager));
+
+    TextBox *text_box = new TextBox(30, Entry_title_scale, BaseLayoutBox(Entry_field_pos + plug::Vec2d(40, 25), Entry_field_size, entry_window->getLayoutBox().getSize(), false, false));
+    text_box->setColor(plug::White);
+
+    entry_window->insertWidget(window);
+    entry_window->insertWidget(entry_field);
+    entry_window->insertWidget(cancel_btn);
+    entry_window->insertWidget(confirm_btn);
+    entry_window->insertWidget(text_box);
+
+    m_canvas_manager.m_dialog_window->insertWidget(entry_window);
+}   
+
+#include <cstdio>
+#include <iostream>
+
+void CloseCanvasWithSave::SaveCanvas::operator()()
+{
+    ContainerWidget *entery_window = static_cast<ContainerWidget*>(m_canvas_manager.m_dialog_window->getLastWidget());
+    TextBox *text_box = static_cast<TextBox*>(entery_window->getLastWidget());
+
+    m_canvas_manager.m_delete_canvas = false;    
+
+    TransformStack stack;
+    plug::EHC context = {(plug::TransformStack&)stack, false, false};
+    m_canvas_manager.onEvent(plug::SaveEvent(text_box->getString()), context);
+
+    m_canvas_manager.m_dialog_window->eraseWidget();
+    m_canvas_manager.m_widgets.popBack();
 }

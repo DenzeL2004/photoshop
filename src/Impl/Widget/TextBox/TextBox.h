@@ -10,15 +10,24 @@
 class TextBox : public Widget
 {
     public:
-        TextBox(    const size_t limit_cnt_symbols, const size_t thicknesses,
+        TextBox(    const size_t limit_cnt_symbols, const double thicknesses,
                     const plug::LayoutBox &box):
                 Widget(box),
                 m_thicknesses(thicknesses), m_limit_cnt_symbols(limit_cnt_symbols), m_color(plug::Color(0, 0, 0)),
                 m_cnt_symbols(0), m_acume_time(0), 
                 m_cursor_pos_x(0), m_cursor_pos_y(0),
-                m_buf(limit_cnt_symbols, '\0'){}
+                m_buf(new char[limit_cnt_symbols])
+        {
+            for (size_t it = 0; it < m_limit_cnt_symbols; it++)
+            {
+                m_buf[it] = '\0';
+            }
+        }
 
-        virtual ~TextBox(){}
+        virtual ~TextBox()
+        {
+            delete[] m_buf;
+        }
 
 
         TextBox(const TextBox &other) = delete;
@@ -31,7 +40,7 @@ class TextBox : public Widget
         void clear(void);
         void setColor(plug::Color color) { m_color = color; }
 
-        const std::string& getString(void) const {return m_buf;}
+        const char* const getString(void) const {return m_buf;}
 
     protected:
 
@@ -42,7 +51,10 @@ class TextBox : public Widget
         virtual void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &context);
     
     private:
-        size_t m_thicknesses;
+
+        char defineSymbol(const plug::KeyboardPressedEvent &event) const;
+
+        double m_thicknesses;
         
         size_t m_limit_cnt_symbols;
         plug::Color m_color;
@@ -54,7 +66,7 @@ class TextBox : public Widget
         size_t m_cursor_pos_x;
         size_t m_cursor_pos_y;
 
-        std::string m_buf;
+        char *m_buf;
 };
 
 #endif

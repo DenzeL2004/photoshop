@@ -48,6 +48,11 @@ void CanvasView::onEvent(const plug::Event &event, plug::EHC &context)
         CanvasView::onFocuse((const plug::FocuseEvent&)event, context);
     }
 
+    if (event.getType() == plug::Save)
+    {
+        CanvasView::onSave((const plug::SaveEvent&)event, context);
+    }
+
     Widget::onEvent(event, context);
 
     context.stack.leave();
@@ -194,6 +199,8 @@ void CanvasView::onFocuse(const plug::FocuseEvent &event, plug::EHC &context)
     // brush->setColorPalette(m_color_palette);
 }
 
+#include <iostream>
+
 void CanvasView::onSave(const plug::SaveEvent &event, plug::EHC &context)
 {
     plug::Texture canvas_texture = m_canvas.getTexture(); 
@@ -203,7 +210,7 @@ void CanvasView::onSave(const plug::SaveEvent &event, plug::EHC &context)
     
     for (size_t y = 0; y < canvas_texture.height; y++)
     {
-        for (size_t x = 0; x < canvas_texture.height; x++)
+        for (size_t x = 0; x < canvas_texture.width; x++)
         {
             img.setPixel(x, y, getSFMLColor(canvas_texture.getPixel(x, y)));
         }

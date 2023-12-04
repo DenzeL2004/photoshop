@@ -48,7 +48,7 @@ static const char *Dialog_window_texture = "src/img/DialogFrame.png";
 static const plug::Vec2d Dialog_window_size = plug::Vec2d(480, 180);
 
 static const char *Close_canvas_title = "Do you want to save it?";
-const double Dialog_title_scale = 1.9;
+static const double Dialog_title_scale = 1.9;
 static const plug::Vec2d Close_canvas_title_pos = plug::Vec2d(  Dialog_window_size.x / 2 - strlen(Close_canvas_title) / 2 * Dialog_title_scale * 7, 
                                                                 Dialog_window_size.y / 3);
 
@@ -56,13 +56,52 @@ static const plug::Color Canvas_dialog_title_color = plug::White;
 
 static const plug::Vec2d Dialog_button_size = plug::Vec2d(80, 25);
 
+static const char *Dialog_button_cancel_released = "src/img/DialogButtonCancelReleased.png";
+static const char *Dialog_button_cancel_pressed  = "src/img/DialogButtonCancelPressed.png";
+static const plug::Vec2d Dialog_button_cancel_pos = plug::Vec2d(Dialog_window_size.x * 0.2 - Dialog_button_size.x / 2, Dialog_window_size.y * 0.6);
+
+static const char *Dialog_button_confirm_released = "src/img/DialogButtonConfirmReleased.png";
+static const char *Dialog_button_confirm_pressed  = "src/img/DialogButtonConfirmPressed.png";
+static const plug::Vec2d Dialog_button_confirm_pos = plug::Vec2d(Dialog_window_size.x * 0.2 - Dialog_button_size.x / 2, Dialog_window_size.y * 0.6);
+
 static const char *Dialog_button_no_released = "src/img/DialogButtonNoReleased.png";
 static const char *Dialog_button_no_pressed  = "src/img/DialogButtonNoPressed.png";
-static const plug::Vec2d Dialog_button_no_pos = plug::Vec2d(Dialog_window_size.x / 4 - Dialog_button_size.x / 2, Dialog_window_size.y * 0.6);
+static const plug::Vec2d Dialog_button_no_pos = plug::Vec2d(Dialog_window_size.x * 0.5 - Dialog_button_size.x / 2, Dialog_window_size.y * 0.6);
 
 static const char *Dialog_button_yes_released = "src/img/DialogButtonYesReleased.png";
 static const char *Dialog_button_yes_pressed  = "src/img/DialogButtonYesPressed.png";
-static const plug::Vec2d Dialog_button_yes_pos = plug::Vec2d(Dialog_window_size.x * 0.75 - Dialog_button_size.x / 2, Dialog_window_size.y * 0.6);
+static const plug::Vec2d Dialog_button_yes_pos = plug::Vec2d(Dialog_window_size.x * 0.8 - Dialog_button_size.x / 2, Dialog_window_size.y * 0.6);
+
+//================================================================
+
+static const char *Entry_window_texture = "src/img/DialogFrame.png";
+static const plug::Vec2d Entry_window_pos  = plug::Vec2d(-10, -10);
+static const plug::Vec2d Entry_window_size = plug::Vec2d(600, 210);
+
+static const char *File_path_name = "File path ";
+static const double Entry_title_scale = 1.9;
+static const plug::Vec2d Filt_path_title_pos = plug::Vec2d(50, 45);
+
+static const char *Entry_field_texture = "src/img/EntryWindow.png";
+static const plug::Vec2d Entry_field_pos  = plug::Vec2d(20, 50);
+static const plug::Vec2d Entry_field_size = plug::Vec2d(Entry_window_size.x * 0.9, Entry_title_scale * 30);
+
+static const plug::Vec2d Entry_button_cancel_pos = plug::Vec2d(Entry_window_size.x * 0.65 - Dialog_button_size.x / 2, Entry_window_size.y * 0.55);
+static const plug::Vec2d Entry_button_confirm_pos = plug::Vec2d(Entry_window_size.x * 0.8 - Dialog_button_size.x / 2, Entry_window_size.y * 0.55);
+
+
+
+// static const plug::Color Canvas_dialog_title_color = plug::White;
+
+// static const plug::Vec2d Dialog_button_size = plug::Vec2d(80, 25);
+
+// static const char *Dialog_button_no_released = "src/img/DialogButtonNoReleased.png";
+// static const char *Dialog_button_no_pressed  = "src/img/DialogButtonNoPressed.png";
+// static const plug::Vec2d Dialog_button_no_pos = plug::Vec2d(Dialog_window_size.x / 4 - Dialog_button_size.x / 2, Dialog_window_size.y * 0.6);
+
+// static const char *Dialog_button_yes_released = "src/img/DialogButtonYesReleased.png";
+// static const char *Dialog_button_yes_pressed  = "src/img/DialogButtonYesPressed.png";
+// static const plug::Vec2d Dialog_button_yes_pos = plug::Vec2d(Dialog_window_size.x * 0.75 - Dialog_button_size.x / 2, Dialog_window_size.y * 0.6);
 
 
 //================================================================

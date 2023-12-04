@@ -61,13 +61,7 @@ void TextBox::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::E
 {    
     plug::KeyCode key_code = event.key_id;
 
-    bool flag = (key_code >= plug::KeyCode::A && key_code <= plug::KeyCode::Z)        || 
-                (key_code >= plug::KeyCode::Num0 && key_code <= plug::KeyCode::Num9)  ||
-                (key_code == plug::KeyCode::Left || key_code == plug::KeyCode::Right  || key_code == plug::KeyCode::Backspace);
-
     context.stopped = false;
-
-    if (!flag) return;
 
     if (key_code == plug::KeyCode::Left)
     {
@@ -121,6 +115,28 @@ void TextBox::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::E
         return;
     }
 
+    char symbol = defineSymbol(event);
+    
+    if (symbol == '\0') return;
+
+    for (size_t it = m_cnt_symbols; it >= m_cursor_pos_x + 1; it--)
+    {
+        std::swap(m_buf[it], m_buf[it - 1]);
+    }
+
+    m_buf[m_cursor_pos_x] = symbol;
+    m_cursor_pos_x++;
+    m_cnt_symbols++;
+
+    getLayoutBox().setSize(Vec2d(m_cnt_symbols, m_thicknesses));
+
+    context.stopped = true;
+}
+
+char TextBox::defineSymbol(const plug::KeyboardPressedEvent &event) const
+{
+    plug::KeyCode key_code = event.key_id;
+
     char symbol = '\0';
     if (key_code >= plug::KeyCode::A && key_code <= plug::KeyCode::Z)
     {
@@ -135,18 +151,18 @@ void TextBox::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::E
         symbol = static_cast<size_t>(key_code) - static_cast<size_t>(plug::KeyCode::Num0) + '0';
     }
 
-    for (size_t it = m_cnt_symbols; it >= m_cursor_pos_x + 1; it--)
+    if (key_code == plug::KeyCode::Slash)
     {
-        std::swap(m_buf[it], m_buf[it - 1]);
+        symbol = '/';
     }
 
-    m_buf[m_cursor_pos_x] = symbol;
-    m_cursor_pos_x++;
-    m_cnt_symbols++;
+    if (key_code == plug::KeyCode::Comma)
+    {
+       
+        symbol = '.';
+    }
 
-    getLayoutBox().setSize(Vec2d(m_cnt_symbols, m_thicknesses));
-
-    context.stopped = true;
+    return symbol;
 }
 
 void TextBox::onTick(const plug::TickEvent &event, plug::EHC &context)

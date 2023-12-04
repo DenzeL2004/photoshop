@@ -29,6 +29,8 @@ class ContainerWidget: public Widget
         void insertWidget(plug::Widget* widget);
         void eraseWidget();
 
+        plug::Widget* getLastWidget();
+
         plug::Widget* getWidget(const size_t id);
 
     protected:

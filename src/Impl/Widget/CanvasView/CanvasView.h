@@ -34,10 +34,10 @@ const size_t Save = 26;
 
 struct SaveEvent : public plug::Event 
 {
-    SaveEvent(const std::string &path)
+    SaveEvent(const char* const &path)
       : Event(Save), file_path(path){}
       
-    const std::string &file_path;
+    const char* const file_path;
 };
 
 }

@@ -49,6 +49,16 @@ plug::Widget* ContainerWidget::getWidget(const size_t id)
     return m_widgets[id];
 }
 
+
+plug::Widget* ContainerWidget::getLastWidget()
+{
+    size_t size = m_widgets.getSize();
+    if (size == 0)
+        return nullptr;
+    
+    return m_widgets[size - 1];
+}
+
 void ContainerWidget::insertWidget(plug::Widget* widget)
 {
     m_widgets.pushBack(widget);

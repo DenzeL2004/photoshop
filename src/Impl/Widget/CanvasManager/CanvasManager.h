@@ -9,27 +9,76 @@
 #include "Impl/Widget/Scrollbar/Scrollbar.h"
 #include "Impl/Widget/Button/Button.h"
 #include "Impl/Widget/ContainerWidget/ContainerWidget.h"
+#include "Impl/Widget/TextBox/TextBox.h"
+
+#include "Impl/TransformStack/TransformStack.h"
 
 #include "App/AppConfig.h"
 
+class EraseLastWidget : public Action
+{
+    public:
+        EraseLastWidget(ContainerWidget &container): 
+                        m_container(container){}
+        ~EraseLastWidget(){};
+
+        void operator() ()
+        {
+            m_container.eraseWidget();
+        }        
+
+    private:
+        ContainerWidget &m_container; 
+};
+
 class CanvasManager;
+
+class CloseCanvasWithSave : public Action
+{
+    public:
+        CloseCanvasWithSave(CanvasManager &manager): 
+                          m_canvas_manager(manager){}
+        ~CloseCanvasWithSave(){}
+
+        void operator() ();
+        
+
+    private:
+
+        class SaveCanvas : public Action
+        {
+        
+            public:
+                SaveCanvas(CanvasManager &manager):m_canvas_manager(manager){}
+                ~SaveCanvas(){}
+            
+                void operator() ();
+
+            private:
+                CanvasManager &m_canvas_manager;
+        };
+    
+
+        CanvasManager &m_canvas_manager;
+};
 
 class CloseCanvasWithoutSave : public Action
 {
     public:
-        CloseCanvasWithoutSave(CanvasManager &manager): m_canvas_manage(manager){}
+        CloseCanvasWithoutSave(CanvasManager &manager): m_canvas_manager(manager){}
         ~CloseCanvasWithoutSave(){};
 
         void operator() ();        
 
     private:
-        CanvasManager &m_canvas_manage; 
+        CanvasManager &m_canvas_manager; 
 };
 
 class CanvasManager : public Widget
 {
     public:
         friend class CloseCanvasWithoutSave;
+        friend class CloseCanvasWithSave;
 
         CanvasManager(  const plug::LayoutBox& box):
                         Widget(box),
@@ -42,12 +91,12 @@ class CanvasManager : public Widget
             m_dialog_window = new ContainerWidget(BaseLayoutBox((box.getSize() - Dialog_window_size ) * 0.5, Dialog_window_size, box.getSize(), false, false));
 
             Window *window = new Window(getPlugTexture(Dialog_window_texture),
-                                        Title(Close_canvas_title_pos, "Do you want to save it?", Dialog_title_scale, Canvas_dialog_title_color),
+                                        Title(Close_canvas_title_pos, Close_canvas_title, Dialog_title_scale, Canvas_dialog_title_color),
                                         BaseLayoutBox(plug::Vec2d(0, 0), Dialog_window_size, box.getSize(), false, false));
 
-            Button *cancel_btn = new Button(getPlugTexture(Cross_button_released), getPlugTexture(Cross_button_pressed), 
-                                            getPlugTexture(Cross_button_released), getPlugTexture(Cross_button_pressed), 
-                                            BaseLayoutBox(Vec2d(Dialog_window_size.x - Cross_button_size.x, 0), Cross_button_size, Dialog_window_size, false, true),
+            Button *cancel_btn = new Button(getPlugTexture(Dialog_button_cancel_released), getPlugTexture(Dialog_button_cancel_pressed), 
+                                            getPlugTexture(Dialog_button_cancel_released), getPlugTexture(Dialog_button_cancel_pressed), 
+                                            BaseLayoutBox(Dialog_button_cancel_pos, Dialog_button_size, Dialog_window_size, false, true),
                                             new Click(m_delete_canvas));
 
             Button *close_btn = new Button( getPlugTexture(Dialog_button_no_released), getPlugTexture(Dialog_button_no_pressed), 
@@ -58,7 +107,7 @@ class CanvasManager : public Widget
             Button *confirm_btn = new Button( getPlugTexture(Dialog_button_yes_released), getPlugTexture(Dialog_button_yes_pressed), 
                                             getPlugTexture(Dialog_button_yes_released), getPlugTexture(Dialog_button_yes_pressed), 
                                             BaseLayoutBox(Dialog_button_yes_pos, Dialog_button_size, Dialog_window_size, false, true),
-                                            new CloseCanvasWithoutSave(*this));
+                                            new CloseCanvasWithSave(*this));
 
             m_dialog_window->insertWidget(window);
             m_dialog_window->insertWidget(cancel_btn);
@@ -81,12 +130,14 @@ class CanvasManager : public Widget
 
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
 
+        virtual void onEvent(const plug::Event &event, plug::EHC &context);
+
         virtual void onParentUpdate(const plug::LayoutBox &parent_box);
 
         void createCanvas(  FilterPalette &filter_palette,
                             plug::ColorPalette &color_palette, const char *file_path = nullptr);
 
-        plug::Canvas* getActiveCanvas(void);
+        plug::Widget* getActiveCanvas(void);
 
     protected:    
 
@@ -109,5 +160,6 @@ class CanvasManager : public Widget
 
         ContainerWidget *m_dialog_window;
 }; 
+
 
 #endif
