@@ -31,6 +31,8 @@ AppWidget::AppWidget():
 
     m_widgets.pushBack(manager);
 
+    m_widgets.pushBack(new TextBox(100, 2.0, BaseLayoutBox(Canvase_manager_pos, Canvase_manager_size, box.getSize(), false, true)));
+
     // widgets_.pushBack(new Button("src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
     //                             "src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
     //                             new AddCanvase(&canvas_manager_, &tool_pallette_, &filter_pallette_), 
@@ -222,8 +224,10 @@ void useApp()
     plug::EHC context = {(plug::TransformStack&)stack, false, false};
 
     context.stack.enter(Transform(Vec2d(0.0, 0.0), Vec2d(1.0, 1.0)));
-
     frame.onParentUpdate(base);
+
+   sf::Clock timer;
+
     while (window.isOpen())
     {   
         plug_window.clear(plug::Color(0, 0, 0));
@@ -248,7 +252,11 @@ void useApp()
         }
 
         frame.draw(context.stack, plug_window);
+        frame.onEvent(plug::TickEvent(timer.getElapsedTime().asSeconds()), context);
+
         window.display();
+
+        timer.restart();
     }
 }
 
@@ -289,14 +297,6 @@ static void runEvent(sf::Event &event, plug::EHC &context, Vec2d mouse_pos, plug
         widget.onEvent( plug::KeyboardPressedEvent(static_cast<plug::KeyCode>(event.key.code), 
                         shift, ctrl, alt), 
                         context);
-    }
-
-    {
-        static sf::Clock timer;
-
-        widget.onEvent(plug::TickEvent(timer.getElapsedTime().asSeconds()), context);
-
-        timer.restart();
     }
 }
 

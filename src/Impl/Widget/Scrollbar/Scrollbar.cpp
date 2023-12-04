@@ -185,6 +185,8 @@ void Scrollbar::onParentUpdate(const plug::LayoutBox &parent_box)
 
 void Scrollbar::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
 {
+    if (context.stopped) return;
+
     if (m_type == Scrollbar::Type::VERTICAL)
     {
         if (event.key_id == plug::KeyCode::Up)
@@ -215,6 +217,3 @@ void Scrollbar::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug:
         }
     }
 }
-
-void Scrollbar::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, plug::EHC &context)
-{}

@@ -104,8 +104,7 @@ class Scrollbar: public Widget
         virtual void onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &context);
 
         virtual void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &context);
-        virtual void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &context);
-
+        
     private:
 
         void moveCenter(void);

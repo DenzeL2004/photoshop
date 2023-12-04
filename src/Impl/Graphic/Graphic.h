@@ -2,8 +2,8 @@
 #define _GRAPHIC_H_
 
 #include <cassert>
-#include <unistd.h>
 #include <cstring>
+#include <string>
 
 #include "Plug/Math.h"
 #include "Plug/Graphics.h"
@@ -23,7 +23,7 @@ void    drawRectangle   (plug::RenderTarget &target,
                          const plug::Vec2d &left_up, const plug::Vec2d &right_down, const plug::Color color = plug::White);
 
 void    writeText       (plug::RenderTarget &target, const plug::Vec2d &pos, 
-                         const std::string &text, const double thikness,
+                         const std::string &text, const double thicknesses,
                          const plug::Color color = plug::White);
 
 

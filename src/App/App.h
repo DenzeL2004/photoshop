@@ -11,17 +11,15 @@
 
 #include "Impl/LayoutBox/BaseLayoutBox/BaseLayoutBox.h"
 #include "Impl/Widget/Widget.h"
-
 #include "Impl/Widget/Window/Window.h"
 #include "Impl/Widget/Frame/Frame.h"
 #include "Impl/Widget/Button/Button.h"
+#include "Impl/Widget/TextBox/TextBox.h"
 
 #include "Impl/Canvas/Canvas.h"
-
 #include "Impl/Widget/CanvasManager/CanvasManager.h"
 
 #include "Impl/Tool/ColorPalette/ColorPalette.h"
-
 #include "Impl/Tool/FilterPalette/FilterPalette.h"
 
 #include "AppConfig.h"

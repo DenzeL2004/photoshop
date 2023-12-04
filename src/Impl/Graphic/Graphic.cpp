@@ -49,7 +49,7 @@ void drawRectangle(plug::RenderTarget &target,
 }
 
 void writeText(plug::RenderTarget &target, const plug::Vec2d &pos, 
-               const std::string &text, const double thikness,
+               const std::string &text, const double thicknesses,
                const plug::Color color)
 {
     size_t len = text.size();
@@ -64,7 +64,7 @@ void writeText(plug::RenderTarget &target, const plug::Vec2d &pos,
 
     plug::Color *data = new plug::Color[plug::Symbol_width * plug::Symbol_height];
 
-    double offset = plug::Symbol_width * thikness;
+    double offset = plug::Symbol_width * thicknesses;
 
     for (size_t it = 0; it < len; it++)
     {
@@ -72,7 +72,7 @@ void writeText(plug::RenderTarget &target, const plug::Vec2d &pos,
 
         plug::Texture texture(plug::Symbol_width, plug::Symbol_height, data);
 
-        plug::Vec2d size = Vec2d(thikness * plug::Symbol_width, thikness * plug::Symbol_height);
+        plug::Vec2d size = Vec2d(thicknesses * plug::Symbol_width, thicknesses * plug::Symbol_height);
 
         vertex_array[0].position = Vec2d(pos.x + it * offset, pos.y);
         vertex_array[1].position = Vec2d(pos.x + it * offset + size.x, pos.y);
@@ -107,7 +107,7 @@ static void getSymbolColorData(plug::Color *data, const char symbol, const plug:
             mask = plug::Slash;
             break;
         
-        case ' ':
+        case ' ': case '\0':
             mask = plug::Space;
             break;
         

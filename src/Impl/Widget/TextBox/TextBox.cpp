@@ -1,35 +1,36 @@
 
-#include "text_box.h"
+#include "TextBox.h"
 
-void TextBox::draw(sf::RenderTarget &target, Container<Transform> &stack_transform)
+void TextBox::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 {   
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
-    context.stack.enter(trf);
+    stack.enter(trf);
     
-    Transform last_trf = stack_transform.getBack();
-    Dot pos = last_trf.apply(Dot(0, 0));
+    Transform last_trf = stack.top();
+    plug::Vec2d pos = last_trf.apply(plug::Vec2d(0, 0));
 
-    Vec2d scale = last_trf.getScale();
+    plug::Vec2d scale = last_trf.getScale();
 
-    double width_symbol = text.getLocalBounds().width / m_cnt_symbols;
+    writeText(target, pos, m_buf, m_thicknesses * scale.x, m_color);
 
-    writeText(targetm )
-
-    if (acume_time_ > 0.5f)
+    plug::Color cursor_color = m_color;
+    if (m_acume_time > 0.5f)
     {
-        m_cursor_poscolor = plug::Transparent;
+        cursor_color = plug::Transparent;
     }
 
-    // drawRectangle(target,   Dot(pos.x + width_symbol * m_cursor_pos.x      , pos.y + m_thicknesses * scale.y + 2), 
-    //                         Dot(pos.x + width_symbol * (m_cursor_pos.x + 1), pos.y + m_thicknesses * scale.y + 5), m_cursor_poscolor);
+    double thicknesses_x = m_thicknesses * scale.x * plug::Symbol_width;
+    double thicknesses_y = m_thicknesses * scale.y * plug::Symbol_height;
+
+    drawRectangle(target,   plug::Vec2d(pos.x + thicknesses_x * m_cursor_pos_x      , pos.y + thicknesses_y + 2), 
+                            plug::Vec2d(pos.x + thicknesses_x * (m_cursor_pos_x + 1), pos.y + thicknesses_y + 5), cursor_color);
   
 
-    stack_transform.popBack();
+    stack.leave();
 }
 
-//================================================================================
 
-void TextBox::onMousePressed(const plug::MousePressedEvent &event,plug::EHC &context)
+void TextBox::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &context)
 {
     context.stopped = false;
 
@@ -38,18 +39,18 @@ void TextBox::onMousePressed(const plug::MousePressedEvent &event,plug::EHC &con
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
     context.stack.enter(trf);
 
-    //Transform last_trf = stack_transform.getBack();
-    plug::Vec2d local_pos = context.stack.restore(pos);
+    plug::Transform last_trf = context.stack.top();
+    plug::Vec2d local_pos = context.stack.restore(event.pos);
 
     plug::Vec2d scale = last_trf.getScale();
 
-    sf::Text text(buf, font_, m_thicknesses * scale.y);
-    double width_symbol =  m_thicknesses * scale.y * plug::Symbol_width;
+    double thicknesses_x =  m_thicknesses * scale.x * plug::Symbol_width;
+    double thicknesses_y =  m_thicknesses * scale.y * plug::Symbol_height;
 
-    if (local_pos.x > Eps && (int)(local_pos.x / width_symbol) <= (int)m_cnt_symbols &&
-        local_pos.y > Eps && local_pos.y  < m_thicknesses * scale.y - Eps)
+    if (local_pos.x > Eps && (int)(local_pos.x / thicknesses_x) <= static_cast<int>(m_cnt_symbols) &&
+        local_pos.y > Eps && local_pos.y  < thicknesses_y - Eps)
     {
-        m_cursor_pos.x = (int)(local_pos.x / width_symbol);
+        m_cursor_pos_x = static_cast<size_t>(local_pos.x / thicknesses_x);
         context.stopped = true;
     }
     
@@ -57,15 +58,12 @@ void TextBox::onMousePressed(const plug::MousePressedEvent &event,plug::EHC &con
 }
 
 void TextBox::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
-{
-    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
-    context.stack.enter(trf);
-    
+{    
     plug::KeyCode key_code = event.key_id;
 
     bool flag = (key_code >= plug::KeyCode::A && key_code <= plug::KeyCode::Z)        || 
                 (key_code >= plug::KeyCode::Num0 && key_code <= plug::KeyCode::Num9)  ||
-                (key_code == plug::KeyCode::Left || key_code == plug::KeyCode::Right  || key_code == plug::KeyCode::BackSpace);
+                (key_code == plug::KeyCode::Left || key_code == plug::KeyCode::Right  || key_code == plug::KeyCode::Backspace);
 
     context.stopped = false;
 
@@ -73,41 +71,43 @@ void TextBox::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::E
 
     if (key_code == plug::KeyCode::Left)
     {
-        if (m_cursor_pos.x > 0)
+        if (m_cursor_pos_x > 0)
         {
-            m_cursor_pos.x--;
+            m_cursor_pos_x--;
         }
-        return true;
+
+        context.stopped = true;
+        return;
     }
 
     if (key_code == plug::KeyCode::Right)
     {
-        if (m_cursor_pos.x < m_cnt_symbols)
+        if (m_cursor_pos_x < m_cnt_symbols)
         {
-            m_cursor_pos.x++;
+            m_cursor_pos_x++;
         }
 
         context.stopped = true;
         return;
     }
     
-    if (key_code == plug::KeyCode::BackSpace)
+    if (key_code == plug::KeyCode::Backspace)
     {
-        if (m_cnt_symbols == 0.0 || m_cursor_pos.x == 0.0)
+        if (m_cnt_symbols == 0u || m_cursor_pos_x == 0u)
         {
             context.stopped = false;
             return;
         }
         
         m_cnt_symbols--;
-        m_cursor_pos.x--;
+        m_cursor_pos_x--;
         
-        for (size_t it = m_cursor_pos.x; it < m_cnt_symbols; it++)
+        for (size_t it = m_cursor_pos_x; it < m_cnt_symbols; it++)
         {
-            std::swap(buf[it], buf[it + 1]);
+            std::swap(m_buf[it], m_buf[it + 1]);
         }
 
-        buf[m_cnt_symbols] = '\0';
+        m_buf[m_cnt_symbols] = '\0';
 
         getLayoutBox().setSize(Vec2d(m_cnt_symbols, m_thicknesses));
         
@@ -115,7 +115,7 @@ void TextBox::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::E
         return;
     }
 
-    if (m_cnt_symbols == limit_m_cnt_symbols)
+    if (m_cnt_symbols == m_limit_cnt_symbols)
     {
         context.stopped = false;
         return;
@@ -125,30 +125,28 @@ void TextBox::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::E
     if (key_code >= plug::KeyCode::A && key_code <= plug::KeyCode::Z)
     {
         if (event.shift)
-            symbol = 'A' + key_code - plug::KeyCode::A;
+            symbol = static_cast<size_t>(key_code) - static_cast<size_t>(plug::KeyCode::A) + 'A';
         else
-            symbol = 'a' + key_code - plug::KeyCode::A;
+            symbol = static_cast<size_t>(key_code) - static_cast<size_t>(plug::KeyCode::A) + 'a';
     }
 
     if (key_code >= plug::KeyCode::Num0 && key_code <= plug::KeyCode::Num9)
     {
-        symbol = '0' + key_code - plug::KeyCode::Num0;
+        symbol = static_cast<size_t>(key_code) - static_cast<size_t>(plug::KeyCode::Num0) + '0';
     }
 
-    for (size_t it = m_cnt_symbols; it >= static_cast<size_t>(m_cursor_pos.x) + 1; it--)
+    for (size_t it = m_cnt_symbols; it >= m_cursor_pos_x + 1; it--)
     {
-        std::swap(buf[it], buf[it - 1]);
+        std::swap(m_buf[it], m_buf[it - 1]);
     }
 
-    buf[static_cast<size_t>(m_cursor_pos.x)] = symbol;
-    m_cursor_pos.x += 1;
+    m_buf[m_cursor_pos_x] = symbol;
+    m_cursor_pos_x++;
     m_cnt_symbols++;
 
     getLayoutBox().setSize(Vec2d(m_cnt_symbols, m_thicknesses));
 
     context.stopped = true;
-
-    context.stack.leave();
 }
 
 void TextBox::onTick(const plug::TickEvent &event, plug::EHC &context)
@@ -164,8 +162,8 @@ void TextBox::onTick(const plug::TickEvent &event, plug::EHC &context)
 void TextBox::clear(void)
 {
     for (size_t it = 0; it < m_limit_cnt_symbols; it++)
-        buf[it] = '\0';
+        m_buf[it] = '\0';
     
-    m_cursor_pos.x = 0.0;
+    m_cursor_pos_x = 0;
     m_cnt_symbols = 0;
 }

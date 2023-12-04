@@ -11,10 +11,12 @@ class TextBox : public Widget
 {
     public:
         TextBox(    const size_t limit_cnt_symbols, const size_t thicknesses,
-                    const BaseLayoutBoc &box):
+                    const plug::LayoutBox &box):
                 Widget(box),
-                m_thicknesses(thicknesses), m_limit_cnt_symbols(limit_cnt_symbols), m_color(plug::Color(0, 0, 0))
-                m_cnt_symbols(0), m_acume_time(0), m_cursor_pos(plug::Vec2d(0, 0)), buf(limit_cnt_symbols){}
+                m_thicknesses(thicknesses), m_limit_cnt_symbols(limit_cnt_symbols), m_color(plug::Color(0, 0, 0)),
+                m_cnt_symbols(0), m_acume_time(0), 
+                m_cursor_pos_x(0), m_cursor_pos_y(0),
+                m_buf(limit_cnt_symbols, '\0'){}
 
         virtual ~TextBox(){}
 
@@ -29,28 +31,30 @@ class TextBox : public Widget
         void clear(void);
         void setColor(plug::Color color) { m_color = color; }
 
-        const std::string& getString(void) const {return buf;}
+        const std::string& getString(void) const {return m_buf;}
 
     protected:
 
         virtual void onTick             (const plug::TickEvent &event, plug::EHC &context);
         
-        virtual void onMousePressed     (const plug::MousePressedEvent &event,plug::EHC &context);
+        virtual void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &context);
     
         virtual void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &context);
     
     private:
         size_t m_thicknesses;
         
-        size_t m_cnt_symbols;
         size_t m_limit_cnt_symbols;
-        std::string buf;
-
-        plug::Vec2d m_cursor_pos;
-
         plug::Color m_color;
+        
+        size_t m_cnt_symbols;
 
         float m_acume_time;
+
+        size_t m_cursor_pos_x;
+        size_t m_cursor_pos_y;
+
+        std::string m_buf;
 };
 
 #endif
