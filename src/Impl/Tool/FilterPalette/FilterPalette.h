@@ -14,12 +14,15 @@ class FilterPalette
         enum FilterType
         {
             UNKNOWN = -1,
-            NEGATIVE,
+            NEGATIVE = 0,
+            CONTRAST,
+            COUNTFILTER
         };
 
-        FilterPalette():    m_filters(Filters_cout_max), m_last_filter(FilterType::NEGATIVE)
+        FilterPalette():    m_filters(Filters_cout_max), m_last_filter(FilterType::CONTRAST)
         {
             saveFilter(static_cast<plug::Filter*>(loadPlugin("Plugins/Negative/Negative.so")->tryGetInterface(static_cast<size_t>(plug::PluginGuid::Filter))), FilterType::NEGATIVE);
+            saveFilter(static_cast<plug::Filter*>(loadPlugin("Plugins/Contrast/Contrast.so")->tryGetInterface(static_cast<size_t>(plug::PluginGuid::Filter))), FilterType::CONTRAST);
         }
         
         ~FilterPalette()

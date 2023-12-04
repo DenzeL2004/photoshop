@@ -2,9 +2,7 @@
 #define _BUTTON_H_
 
 #include "Impl/Widget/Widget.h"
-// #include "Impl/Graphics/Graphic.h"
-
-//================================================================================
+#include "Container/Container.h"
 
 class Action
 {
@@ -16,6 +14,42 @@ class Action
         virtual void operator() () = 0;
     
 };
+
+class Click : public Action
+{
+    public:
+        Click(bool &ptr): m_flag(ptr){};
+        ~Click(){};
+
+        void operator() ()
+        {
+            m_flag ^= true;
+        }
+
+    private:
+        bool &m_flag; 
+};
+
+class Button;
+class ButtonList;
+
+// class ShowButtonList : public Action
+// {
+//     public:
+//         ShowButtonList(Container<Button*> &buttons): m_buttons(buttons){}
+//         ~ShowButtonList(){};
+
+//         void operator()() 
+//         {
+//             size_t size = m_buttons.getSize();
+//             for (size_t it = 0; it < size; it++)
+//                 m_buttons[it]->m_state = m_buttons[it]->m_prev_state;
+//         }
+
+//     private:
+//         Container<Button*> &m_buttons; 
+// };
+
 
 //================================================================================
 
@@ -82,28 +116,21 @@ class Button : public Widget
 // class ButtonList : public Button
 // {
 //     public:
-//         ButtonList (const char *released_texture_file, const char *covered_texture_file, 
-//                     const char *pressed_texture_file,  const char *disabled_texture_file,
-//                     const Action *action, 
-//                     const Vec2d &size, const Vec2d &pos, 
-//                     const Widget *parent, const Vec2d &parent_size = Vec2d(1.0, 1.0),
-//                     const Vec2d &origin = Vec2d(0.0, 0.0), const Vec2d &scale = Vec2d(1.0, 1.0)):
-//                     Button(released_texture_file, covered_texture_file, 
-//                            pressed_texture_file, disabled_texture_file, 
-//                            action, size, pos, parent, (parent != nullptr) ? parent->getLayoutBox().getSize() : parent_size, origin, scale), buttons_(){}
+//         ButtonList (const plug::Texture &texture_released, const plug::Texture &texture_covered,
+//                     const plug::Texture &texture_pressed,  const plug::Texture &texture_disabled,
+//                     const plug::LayoutBox& box):
+//                     Button( texture_released, texture_covered, 
+//                             texture_pressed, texture_disabled, 
+//                             box, new ShowButtonList(m_buttons)){}
 
 //         virtual ~ButtonList()
 //         {
-//             size_t size = buttons_.getSize();
+//             size_t size = m_buttons.getSize();
 //             for (size_t it = 0; it < size; it++)
-//                 delete buttons_[it];
-
-//             delete m_action;
+//                 delete m_buttons[it];
 //         }
 
-
 //         ButtonList(const ButtonList &other) = delete;
-
 //         virtual ButtonList &operator= (const ButtonList &other) = delete;
 
 //         virtual bool onMousePressed     (const Vec2d &pos, const MouseKey key, Container<Transform> &stack_transform);
@@ -118,53 +145,10 @@ class Button : public Widget
 //         virtual void draw               (sf::RenderTarget &targert, Container<Transform> &stack_transform) override;    
         
 //         void addButton                  (Button *button);
-
-
-//         const Action *m_action;
-//         Container<Button*> buttons_;
         
 //     protected:
 
-        
-        
+//         Container<Button*> m_buttons;
 // };
-
-//================================================================================
-
-class Click : public Action
-{
-    public:
-        Click(bool &ptr): m_flag(ptr){};
-        ~Click(){};
-
-        void operator() ()
-        {
-            m_flag ^= true;
-        }
-
-    private:
-        bool &m_flag; 
-};
-
-//================================================================================
-
-// class ShowButtonList : public Action
-// {
-//     public:
-//         ShowButtonList(Container<Button*> *buttons): buttons_(buttons){};
-//         ~ShowButtonList(){};
-
-//         void operator() () const
-//         {
-//             size_t size = buttons_->getSize();
-//             for (size_t it = 0; it < size; it++)
-//                 (*buttons_)[it]->m_state = (*buttons_)[it]->m_prev_state;
-//         }
-
-//     private:
-//         Container<Button*> *buttons_; 
-// };
-
-//================================================================================
 
 #endif
