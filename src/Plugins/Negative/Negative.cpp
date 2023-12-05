@@ -37,7 +37,6 @@ void NegativeFilter::applyFilter(plug::Canvas &canvas) const
     vertex_array[2].position = Vec2d(new_texture.width, new_texture.height);
     vertex_array[3].position = Vec2d(0, new_texture.height);
     
-
     canvas.draw(vertex_array, new_texture);
 }
 

@@ -23,10 +23,10 @@ void CanvasManager::draw(plug::TransformStack &stack, plug::RenderTarget &target
 
 void CanvasManager::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
 {
+    if (context.stopped) return;
+
     context.stopped = false;
     
-    
-
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
     context.stack.enter(trf);
 
@@ -87,6 +87,8 @@ void CanvasManager::onMousePressed(const plug::MousePressedEvent &event, plug::E
 
 void CanvasManager::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &context)
 {
+    if (context.stopped) return;
+
     context.stopped = false;
 
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
@@ -109,6 +111,8 @@ void CanvasManager::onMouseReleased(const plug::MouseReleasedEvent &event, plug:
 
 void CanvasManager::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
 {
+    if (context.stopped) return;
+    
     context.stopped = false;
 
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
@@ -128,6 +132,8 @@ void CanvasManager::onKeyboardPressed(const plug::KeyboardPressedEvent &event, p
 
 void CanvasManager::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, plug::EHC &context)
 {
+    if (context.stopped) return;
+
     context.stopped = false;
 
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
@@ -147,6 +153,8 @@ void CanvasManager::onKeyboardReleased(const plug::KeyboardReleasedEvent &event,
 
 void CanvasManager::onTick(const plug::TickEvent &event, plug::EHC &context)
 {
+    if (context.stopped) return;
+
     context.stopped = false;
 
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
@@ -167,6 +175,8 @@ void CanvasManager::onTick(const plug::TickEvent &event, plug::EHC &context)
 
 void CanvasManager::onEvent(const plug::Event &event, plug::EHC &context)
 {
+    if (context.stopped) return;
+
     context.stopped = false;
     size_t size = m_widgets.getSize(); 
 
@@ -312,9 +322,6 @@ void CloseCanvasWithSave::operator()()
 
     m_canvas_manager.m_dialog_window->insertWidget(entry_window);
 }   
-
-#include <cstdio>
-#include <iostream>
 
 void CloseCanvasWithSave::SaveCanvas::operator()()
 {

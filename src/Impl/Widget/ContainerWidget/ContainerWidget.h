@@ -1,15 +1,17 @@
 #ifndef _CONTAINER_WIDGET_H_
 #define _CONTAINER_WIDGET_H_
 
-#include "Impl/Widget/Widget.h"
 #include "Container/Container.h"
+
+#include "Impl/Widget/Widget.h"
+#include "Impl/Widget/Button/Button.h"
 
 class ContainerWidget: public Widget
 {
     public:
-        ContainerWidget(  const plug::LayoutBox &box):
-                Widget(box),
-                m_widgets(){}
+        ContainerWidget(const plug::LayoutBox &box):
+                        Widget(box),
+                        m_widgets(){}
 
         virtual ~ContainerWidget()
         {
@@ -26,16 +28,32 @@ class ContainerWidget: public Widget
 
         virtual void onEvent(const plug::Event &event, plug::EHC &context);
 
-        void insertWidget(plug::Widget* widget);
-        void eraseWidget();
+        virtual void insertWidget(plug::Widget* widget);
+        virtual void eraseWidget();
 
-        plug::Widget* getLastWidget();
+        virtual plug::Widget* getLastWidget();
 
-        plug::Widget* getWidget(const size_t id);
+        virtual plug::Widget* getWidget(const size_t id);
 
     protected:
 
         Container<plug::Widget*> m_widgets;
+};
+
+class EraseLastWidget : public Action
+{
+    public:
+        EraseLastWidget(ContainerWidget &container): 
+                        m_container(container){}
+        ~EraseLastWidget(){};
+
+        void operator() ()
+        {
+            m_container.eraseWidget();
+        }        
+
+    private:
+        ContainerWidget &m_container; 
 };
 
 #endif

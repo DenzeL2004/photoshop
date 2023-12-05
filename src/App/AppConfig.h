@@ -81,6 +81,9 @@ static const plug::Vec2d Entry_window_size = plug::Vec2d(600, 210);
 static const char *File_path_name = "File path ";
 static const double Entry_title_scale = 1.9;
 static const plug::Vec2d Filt_path_title_pos = plug::Vec2d(50, 45);
+static const size_t Entry_field_symbol_limit = 30;
+static const plug::Color Entry_field_color = plug::Color(255, 255, 255);
+
 
 static const char *Entry_field_texture = "src/img/EntryWindow.png";
 static const plug::Vec2d Entry_field_pos  = plug::Vec2d(20, 50);
@@ -109,6 +112,27 @@ static const char *Menu_file_released = "src/img/ButtonFileReleased.png";
 static const char *Menu_file_pressed  = "src/img/ButtonFilePressed.png";
 static const plug::Vec2d File_button_size = Menu_button_size;
 static const plug::Vec2d File_button_pos  = Background_window_pos;
+
+static const plug::Vec2d Menu_list_size = plug::Vec2d(200, 30);
+
+
+static const char *Menu_button_released = "src/img/MenuButtonsBackgroundReleased.png";
+static const char *Menu_button_pressed  = "src/img/MenuButtonsBackgroundPressed.png";
+
+static const double Menu_button_scale = 1.5;
+static const plug::Color Menu_button_color = plug::Color(255, 255, 255);
+static const plug::Vec2d Menu_title_pos = plug::Vec2d(3,  File_button_size.y / 2);
+
+static const char *Menu_file_open_released = Menu_button_released;
+static const char *Menu_file_open_pressed  = Menu_button_pressed;
+static const plug::Vec2d File_button_open_size = Menu_list_size;
+static const plug::Vec2d File_button_open_pos  = plug::Vec2d(File_button_pos.x, File_button_size.y);
+
+
+static const char *Menu_file_new_released = Menu_button_released;
+static const char *Menu_file_new_pressed  = Menu_button_released;
+static const plug::Vec2d File_button_new_size = Menu_list_size;
+static const plug::Vec2d File_button_new_pos  = plug::Vec2d(File_button_pos.x, File_button_size.y + + File_button_open_size.y);
 
 static const plug::Vec2d Tool_bar_pos  = plug::Vec2d(0, Config_bar_size.y); 
 static const plug::Vec2d Tool_bar_size = plug::Vec2d(60, Background_window_size.y - Tool_bar_pos.y);

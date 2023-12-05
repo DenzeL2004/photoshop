@@ -15,22 +15,6 @@
 
 #include "App/AppConfig.h"
 
-class EraseLastWidget : public Action
-{
-    public:
-        EraseLastWidget(ContainerWidget &container): 
-                        m_container(container){}
-        ~EraseLastWidget(){};
-
-        void operator() ()
-        {
-            m_container.eraseWidget();
-        }        
-
-    private:
-        ContainerWidget &m_container; 
-};
-
 class CanvasManager;
 
 class CloseCanvasWithSave : public Action

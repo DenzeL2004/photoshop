@@ -30,7 +30,6 @@ class Click : public Action
         bool &m_flag; 
 };
 
-
 //================================================================================
 
 class Button : public Widget
@@ -57,7 +56,6 @@ class Button : public Widget
                 m_action(action),
                 m_state(RELEASED), m_prev_state(RELEASED),         
                 m_covering_time(0){}    
-
 
         virtual ~Button()
         {
@@ -90,6 +88,29 @@ class Button : public Widget
         double m_covering_time;
 
         Action *m_action;
+};
+
+class TextButton : public Button
+{
+    public:
+
+        TextButton( const plug::Texture &texture_released, const plug::Texture &texture_covered,
+                    const plug::Texture &texture_pressed,  const plug::Texture &texture_disabled,
+                    const Title &title_released, const Title &title_pressed,
+                    const plug::LayoutBox& box, Action *action):
+                    Button( texture_released, texture_covered, 
+                            texture_pressed, texture_disabled, 
+                            box, action),
+                    m_title_released(title_released), m_title_pressed(title_pressed){}    
+
+        virtual ~TextButton(){}
+
+        virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
+
+    protected:
+
+        Title m_title_released;
+        Title m_title_pressed;
 };
 
 class ShowButtonList : public Action

@@ -7,10 +7,10 @@ static void runEvent(sf::Event &event, plug::EHC &context, Vec2d mouse_pos, plug
 static void defineModifierKey(sf::Event &event, bool &shift, bool &ctrl, bool &alt);
 
 AppWidget::AppWidget():
-                    Widget(BaseLayoutBox(Background_window_pos, Background_window_size, plug::Vec2d(Window_width, Window_height), false, false)), 
-                    m_widgets(), 
+                    ContainerWidget(BaseLayoutBox(Background_window_pos, Background_window_size, plug::Vec2d(Window_width, Window_height), false, false)), 
                     m_filter_palette(),
-                    m_color_palette()
+                    m_color_palette(),
+                    m_canvas_manager_id(0)
 {
     plug::LayoutBox &box = getLayoutBox();
     m_color_palette.setBGColor(plug::White);
@@ -34,101 +34,30 @@ AppWidget::AppWidget():
                                              getPlugTexture(Menu_file_pressed),  getPlugTexture(Menu_file_pressed), 
                                              BaseLayoutBox(File_button_pos, File_button_size, box.getSize(), false, false));
 
-    Button *dum1 = new Button(getPlugTexture(Menu_file_released), getPlugTexture(Menu_file_pressed), 
-                                             getPlugTexture(Menu_file_pressed), getPlugTexture(Empty_texture), 
-                                             BaseLayoutBox(File_button_pos + Menu_button_size, File_button_size, file_button->getLayoutBox().getSize(), false, false), nullptr);
-
-
-    Button *dum2 = new Button(getPlugTexture(Menu_file_released), getPlugTexture(Menu_file_pressed), 
-                                            getPlugTexture(Menu_file_pressed), getPlugTexture(Empty_texture), 
-                                            BaseLayoutBox(File_button_pos + 2 * Menu_button_size, File_button_size, file_button->getLayoutBox().getSize(), false, false), nullptr);
-    file_button->addButton(dum1);
-    file_button->addButton(dum2);
+    file_button->addButton(new TextButton(  getPlugTexture(Menu_file_open_released), getPlugTexture(Menu_file_open_pressed), 
+                                            getPlugTexture(Menu_file_open_released), getPlugTexture(Empty_texture), 
+                                            Title(Menu_title_pos, "Open", Menu_button_scale, Menu_button_color), 
+                                            Title(Menu_title_pos, "Open", Menu_button_scale, Menu_button_color),
+                                            BaseLayoutBox(File_button_open_pos, File_button_open_size, file_button->getLayoutBox().getSize(), false, false), 
+                                            new LoadImage(*this)));
+   
+    file_button->addButton(new TextButton(  getPlugTexture(Menu_file_open_released), getPlugTexture(Menu_file_open_pressed), 
+                                            getPlugTexture(Menu_file_open_released), getPlugTexture(Empty_texture),
+                                            Title(Menu_title_pos, "New", Menu_button_scale, Menu_button_color), 
+                                            Title(Menu_title_pos, "New", Menu_button_scale, Menu_button_color),
+                                            BaseLayoutBox(File_button_new_pos, File_button_open_size, file_button->getLayoutBox().getSize(), false, false), 
+                                            new AddNewCanvas(*this)));
 
     m_widgets.pushBack(file_button);
 
     CanvasManager* manager = new CanvasManager(BaseLayoutBox(Canvase_manager_pos, Canvase_manager_size, box.getSize(), false, false));
 
-
-    manager->createCanvas(m_filter_palette, m_color_palette, nullptr);
-    manager->createCanvas(m_filter_palette, m_color_palette, "src/img/pika.png");
-
-    
     m_widgets.pushBack(manager);
-
-    // widgets_.pushBack(new Button("src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
-    //                             "src/img/NewCanvasReleased.png", "src/img/NewCanvasPressed.png", 
-    //                             new AddCanvase(&canvas_manager_, &tool_pallette_, &filter_pallette_), 
-    //                             Button_create_size, Button_create_pos, this));
-    
-    
-    // {
-    //     ButtonList *tools_button_ = new ButtonList( "src/img/ToolsReleased.png", "src/img/ToolsPressed.png", 
-    //                                                 "src/img/ToolsPressed.png", "src/img/ToolsPressed.png", 
-    //                                                 nullptr, Button_Tools_size, Button_Tools_pos , this);
-
-    //     tools_button_->action_ = new ShowButtonList(&(tools_button_->buttons_)); 
-                
-    //     tools_button_->addButton(new Button("src/img/LineReleased.png", "src/img/LinePressed.png", 
-    //                                         "src/img/LinePressed.png",  "src/img/LinePressed.png", 
-    //                                         new ChooseTool(ToolPalette::LINE, &tool_pallette_), 
-    //                                         Button_Line_size, Button_Line_pos, tools_button_));
-        
-    //     tools_button_->addButton(new Button("src/img/BrushReleased.png", "src/img/BrushPressed.png", 
-    //                                         "src/img/BrushPressed.png",  "src/img/BrushPressed.png", 
-    //                                         new ChooseTool(ToolPalette::BRUSH, &tool_pallette_), 
-    //                                         Button_Brush_size, Button_Brush_pos, tools_button_));
-        
-    //     tools_button_->addButton(new Button("src/img/SquareReleased.png", "src/img/SquarePressed.png", 
-    //                                         "src/img/SquarePressed.png",  "src/img/SquarePressed.png", 
-    //                                         new ChooseTool(ToolPalette::SQUARE, &tool_pallette_), 
-    //                                         Button_Square_size, Button_Square_pos, tools_button_));
-
-    //     tools_button_->addButton(new Button("src/img/CircleReleased.png", "src/img/CirclePressed.png", 
-    //                                         "src/img/CirclePressed.png",  "src/img/CirclePressed.png", 
-    //                                         new ChooseTool(ToolPalette::CIRCLE, &tool_pallette_), 
-    //                                         Button_Circle_size, Button_Circle_pos, tools_button_));
-        
-    //     tools_button_->addButton(new Button("src/img/PolylineReleased.png", "src/img/PolylinePressed.png", 
-    //                                         "src/img/PolylinePressed.png",  "src/img/PolylinePressed.png", 
-    //                                         new ChooseTool(ToolPalette::POLYLINE, &tool_pallette_), 
-    //                                         Button_Polyline_size, Button_Polyline_pos, tools_button_));
-
-    //     tools_button_->addButton(new Button("src/img/PenReleased.png", "src/img/PenPressed.png", 
-    //                                         "src/img/PenPressed.png",  "src/img/PenPressed.png", 
-    //                                         new ChooseTool(ToolPalette::PEN, &tool_pallette_), 
-    //                                         Button_Pen_size, Button_Pen_pos, tools_button_));
-
-    //     tools_button_->addButton(new Button("src/img/EraserReleased.png", "src/img/EraserPressed.png", 
-    //                                         "src/img/EraserPressed.png",  "src/img/EraserPressed.png", 
-    //                                         new ChooseTool(ToolPalette::ERASER, &tool_pallette_), 
-    //                                         Button_Eraser_size, Button_Eraser_pos, tools_button_));
-        
-    //     tools_button_->addButton(new Button("src/img/TextReleased.png", "src/img/TextPressed.png", 
-    //                                         "src/img/TextPressed.png",  "src/img/TextPressed.png", 
-    //                                         new ChooseTool(ToolPalette::TEXT, &tool_pallette_), 
-    //                                         Button_Text_size, Button_Text_pos, tools_button_));
-
-    //     size_t size = tools_button_->buttons_.getSize();
-    //     for (size_t it = 0; it < size; it++)
-    //         tools_button_->buttons_[it]->state_ = Button::ButtonState::DISABLED;
-        
-    //     widgets_.pushBack(tools_button_);
-    // }    
-
-    // {
-    //     ButtonList *filters_button = new ButtonList("src/img/FilterReleased.png", "src/img/FilterPressed.png", 
-    //                                                 "src/img/FilterPressed.png", "src/img/FilterPressed.png", 
-    //                                                 nullptr, Button_Filter_size, Button_Filter_pos, this);
-
-    //     filters_button->action_ = new ShowButtonList(&(filters_button->buttons_)); 
-
-    // }
-
+    m_canvas_manager_id = m_widgets.getSize() - 1;
 }
 
 void AppWidget::draw(plug::TransformStack &stack, plug::RenderTarget &target)
-{
+{   
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
     stack.enter(trf);
 
@@ -162,50 +91,10 @@ void AppWidget::onEvent(const plug::Event &event, plug::EHC &context)
     context.stack.leave();
 }
 
-void AppWidget::onParentUpdate(const plug::LayoutBox &parent_box)
+void AppWidget::createNewCanvas(const char *file_path)
 {
-    plug::LayoutBox &layout_box = getLayoutBox();
-    layout_box.onParentUpdate(parent_box);
-    
-    size_t size = m_widgets.getSize();
-    for (size_t it = 0; it < size; it++)
-        m_widgets[it]->onParentUpdate(layout_box);
-}
-
-void AppWidget::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
-{
-    context.stopped = false;
-}
-
-void AppWidget::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &context)
-{
-    context.stopped = false;
-}
-
-void AppWidget::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &context)
-{
-   
-    context.stopped = false;
-}
-
-void AppWidget::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
-{
-    context.stopped = false;
-}
-
-void AppWidget::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, plug::EHC &context)
-{
-    context.stopped = false;
-}
-
-void AppWidget::onTick(const plug::TickEvent &event, plug::EHC &context)
-{
-    context.stopped = false;
-} 
-
-void AppWidget::addWidget(Widget* widget)
-{
-    m_widgets.pushBack(widget);
+    CanvasManager *manager = static_cast<CanvasManager*>(m_widgets[m_canvas_manager_id]);
+    manager->createCanvas(m_filter_palette, m_color_palette, file_path);
 }
 
 void useApp()

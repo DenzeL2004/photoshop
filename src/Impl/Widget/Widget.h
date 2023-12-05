@@ -13,6 +13,7 @@
 #define __IMPL_WIDGET_H
 
 #include "Plug/Widget.h"
+#include "Impl/Graphic/Graphic.h"
 
 enum Corner {
   TopLeft = 0,

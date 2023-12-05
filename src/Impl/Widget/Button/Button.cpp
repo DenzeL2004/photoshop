@@ -60,7 +60,7 @@ const plug::Texture* Button::defineTexture() const
 
 void Button::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
 {
-    if (m_state ==  Button::ButtonState::DISABLED)
+    if (m_state ==  Button::ButtonState::DISABLED || context.stopped)
         return;
 
     Transform trf(getLayoutBox().getPosition(), Default_scale);    
@@ -87,8 +87,7 @@ void Button::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
 
 void Button::onMousePressed(const plug::MousePressedEvent &event, plug::EHC &context)
 {
-    if (m_state == Button::ButtonState::DISABLED || context.stopped)
-        return;
+    if (m_state == Button::ButtonState::DISABLED || context.stopped) return;
 
     Transform trf(getLayoutBox().getPosition(), Default_scale);    
     context.stack.enter(trf);
@@ -133,7 +132,33 @@ void Button::doAction(void)
         (*m_action)();
 }
 
-// ================================================================================
+//================================================================================
+
+void TextButton::draw(plug::TransformStack &stack, plug::RenderTarget &target)
+{
+    Button::draw(stack, target);
+
+    Transform trf(getLayoutBox().getPosition(), Default_scale);
+    stack.enter(trf);
+
+
+    if (m_state != Button::ButtonState::DISABLED)
+    {
+        Title &title = m_title_released;
+        if (m_state == Button::ButtonState::PRESSED || m_state == Button::ButtonState::COVERED)
+        {
+            title = m_title_pressed;
+        }
+
+        plug::Vec2d abs_pos = stack.apply(plug::Vec2d(0.0, 0.0)) + title.pos;
+        writeText(target, abs_pos, title.msg, title.width, title.color);   
+
+    }
+
+    stack.leave();
+}
+
+//================================================================================
 
 void ButtonList::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 {
@@ -153,11 +178,7 @@ void ButtonList::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 
 void ButtonList::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
 {
-    if (m_state ==  Button::ButtonState::DISABLED)
-    {
-        context.stopped = false;
-        return;
-    }
+    if (m_state ==  Button::ButtonState::DISABLED || context.stopped) return;
 
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
     context.stack.enter(trf);
@@ -235,7 +256,6 @@ void ButtonList::onMousePressed(const plug::MousePressedEvent &event,plug::EHC &
             m_buttons[it]->m_prev_state = m_buttons[it]->m_state;
             m_buttons[it]->m_state = Button::ButtonState::DISABLED;
         }
-
 
         if (current_pressed == -1 && last_presed >= 0)
         {
