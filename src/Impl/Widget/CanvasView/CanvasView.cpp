@@ -33,6 +33,15 @@ void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
     
     target.draw(vertex_array, *m_texture);
 
+    if (brush)
+    {
+        plug::Widget* preview = brush->getWidget();
+        if (preview)
+        {
+            preview->draw(stack, target);
+        }
+    }
+
     stack.leave();
 }
 
@@ -43,18 +52,26 @@ void CanvasView::onEvent(const plug::Event &event, plug::EHC &context)
     
     context.stopped = false;
 
-    if (event.getType() == plug::Focuse)
+    switch (event.getType())
     {
-        CanvasView::onFocuse((const plug::FocuseEvent&)event, context);
-    }
+        case plug::Focuse:
+            onFocuse((const plug::FocuseEvent&)event, context);
+            break;
 
-    if (event.getType() == plug::Save)
-    {
-        CanvasView::onSave((const plug::SaveEvent&)event, context);
-    }
+        case plug::SaveCanvas:
+            onSave((const plug::SaveEvent&)event, context);
+            break;
 
-    Widget::onEvent(event, context);
+        case plug::FilterApply:
+            onFilterApply((const plug::FilterApplyEvent&)event, context);
+            break;
 
+        default:
+            Widget::onEvent(event, context);
+            break;
+    } 
+
+   
     context.stack.leave();
 }
 
@@ -101,7 +118,9 @@ void CanvasView::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &conte
     {
         plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
 
-        //brush->onMove(center);
+        
+
+        brush->onMove(center);
 
         m_update_texture = true;
     }
@@ -122,8 +141,10 @@ void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC 
     if (context.stopped)
     {
         plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
-        
-        //brush->onMainButton({plug::State::Pressed}, center);
+
+        brush->setActiveCanvas(m_canvas);
+        brush->setColorPalette(m_color_palette);
+        brush->onMainButton({plug::State::Pressed}, center);
 
         m_update_texture = true;
     }
@@ -131,16 +152,17 @@ void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC 
 
 void CanvasView::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EHC &context)
 {
-    context.stopped = false;
     if (!m_focuse)
     {
-        //brush->onCancel();
+        brush->onCancel();
         return;
     }
 
     plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
     
-    //brush->onConfirm();
+    brush->setActiveCanvas(m_canvas);
+    brush->setColorPalette(m_color_palette);
+    brush->onConfirm();
 
     m_update_texture = true;
     
@@ -150,35 +172,6 @@ void CanvasView::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug
 {
     context.stopped = false;
 
-    if (event.ctrl)
-    {
-        context.stopped = useFilter(event.key_id);
-    }
-}
-
-bool CanvasView::useFilter(const plug::KeyCode key_id)
-{
-    plug::Filter* filter = nullptr;
-
-    switch (key_id)
-    {
-        case Last_filter_use:
-            filter = m_filter_palette.getLastFilter();
-            break;
-        
-        default:
-            break;
-    }
-
-    if (filter)
-    {
-        filter->applyFilter(m_canvas);
-        filter->release();
-
-        return true;
-    }
-
-    return false;
 }
 
 void CanvasView::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, plug::EHC &context)
@@ -194,12 +187,7 @@ void CanvasView::onTick(const plug::TickEvent &event, plug::EHC &context)
 void CanvasView::onFocuse(const plug::FocuseEvent &event, plug::EHC &context)
 {
     m_focuse = event.focuse_flag;
-
-    // brush->setActiveCanvas(m_canvas);
-    // brush->setColorPalette(m_color_palette);
 }
-
-#include <iostream>
 
 void CanvasView::onSave(const plug::SaveEvent &event, plug::EHC &context)
 {
@@ -219,6 +207,24 @@ void CanvasView::onSave(const plug::SaveEvent &event, plug::EHC &context)
     if (!img.saveToFile(event.file_path))
     {
         PROCESS_ERROR(ERR_FILE_OPEN, "failed save img by path(%s)", event.file_path);
+    }
+}
+
+void CanvasView::onFilterApply(const plug::FilterApplyEvent &event, plug::EHC &context)
+{
+    plug::Filter* filter = nullptr;
+
+    if (event.filter_type == FilterPalette::FilterType::LAST)
+        filter = m_filter_palette.getLastFilter();
+    else
+        filter = m_filter_palette.getFilter(event.filter_type);
+
+    if (filter)
+    {
+        filter->applyFilter(m_canvas);
+        filter->release();
+
+        context.stopped = true;
     }
 }
 

@@ -10,7 +10,6 @@
 #include "Plug/Event/Event.h"
 
 #include "Impl/Tool/ColorPalette/ColorPalette.h"
-#include "Impl/Tool/Tools/ToolBrush.h"
 
 #include "Impl/Tool/PluginUtil.h"
 #include "Impl/Tool/FilterPalette/FilterPalette.h"
@@ -30,14 +29,24 @@ struct FocuseEvent : public plug::Event
     bool focuse_flag;
 };
 
-const size_t Save = 26;
+const size_t SaveCanvas = 26;
 
 struct SaveEvent : public plug::Event 
 {
     SaveEvent(const char* const &path)
-      : Event(Save), file_path(path){}
+      : Event(SaveCanvas), file_path(path){}
       
     const char* const file_path;
+};
+
+const size_t FilterApply = 27;
+
+struct FilterApplyEvent : public plug::Event 
+{
+    FilterApplyEvent(size_t type)
+      : Event(FilterApply), filter_type(type){}
+      
+    size_t filter_type;
 };
 
 }
@@ -60,7 +69,8 @@ class CanvasView: public Widget
                     m_filter_palette(filter_palette),
                     brush(nullptr)
         {
-            brush = nullptr;// static_cast<plug::Tool*>(loadPlugin("obj/Plugins/ToolBrush.so"));
+            brush = static_cast<plug::Tool*>(loadPlugin("Plugins/TestTool/test_tool.so")->tryGetInterface(static_cast<size_t>(plug::PluginGuid::Tool)));
+            assert(brush != nullptr);
         }
                 
         virtual ~CanvasView()
@@ -96,11 +106,11 @@ class CanvasView: public Widget
 
         virtual void onFocuse           (const plug::FocuseEvent &event, plug::EHC &context);
         virtual void onSave             (const plug::SaveEvent &event, plug::EHC &context);
+        virtual void onFilterApply      (const plug::FilterApplyEvent &event, plug::EHC &context);
     
     private:
 
         void updateTexture(void);
-        bool useFilter(const plug::KeyCode key_id);
 
         plug::Canvas &m_canvas;      
         plug::Vec2d m_scale;

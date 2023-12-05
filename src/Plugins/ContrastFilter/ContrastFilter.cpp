@@ -1,4 +1,4 @@
-#include "Contrast.h"
+#include "ContrastFilter.h"
 
 #include "Plug/Graphics/VertexArray.h"
 

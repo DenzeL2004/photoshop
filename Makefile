@@ -50,11 +50,11 @@ plugins : $(DLL_SO)
 
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
-	@$(COMPILER) $(FLAGS) $(INC_FLAGS) $(D_FLAGS) -MMD -fPIC -c $< -o $@
+	@$(COMPILER) $(FLAGS) $(INC_FLAGS) -MMD -fPIC -c $< -o $@
 
-$(PLUGIN_DIR)/%.so : $(OBJ_DIR)/$(PLUGIN_DIR)/%.o
+$(PLUGIN_DIR)/%.so : $(OBJ_DIR)/$(PLUGIN_DIR)/%.o $(OBJ)
 	@mkdir -p $(@D)
-	@$(COMPILER) -shared -z defs -o $@ $^ 
+	@$(COMPILER) -shared -z defs -o $@ $^ -lsfml-graphics -lsfml-window -lsfml-system
 
 
 .PHONY : cleanup

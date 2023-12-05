@@ -97,6 +97,20 @@ void AppWidget::createNewCanvas(const char *file_path)
     manager->createCanvas(m_filter_palette, m_color_palette, file_path);
 }
 
+
+void AppWidget::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
+{
+    if (event.ctrl)
+    {
+        if (event.key_id == plug::KeyCode::F)
+        {
+            onEvent(plug::FilterApplyEvent(FilterPalette::FilterType::LAST), context);
+        }
+    }
+}
+
+//=========================================================================================
+
 void useApp()
 {
     sf::RenderWindow window(sf::VideoMode((size_t)Window_width, (size_t)Window_height), "- _ -");
@@ -162,7 +176,6 @@ void useApp()
         timer.restart();
     }
 }
-
 
 static void runEvent(sf::Event &event, plug::EHC &context, Vec2d mouse_pos, plug::Widget &widget)
 {

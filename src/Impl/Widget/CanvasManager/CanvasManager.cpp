@@ -72,7 +72,6 @@ void CanvasManager::onMousePressed(const plug::MousePressedEvent &event, plug::E
             m_widgets[size - 1]->onEvent(plug::FocuseEvent(false), context); 
 
             m_widgets.drown(it);
-            m_canvases.drown(it);
 
             m_widgets[size - 1]->onEvent(plug::FocuseEvent(true), context);            
 
@@ -177,18 +176,22 @@ void CanvasManager::onEvent(const plug::Event &event, plug::EHC &context)
 {
     if (context.stopped) return;
 
-    context.stopped = false;
     size_t size = m_widgets.getSize(); 
-
     if (size == 0) return;
 
-    if (event.getType() == plug::Save)
+    size_t event_type = event.getType();
+
+    switch (event_type)
     {
-        m_widgets[size - 1]->onEvent(event, context);
-    }
-    else
-    {
-        Widget::onEvent(event, context);
+        case plug::SaveCanvas: case plug::FilterApply:
+            {
+                m_widgets[size - 1]->onEvent(event, context);
+            }
+            break;
+        
+        default:
+            Widget::onEvent(event, context);
+            break;
     }
 }
 

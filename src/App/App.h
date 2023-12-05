@@ -47,7 +47,7 @@ class AppWidget : public ContainerWidget
         // virtual void onMousePressed     (const plug::MousePressedEvent &event, plug::EHC &context);
         // virtual void onMouseReleased    (const plug::MouseReleasedEvent &event, plug::EHC &context);
 
-        // virtual void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &context);
+        virtual void onKeyboardPressed  (const plug::KeyboardPressedEvent &event, plug::EHC &context);
         // virtual void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &context);
 
     private:
@@ -130,6 +130,28 @@ class AddNewCanvas : public Action
 
         AppWidget &m_app_widget;
 };
+
+class ApplyFilter : public Action
+{
+    public:
+
+        ApplyFilter(plug::Widget &widget, size_t type):
+                    m_widget(widget),
+                    m_type(type){}
+        ~ApplyFilter(){}
+
+        void operator()()
+        {
+            TransformStack stack;
+            plug::EHC context = {(plug::TransformStack&)stack, false, false};
+            m_widget.onEvent(plug::FilterApplyEvent(m_type), context);
+        }
+
+    private:
+        plug::Widget &m_widget;
+        size_t m_type;
+};
+
 
 void useApp();
 

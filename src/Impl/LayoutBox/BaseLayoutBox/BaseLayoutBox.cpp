@@ -3,9 +3,9 @@
 BaseLayoutBox::BaseLayoutBox(const plug::Vec2d& pos, 
                              const plug::Vec2d& size, const plug::Vec2d& parent_size, 
                              const bool resize_flag, const bool save_locals_flag):
-                            m_pos(pos), 
-                            m_size(size), m_parent_size(parent_size), 
-                            m_resizable(resize_flag), m_save_locals(save_locals_flag){}
+                             m_pos(pos), 
+                             m_size(size), m_parent_size(parent_size), 
+                             m_resizable(resize_flag), m_save_locals(save_locals_flag){}
 
 Vec2d BaseLayoutBox::getPosition() const
 {

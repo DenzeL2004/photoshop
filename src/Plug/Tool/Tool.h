@@ -52,7 +52,7 @@ public:
    * @brief Process action on secondary tool button
    *
    * @param[in] state	    State of button
-   * @param[in] position	Position of cursor during action
+   * @param[in] position	Position of cursor duridrawng action
    */
   virtual void onSecondaryButton(const ControlState &state,
                                  const Vec2d &position) = 0;

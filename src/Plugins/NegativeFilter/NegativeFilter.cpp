@@ -1,4 +1,4 @@
-#include "Negative.h"
+#include "NegativeFilter.h"
 
 #include "Plug/Graphics/VertexArray.h"
 
