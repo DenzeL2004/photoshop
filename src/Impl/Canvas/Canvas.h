@@ -10,7 +10,6 @@
 
 class Canvas : public plug::Canvas
 {
-
     public:
         Canvas(const size_t width, const size_t height, const plug::Color color);
         Canvas(const char *filename);
@@ -38,6 +37,9 @@ class Canvas : public plug::Canvas
         virtual void setPixel(size_t x, size_t y, const plug::Color &color);
 
         virtual const plug::Texture& getTexture(void) const;
+
+        Canvas(const Canvas &other) = delete;
+        Canvas &operator= (const Canvas &other) = delete;
 
     private:
         sf::RenderTexture *m_render_texture;

@@ -54,6 +54,9 @@ class AppWidget : public ContainerWidget
         // virtual void onKeyboardReleased (const plug::KeyboardReleasedEvent &event, plug::EHC &context);
 
     private:
+
+        void AddFiltersButtons(void);
+        void AddFileButtons(void);
         
         FilterPalette m_filter_palette;
         ColorPalette  m_color_palette;
@@ -164,6 +167,7 @@ class ApplyFilter : public Action
         ApplyFilter &operator= (const ApplyFilter &other) = delete;
 
     private:
+
         plug::Widget &m_widget;
         size_t m_type;
 };

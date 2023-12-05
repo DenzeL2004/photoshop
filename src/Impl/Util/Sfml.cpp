@@ -65,7 +65,7 @@ plug::Texture getPlugTexture(const char *texture_path)
     if (!img.loadFromFile(texture_path))
     {
         fprintf(stderr, "open file(\'%s\') to coppy sf::Image is failed!\n");
-        return {0, 0, nullptr};
+        return plug::Texture(0, 0);
     }
 
     size_t width  = img.getSize().x;
@@ -103,6 +103,7 @@ plug::Texture getPlugTexture(const sf::Texture &texture)
             data[it * width + jt] = getPlugColor(img.getPixel(jt, it));
         }
     }
+
     plug::Texture plug_texture(width, height, data);
     delete[] data;
     

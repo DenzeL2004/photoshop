@@ -210,12 +210,14 @@ void CanvasView::onSave(const plug::SaveEvent &event, plug::EHC &context)
 
 void CanvasView::onFilterApply(const plug::FilterApplyEvent &event, plug::EHC &context)
 {
-    plug::Filter* filter = nullptr;
+    if (context.stopped) return;
 
-    if (event.filter_type == FilterPalette::FilterType::LAST)
-        filter = m_filter_palette.getLastFilter();
-    else
-        filter = m_filter_palette.getFilter(event.filter_type);
+    if (event.filter_type != FilterPalette::FilterType::LAST)
+    {
+        m_filter_palette.setLastFilter(event.filter_type);
+    }
+
+    plug::Filter* filter = m_filter_palette.getLastFilter();
 
     if (filter)
     {

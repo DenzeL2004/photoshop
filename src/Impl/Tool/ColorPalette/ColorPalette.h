@@ -20,6 +20,9 @@ class ColorPalette : public plug::ColorPalette
         void setFGColor(plug::Color new_fg_color);
         void setBGColor(plug::Color new_bg_color);
 
+        ColorPalette(const ColorPalette &other) = delete;
+        ColorPalette &operator= (const ColorPalette &other) = delete;
+
     private:
 
         plug::Color m_bg_color;

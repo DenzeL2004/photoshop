@@ -104,35 +104,38 @@ static const plug::Vec2d Background_window_size = plug::Vec2d(Window_width - 9, 
 
 static const char Config_bar_texture[]   = "src/img/ConfigBarTexture.png";
 static const plug::Vec2d Config_bar_pos  = Background_window_pos; 
-static const plug::Vec2d Config_bar_size = plug::Vec2d(Background_window_size.x, 20);
+static const plug::Vec2d Config_bar_size = plug::Vec2d(Background_window_size.x, 40);
 
-static const plug::Vec2d Menu_button_size = plug::Vec2d(Config_bar_size.y * 1.33, Config_bar_size.y);
+static const plug::Vec2d Menu_button_size = plug::Vec2d(Config_bar_size.y * 1.5, Config_bar_size.y);
 
 static const char Menu_file_released[] = "src/img/ButtonFileReleased.png";
 static const char Menu_file_pressed [] = "src/img/ButtonFilePressed.png";
 static const plug::Vec2d File_button_size = Menu_button_size;
 static const plug::Vec2d File_button_pos  = Background_window_pos;
 
-static const plug::Vec2d Menu_list_size = plug::Vec2d(200, 30);
-
+static const plug::Vec2d Menu_list_size = plug::Vec2d(200, 50);
 
 static const char Menu_button_released[] = "src/img/MenuButtonsBackgroundReleased.png";
 static const char Menu_button_pressed [] = "src/img/MenuButtonsBackgroundPressed.png";
 
-static const double Menu_button_scale = 1.5;
+static const double Menu_button_scale = 1.9;
 static const plug::Color Menu_button_color = plug::Color(255, 255, 255);
-static const plug::Vec2d Menu_title_pos = plug::Vec2d(3,  File_button_size.y / 2);
+static const plug::Vec2d Menu_title_pos = plug::Vec2d(5,  Menu_list_size.y / 3);
 
 static const char Menu_file_open_released[] = "src/img/MenuButtonsBackgroundReleased.png";
 static const char Menu_file_open_pressed [] = "src/img/MenuButtonsBackgroundPressed.png";
 static const plug::Vec2d File_button_open_size = Menu_list_size;
 static const plug::Vec2d File_button_open_pos  = plug::Vec2d(File_button_pos.x, File_button_size.y);
 
-
 static const char Menu_file_new_released[] = "src/img/MenuButtonsBackgroundReleased.png";
 static const char Menu_file_new_pressed [] = "src/img/MenuButtonsBackgroundPressed.png";
 static const plug::Vec2d File_button_new_size = Menu_list_size;
 static const plug::Vec2d File_button_new_pos  = plug::Vec2d(File_button_pos.x, File_button_size.y + + File_button_open_size.y);
+
+static const char Menu_filter_released[] = "src/img/ButtonFilterReleased.png";
+static const char Menu_filter_pressed [] = "src/img/ButtonFilterPressed.png";
+static const plug::Vec2d Filter_button_size = Menu_button_size;
+static const plug::Vec2d Filter_button_pos  = plug::Vec2d(File_button_pos.x + File_button_size.x, File_button_pos.y);
 
 static const plug::Vec2d Tool_bar_pos  = plug::Vec2d(0, Config_bar_size.y); 
 static const plug::Vec2d Tool_bar_size = plug::Vec2d(60, Background_window_size.y - Tool_bar_pos.y);
@@ -142,80 +145,6 @@ static const plug::Vec2d Canvase_manager_size = Background_window_size - Canvase
 
 
 //================================================================
-
-
-// static plug::Vec2d Menu_size = plug::Vec2d(1, 50);
-// static plug::Vec2d Menu_pos  = plug::Vec2d(0, 0);
-
-// static plug::Vec2d Colors_palette_size = plug::Vec2d(200, Menu_size.y - 20);
-// static plug::Vec2d Colors_palette_pos  = plug::Vec2d(160, 10);
-
-
-
-// static plug::Vec2d Menu_Button_size = plug::Vec2d(50, Menu_size.y);
-
-
-
-// static plug::Vec2d Button_create_pos    = plug::Vec2d(0.0, 0.0);
-// static plug::Vec2d Button_create_size   = Menu_Button_size;
-
-// //Tools
-// static plug::Vec2d Button_Tools_pos   = plug::Vec2d(50.0, 0.0);
-// static plug::Vec2d Button_Tools_size  = Menu_Button_size;
-
-// static plug::Vec2d Button_Brush_pos   = plug::Vec2d(Button_Tools_pos.x, Button_Tools_pos.y + Menu_Button_size.y);
-// static plug::Vec2d Button_Brush_size  = Menu_Button_size;
-
-// static plug::Vec2d Button_Line_pos   = plug::Vec2d(Button_Tools_pos.x + Menu_Button_size.x, Button_Tools_pos.y + Menu_Button_size.y);
-// static plug::Vec2d Button_Line_size  = Menu_Button_size;
-
-
-// static plug::Vec2d Button_Square_pos   = plug::Vec2d(Button_Tools_pos.x + 2 * Menu_Button_size.x, Button_Tools_pos.y + Menu_Button_size.y);
-// static plug::Vec2d Button_Square_size  = Menu_Button_size;
-
-
-// static plug::Vec2d Button_Circle_pos   = plug::Vec2d(Button_Tools_pos.x + 2 * Menu_Button_size.x, Button_Tools_pos.y + 2 * Menu_Button_size.y);
-// static plug::Vec2d Button_Circle_size  = Menu_Button_size;
-
-// static plug::Vec2d Button_Polyline_pos   = plug::Vec2d(Button_Tools_pos.x + Menu_Button_size.x, Button_Tools_pos.y + 2 * Menu_Button_size.y);
-// static plug::Vec2d Button_Polyline_size  = Menu_Button_size;
-
-// static plug::Vec2d Button_Pen_pos   = plug::Vec2d(Button_Tools_pos.x, Button_Tools_pos.y + 2 * Menu_Button_size.y);
-// static plug::Vec2d Button_Pen_size  = Menu_Button_size;
-
-// static plug::Vec2d Button_Eraser_pos   = plug::Vec2d(Button_Tools_pos.x, Button_Tools_pos.y + 3 * Menu_Button_size.y);
-// static plug::Vec2d Button_Eraser_size  = Menu_Button_size;
-
-// static plug::Vec2d Button_Text_pos   = plug::Vec2d(Button_Tools_pos.x + Menu_Button_size.x, Button_Tools_pos.y + 3 * Menu_Button_size.y);
-// static plug::Vec2d Button_Text_size  = Menu_Button_size;
-
-
-// //Filters
-
-// static plug::Vec2d Button_Filter_pos   = plug::Vec2d(100.0, 0.0);
-// static plug::Vec2d Button_Filter_size  = Menu_Button_size;
-
-// static plug::Vec2d Button_Inclight_pos   = plug::Vec2d(Button_Filter_pos.x, Button_Filter_pos.y + Menu_Button_size.y);
-// static plug::Vec2d Button_Inclight_size  = Menu_Button_size;
-
-// static plug::Vec2d Button_Declight_pos   = plug::Vec2d(Button_Filter_pos.x, Button_Filter_pos.y + 2 * Menu_Button_size.y);
-// static plug::Vec2d Button_Declight_size  = Menu_Button_size;
-
-// static plug::Vec2d Button_Blackwhite_pos   = plug::Vec2d(Button_Filter_pos.x + Menu_Button_size.x, Button_Filter_pos.y + 1 * Menu_Button_size.y);
-// static plug::Vec2d Button_Blackwhite_size  = Menu_Button_size;
-
-// static plug::Vec2d Button_Invert_pos   = plug::Vec2d(Button_Filter_pos.x + Menu_Button_size.x, Button_Filter_pos.y + 2 * Menu_Button_size.y);
-// static plug::Vec2d Button_Invert_size  = Menu_Button_size;
-
-
-// static plug::Vec2d Button_Redfilter_pos   = plug::Vec2d(Button_Filter_pos.x + 2 * Menu_Button_size.x, Button_Filter_pos.y + 1 * Menu_Button_size.y);
-// static plug::Vec2d Button_Redfilter_size  = Menu_Button_size;
-
-// static plug::Vec2d Button_Greenfilter_pos   = plug::Vec2d(Button_Filter_pos.x + 2 * Menu_Button_size.x, Button_Filter_pos.y + 2 * Menu_Button_size.y);
-// static plug::Vec2d Button_Greenfilter_size  = Menu_Button_size;
-
-// static plug::Vec2d Button_Bluefilter_pos   = plug::Vec2d(Button_Filter_pos.x + 2 * Menu_Button_size.x, Button_Filter_pos.y + 3 * Menu_Button_size.y);
-// static plug::Vec2d Button_Bluefilter_size  = Menu_Button_size;
 
 
 static const char *Empty_texture = "src/img/empty.png";

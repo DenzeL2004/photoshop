@@ -7,15 +7,25 @@
 #include <cassert>
 #include <iostream>
 #include <cstdio>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <dirent.h>
+
 
 #include "Plug/Plugin.h"
 #include "Plug/Tool.h"
 #include "Plug/Filter.h"
 
+#include "Container/Container.h"
 
 static const char Load_plug_sym[] = "loadPlugin";
+static const char Plugin_dir_name[] = "Plugins\0";
+static const size_t Max_path_len = 100;
 
 plug::Plugin* loadPlugin(const char *dll_path);
+
+void loadePlugins(Container<plug::Plugin*> &plugins);
 
 class BaseData : public plug::PluginData
 {

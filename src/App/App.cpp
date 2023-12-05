@@ -14,25 +14,56 @@ AppWidget::AppWidget():
 {
     plug::LayoutBox &box = getLayoutBox();
     m_color_palette.setBGColor(plug::White);
-    m_color_palette.setFGColor(plug::Green);
+    m_color_palette.setFGColor(plug::Black);
 
     m_widgets.pushBack( new Window( getPlugTexture(Background_window_texture), 
                                     Title(),
-                                    BaseLayoutBox(Background_window_pos, 
-                                                  Background_window_size, 
-                                                  box.getSize(), 
-                                                  true, true)));
+                                    BaseLayoutBox(Background_window_pos, Background_window_size, box.getSize(), true, true)));
 
     m_widgets.pushBack( new Window( getPlugTexture(Config_bar_texture), 
                                     Title(),
-                                    BaseLayoutBox(Config_bar_pos, 
-                                                  Config_bar_size, 
-                                                  box.getSize(), 
-                                                  true, true)));
+                                    BaseLayoutBox(Config_bar_pos, Config_bar_size, box.getSize(), true, true)));
+    AddFileButtons();
+    AddFiltersButtons();
 
+    CanvasManager* manager = new CanvasManager(BaseLayoutBox(Canvase_manager_pos, Canvase_manager_size, box.getSize(), false, false));
+
+    m_widgets.pushBack(manager);
+    m_canvas_manager_id = m_widgets.getSize() - 1;
+}
+
+void AppWidget::AddFiltersButtons(void)
+{
+    ButtonList *filters_button = new ButtonList(getPlugTexture(Menu_filter_released), getPlugTexture(Menu_filter_pressed), 
+                                                getPlugTexture(Menu_filter_pressed),  getPlugTexture(Menu_filter_pressed), 
+                                                BaseLayoutBox(Filter_button_pos, Filter_button_size, this->getLayoutBox().getSize(), false, false));    
+    
+    size_t cnt_filters = m_filter_palette.getSize();
+    for (size_t it = 0; it < cnt_filters; it++)
+    {
+        plug::Filter *filter = m_filter_palette.getFilter(it);
+
+        const char* filter_name = filter->getPluginData()->getName();
+        plug::Vec2d button_pos = plug::Vec2d(0, Filter_button_size.y + Menu_list_size.y * it);
+
+        filters_button->addButton(new TextButton(getPlugTexture(Menu_file_open_released), getPlugTexture(Menu_file_open_pressed), 
+                                                 getPlugTexture(Menu_file_open_released), getPlugTexture(Empty_texture),
+                                                 Title(Menu_title_pos, filter_name, Menu_button_scale, Menu_button_color), 
+                                                 Title(Menu_title_pos, filter_name, Menu_button_scale, Menu_button_color),
+                                                 BaseLayoutBox(button_pos, Menu_list_size, filters_button->getLayoutBox().getSize(), false, false), 
+                                                 new ApplyFilter(*this, it)));       
+
+        filter->release();
+    }
+
+    m_widgets.pushBack(filters_button);
+}
+
+void AppWidget::AddFileButtons(void)
+{
     ButtonList *file_button = new ButtonList(getPlugTexture(Menu_file_released), getPlugTexture(Menu_file_pressed), 
                                              getPlugTexture(Menu_file_pressed),  getPlugTexture(Menu_file_pressed), 
-                                             BaseLayoutBox(File_button_pos, File_button_size, box.getSize(), false, false));
+                                             BaseLayoutBox(File_button_pos, File_button_size, this->getLayoutBox().getSize(), false, false));
 
     file_button->addButton(new TextButton(  getPlugTexture(Menu_file_open_released), getPlugTexture(Menu_file_open_pressed), 
                                             getPlugTexture(Menu_file_open_released), getPlugTexture(Empty_texture), 
@@ -49,11 +80,6 @@ AppWidget::AppWidget():
                                             new AddNewCanvas(*this)));
 
     m_widgets.pushBack(file_button);
-
-    CanvasManager* manager = new CanvasManager(BaseLayoutBox(Canvase_manager_pos, Canvase_manager_size, box.getSize(), false, false));
-
-    m_widgets.pushBack(manager);
-    m_canvas_manager_id = m_widgets.getSize() - 1;
 }
 
 void AppWidget::draw(plug::TransformStack &stack, plug::RenderTarget &target)
