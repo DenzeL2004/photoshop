@@ -22,6 +22,9 @@ class ContainerWidget: public Widget
             }
         }
 
+        ContainerWidget(const ContainerWidget &other) = delete;
+        virtual ContainerWidget &operator= (const ContainerWidget &other) = delete;
+
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
 
         virtual void onParentUpdate(const plug::LayoutBox &parent_box);
@@ -51,6 +54,9 @@ class EraseLastWidget : public Action
         {
             m_container.eraseWidget();
         }        
+
+        EraseLastWidget(const EraseLastWidget &other) = delete;
+        virtual EraseLastWidget &operator= (const EraseLastWidget &other) = delete;
 
     private:
         ContainerWidget &m_container; 

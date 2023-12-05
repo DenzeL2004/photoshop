@@ -11,8 +11,7 @@ void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
         m_update_texture = false;
     }
 
-    plug::Transform trf(getLayoutBox().getPosition(), Default_scale);
-    stack.enter(trf);
+    stack.enter(Transform(getLayoutBox().getPosition(), Default_scale));
 
     plug::VertexArray vertex_array(plug::PrimitiveType::Quads, 4);
     
@@ -38,7 +37,12 @@ void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
         plug::Widget* preview = brush->getWidget();
         if (preview)
         {
+            stack.enter(Transform(-m_canvas_pos, Default_scale));
+            
             preview->draw(stack, target);
+
+            stack.leave();
+
         }
     }
 
@@ -118,8 +122,6 @@ void CanvasView::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &conte
     {
         plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
 
-        
-
         brush->onMove(center);
 
         m_update_texture = true;
@@ -132,7 +134,7 @@ void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC 
 {
     if (!m_focuse)
     {
-        context.stopped = false;
+        context.stopped = covers(context.stack, event.pos);
         return;
     }
 
@@ -142,8 +144,8 @@ void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC 
     {
         plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
 
-        brush->setActiveCanvas(m_canvas);
-        brush->setColorPalette(m_color_palette);
+        // brush->setActiveCanvas(m_canvas);
+        // brush->setColorPalette(m_color_palette);
         brush->onMainButton({plug::State::Pressed}, center);
 
         m_update_texture = true;
@@ -154,24 +156,20 @@ void CanvasView::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EH
 {
     if (!m_focuse)
     {
-        brush->onCancel();
+        context.stopped = false;
         return;
     }
 
     plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
-    
-    brush->setActiveCanvas(m_canvas);
-    brush->setColorPalette(m_color_palette);
-    brush->onConfirm();
 
-    m_update_texture = true;
-    
+    brush->onMainButton({plug::State::Released}, event.pos);    
+
+    m_update_texture = true;   
 }
 
 void CanvasView::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
 {
     context.stopped = false;
-
 }
 
 void CanvasView::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, plug::EHC &context)

@@ -39,6 +39,9 @@ class AppWidget : public ContainerWidget
 
         void createNewCanvas(const char *file_path = nullptr);
 
+        AppWidget(const AppWidget &other) = delete;
+        AppWidget &operator= (const AppWidget &other) = delete;
+
     protected:
 
         // virtual void onTick             (const plug::TickEvent &event, plug::EHC &context);
@@ -90,6 +93,9 @@ class LoadImage : public Action
             m_app_widget.insertWidget(entry_window);
         }
 
+        LoadImage(const LoadImage &other) = delete;
+        LoadImage &operator= (const LoadImage &other) = delete;
+
     private:
 
         class AddImage : public Action
@@ -105,6 +111,10 @@ class LoadImage : public Action
                     m_app_widget.createNewCanvas(m_entry_field.getString());
                     m_app_widget.eraseWidget();
                 }
+
+                AddImage(const AddImage &other) = delete;
+                AddImage &operator= (const AddImage &other) = delete;
+
 
             private:
                 AppWidget &m_app_widget;
@@ -126,6 +136,9 @@ class AddNewCanvas : public Action
             m_app_widget.createNewCanvas();
         }
 
+        AddNewCanvas(const AddNewCanvas &other) = delete;
+        AddNewCanvas &operator= (const AddNewCanvas &other) = delete;
+
     private:
 
         AppWidget &m_app_widget;
@@ -146,6 +159,9 @@ class ApplyFilter : public Action
             plug::EHC context = {(plug::TransformStack&)stack, false, false};
             m_widget.onEvent(plug::FilterApplyEvent(m_type), context);
         }
+
+        ApplyFilter(const ApplyFilter &other) = delete;
+        ApplyFilter &operator= (const ApplyFilter &other) = delete;
 
     private:
         plug::Widget &m_widget;

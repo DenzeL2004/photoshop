@@ -13,7 +13,7 @@
 #include "Plug/Filter.h"
 
 
-static const char* Load_plug_sym = "loadPlugin";
+static const char Load_plug_sym[] = "loadPlugin";
 
 plug::Plugin* loadPlugin(const char *dll_path);
 
@@ -28,6 +28,9 @@ class BaseData : public plug::PluginData
 
     virtual const char *getName(void) const { return m_name;}
     virtual const char *getTexturePath(void) const { return m_texture_path; }
+
+    BaseData(const BaseData &other) = delete;
+    BaseData &operator= (const BaseData &other) = delete;
 
     private:
         const char* m_name;
@@ -84,6 +87,9 @@ class DefFilter : public plug::Filter
 
         virtual ~DefFilter() = default;
 
+        DefFilter(const DefFilter &other) = delete;
+        DefFilter &operator= (const DefFilter &other) = delete;
+
     private:
         size_t m_cnt_reference;
         const BaseData m_data;
@@ -138,6 +144,9 @@ class DefTool : public plug::Tool
         }
 
         virtual ~DefTool() = default;
+
+        DefTool(const DefTool &other) = delete;
+        DefTool &operator= (const DefTool &other) = delete;
 
     private:
         size_t m_cnt_reference;

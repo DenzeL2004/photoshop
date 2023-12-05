@@ -32,10 +32,10 @@ class LineTool : public DefTool
 
         virtual plug::Widget* getWidget(void);
 
-        virtual ~LineTool()
-        {
-            delete m_preview;
-        }
+        virtual ~LineTool();
+
+        LineTool(const LineTool &other) = delete;
+        LineTool &operator= (const LineTool &other) = delete;
 
     private:
         plug::ColorPalette *m_color_palette;

@@ -7,7 +7,7 @@ class ContrastFilter : public DefFilter
 {
     public:
         ContrastFilter(const int correction = 0):
-                        DefFilter("Negative", "ERROR_PATH"),
+                        DefFilter("Contrast", "ERROR_PATH"),
                         m_correction(correction){}
 
         ~ContrastFilter() = default;
@@ -15,6 +15,9 @@ class ContrastFilter : public DefFilter
         virtual void applyFilter(plug::Canvas &canvas) const;
 
         virtual plug::Widget *getWidget(void) { return nullptr; }     
+
+        ContrastFilter(const ContrastFilter &other) = delete;
+        ContrastFilter &operator= (const ContrastFilter &other) = delete;
 
     private:
         int m_correction;

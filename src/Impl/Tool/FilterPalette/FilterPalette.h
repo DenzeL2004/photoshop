@@ -17,10 +17,10 @@ class FilterPalette
             LAST = 10001,
         };
 
-        FilterPalette():    m_filters(), m_last_filter(0)
+        FilterPalette():    m_filters(), m_last_filter(1)
         {
-            m_filters.pushBack(static_cast<plug::Filter*>(loadPlugin("Plugins/NegativeFilter/NegativeFilter.so")->tryGetInterface(static_cast<size_t>(plug::PluginGuid::Filter))));
-            //m_filters.pushBack(static_cast<plug::Filter*>(loadPlugin("Plugins/Contrast/Contrast.so")->tryGetInterface(static_cast<size_t>(plug::PluginGuid::Filter))));
+            m_filters.pushBack(static_cast<plug::Filter*>(loadPlugin("Plugins/NegativeFilter/NegativeFilter.so")));
+            m_filters.pushBack(static_cast<plug::Filter*>(loadPlugin("Plugins/ContrastFilter/ContrastFilter.so")));
         }
         
         ~FilterPalette()

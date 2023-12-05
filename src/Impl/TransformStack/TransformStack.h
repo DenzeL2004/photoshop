@@ -9,21 +9,21 @@ class TransformStack : public plug::TransformStack
 {
     public:
 
-    TransformStack():m_stack(){}
+        TransformStack():m_stack(){}
 
-    virtual ~TransformStack(){}
+        virtual ~TransformStack(){}
 
-    virtual void enter(const Transform &transform);
-    virtual void leave();
+        virtual void enter(const plug::Transform &transform);
+        virtual void leave();
 
-    virtual Transform top () const;
- 
-    virtual Vec2d apply     (const Vec2d &vec) const;
-    virtual Vec2d restore   (const Vec2d &vec) const;
+        virtual plug::Transform top () const;
+    
+        virtual plug::Vec2d apply     (const plug::Vec2d &vec) const;
+        virtual plug::Vec2d restore   (const plug::Vec2d &vec) const;
 
     private:
     
-    Container<Transform> m_stack;
+        Container<Transform> m_stack;
 
 };
 

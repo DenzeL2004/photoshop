@@ -13,6 +13,9 @@ class NegativeFilter : public DefFilter
         virtual void applyFilter(plug::Canvas &canvas) const;
 
         virtual plug::Widget *getWidget(void) { return nullptr; }        
+
+        NegativeFilter(const NegativeFilter &other) = delete;
+        NegativeFilter &operator= (const NegativeFilter &other) = delete;
 };
 
 extern "C" plug::Plugin* loadPlugin(void);

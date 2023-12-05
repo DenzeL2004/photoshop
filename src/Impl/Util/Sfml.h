@@ -21,6 +21,8 @@ void copyToSFMLVertexArray(sf::VertexArray &sf_array,
 void copyToSFMLTexture(sf::Texture &sf_texture,
                        const plug::Texture &plug_texture);
 
-plug::Texture getPlugTexture (const char *texture_path);
+plug::Texture getPlugTexture(const char *texture_path);
+
+plug::Texture getPlugTexture(const sf::Texture &texture);
 
 #endif

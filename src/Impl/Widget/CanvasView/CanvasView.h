@@ -69,10 +69,16 @@ class CanvasView: public Widget
                     m_filter_palette(filter_palette),
                     brush(nullptr)
         {
-            brush = static_cast<plug::Tool*>(loadPlugin("Plugins/TestTool/test_tool.so")->tryGetInterface(static_cast<size_t>(plug::PluginGuid::Tool)));
+            brush = static_cast<plug::Tool*>(loadPlugin("Plugins/LineTool/LineTool.so")->tryGetInterface(static_cast<size_t>(plug::PluginGuid::Tool)));
             assert(brush != nullptr);
+
+            brush->setActiveCanvas(m_canvas);
+            brush->setColorPalette(m_color_palette);
         }
-                
+
+        CanvasView(const CanvasView &other) = delete;
+        virtual CanvasView &operator= (const CanvasView &other) = delete;
+
         virtual ~CanvasView()
         {
             delete m_texture;

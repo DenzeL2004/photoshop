@@ -26,6 +26,10 @@ class Click : public Action
             m_flag ^= true;
         }
 
+        Click(const Click &other) = delete;
+        Click& operator= (const Click &other) = delete;
+
+
     private:
         bool &m_flag; 
 };
@@ -103,6 +107,9 @@ class TextButton : public Button
                             box, action),
                     m_title_released(title_released), m_title_pressed(title_pressed){}    
 
+        TextButton(const TextButton &other) = delete;
+        TextButton& operator= (const Button &other) = delete;
+
         virtual ~TextButton(){}
 
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
@@ -127,6 +134,9 @@ class ShowButtonList : public Action
                 m_buttons[it]->m_state = m_buttons[it]->m_prev_state;
             }
         }
+
+        ShowButtonList(const ShowButtonList &other) = delete;
+        ShowButtonList& operator= (const ShowButtonList &other) = delete;
 
     private:
         Container<Button*> &m_buttons; 

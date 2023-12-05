@@ -48,6 +48,9 @@ class Frame: public Window
 
         virtual void onEvent(const plug::Event &event, plug::EHC &context);
 
+        Frame(const Frame &other) = delete;
+        virtual Frame &operator= (const Frame &other) = delete;
+
     protected:
 
         virtual void onTick             (const plug::TickEvent &event, plug::EHC &context);

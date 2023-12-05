@@ -2,7 +2,7 @@
 #include "Plug/Math.h"
 
 
-void TransformStack::enter(const Transform &transform)
+void TransformStack::enter(const plug::Transform &transform)
 {
     if (m_stack.getSize() == 0)
     {
@@ -23,7 +23,7 @@ void TransformStack::leave()
 }
 
 
-Transform TransformStack::top() const
+plug::Transform TransformStack::top() const
 {
     if (m_stack.getSize() == 0)
         return Transform(Vec2d(0.0, 0.0), Vec2d(1.0, 1.0));
@@ -31,7 +31,7 @@ Transform TransformStack::top() const
     return m_stack.getBack();
 }
 
-Vec2d TransformStack::apply(const Vec2d &vec) const
+plug::Vec2d TransformStack::apply(const plug::Vec2d &vec) const
 {
     if (m_stack.getSize() == 0)
         return vec;
@@ -40,7 +40,7 @@ Vec2d TransformStack::apply(const Vec2d &vec) const
 } 
 
 
-Vec2d TransformStack::restore(const Vec2d &vec) const
+plug::Vec2d TransformStack::restore(const plug::Vec2d &vec) const
 {
     if (m_stack.getSize() == 0)
         return vec;

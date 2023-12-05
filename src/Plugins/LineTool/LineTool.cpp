@@ -7,7 +7,7 @@ class LineToolPreview : public Widget
 {
     public:
         LineToolPreview(const plug::Vec2d &begin_pos, const plug::Vec2d &end_pos, const plug::Color &color):
-                        Widget(BaseLayoutBox(plug::Vec2d(1, 1), plug::Vec2d(1, 1), plug::Vec2d(1, 1), false, false)),
+                        Widget(BaseLayoutBox(plug::Vec2d(0, 0), plug::Vec2d(1, 1), plug::Vec2d(1, 1), false, false)),
                         m_begin_pos(begin_pos), 
                         m_end_pos(end_pos),
                         m_color(color){}
@@ -16,12 +16,14 @@ class LineToolPreview : public Widget
 
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target)
         {
-            plug::Transform last_trf = stack.top();
-
+        
             plug::VertexArray line(plug::PrimitiveType::Lines, 2);
 
-            line[0] = {m_begin_pos + last_trf.getOffset(), Vec2d(0, 0), m_color};
-            line[1] = {m_end_pos   + last_trf.getOffset(), Vec2d(0, 0), m_color};
+            line[0].position = stack.apply(m_begin_pos);
+            line[1].position = stack.apply(m_end_pos);
+
+            line[0].color = line[1].color = m_color;
+            line[0].tex_coords = line[1].tex_coords = plug::Vec2d(0, 0);
 
             target.draw(line);
         }
@@ -44,6 +46,11 @@ LineTool::LineTool():
                 m_begin_pos(0, 0), m_end_pos(0, 0), m_color(plug::Color(255, 255, 255)), 
                 m_preview(new LineToolPreview(m_begin_pos, m_end_pos, m_color)){}
 
+LineTool::~LineTool()
+{
+    delete m_preview;
+}
+
 void LineTool::setColorPalette(plug::ColorPalette &palette)
 {
     m_color_palette = &palette;
@@ -56,26 +63,30 @@ void LineTool::setActiveCanvas(plug::Canvas &canvas)
 
 void LineTool::onMainButton(const plug::ControlState &state, const plug::Vec2d &pos)
 {
-    if (state.state != plug::State::Pressed) return;
-
-    if (m_active) return;
-
-    m_begin_pos = m_end_pos = pos;
-
-    m_active = true;
-
-    if (!m_color_palette)
+    if (m_active && state.state == plug::State::Released)
     {
-        m_active = false;
-
-        #ifdef DEBUG_PALGINS
-        
-        printf("Color palette is nullptr");
-        
-        #endif
+        onConfirm();
     }
 
-    m_color = m_color_palette->getFGColor();
+    if (!m_active && state.state == plug::State::Pressed)
+    {
+        m_begin_pos = m_end_pos = pos;
+
+        m_active = true;
+
+        if (!m_color_palette)
+        {
+            m_active = false;
+
+            #ifdef DEBUG_PALGINS
+            
+            printf("Color palette is nullptr");
+            
+            #endif
+        }
+
+        m_color = m_color_palette->getFGColor();
+    }
 }
 
 void LineTool::onMove(const plug::Vec2d &pos)
@@ -92,7 +103,7 @@ void LineTool::onCancel(void)
 }
 
 void LineTool::onConfirm(void)
-{ 
+{
     if (!m_canvas || !m_color_palette)
     {
         m_active = false;
@@ -103,8 +114,6 @@ void LineTool::onConfirm(void)
         
         #endif
     }
-
-    if (!m_active) return;
 
     plug::VertexArray line(plug::PrimitiveType::Lines, 2);
 
@@ -122,7 +131,10 @@ void LineTool::onConfirm(void)
 
 plug::Widget* LineTool::getWidget(void) 
 {
-    return m_preview;
+    if (m_active)
+        return m_preview;
+
+    return nullptr;
 };
 
 plug::Plugin* loadPlugin(void)

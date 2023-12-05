@@ -33,8 +33,6 @@ class TextBox : public Widget
         TextBox(const TextBox &other) = delete;
         TextBox& operator= (const TextBox &other) = delete;
 
-        
-
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
 
         void clear(void);

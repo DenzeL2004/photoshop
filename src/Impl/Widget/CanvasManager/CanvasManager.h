@@ -25,7 +25,9 @@ class CloseCanvasWithSave : public Action
         ~CloseCanvasWithSave(){}
 
         void operator() ();
-        
+
+        CloseCanvasWithSave(const CloseCanvasWithSave &other) = delete;
+        virtual CloseCanvasWithSave &operator= (const CloseCanvasWithSave &other) = delete;        
 
     private:
 
@@ -53,6 +55,9 @@ class CloseCanvasWithoutSave : public Action
         ~CloseCanvasWithoutSave(){};
 
         void operator() ();        
+
+        CloseCanvasWithoutSave(const CloseCanvasWithoutSave &other) = delete;
+        virtual CloseCanvasWithoutSave &operator= (const CloseCanvasWithoutSave &other) = delete;
 
     private:
         CanvasManager &m_canvas_manager; 
@@ -123,6 +128,9 @@ class CanvasManager : public Widget
 
         plug::Widget* getActiveCanvas(void);
 
+        CanvasManager(const CanvasManager &other) = delete;
+        virtual CanvasManager &operator= (const CanvasManager &other) = delete;
+
     protected:    
 
         virtual void onTick             (const plug::TickEvent &event, plug::EHC &context);
@@ -136,11 +144,10 @@ class CanvasManager : public Widget
         
     private:
         Container<Widget*> m_widgets;
-        bool m_delete_canvas;
-
         Container<plug::Canvas*> m_canvases;
 
         size_t m_cnt_canvas;
+        bool m_delete_canvas;
 
         ContainerWidget *m_dialog_window;
 }; 

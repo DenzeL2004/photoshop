@@ -19,6 +19,9 @@ class ScrollCanvas : public Action
             m_canvas_view.setCanvasPos(m_offset + m_canvas_view.getCanvasPos());
         }
 
+        ScrollCanvas(const ScrollCanvas &other) = delete;
+        virtual ScrollCanvas &operator= (const ScrollCanvas &other) = delete;
+
     private:
         plug::Vec2d m_offset;
         CanvasView &m_canvas_view;
@@ -96,6 +99,10 @@ class Scrollbar: public Widget
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
 
         virtual void onParentUpdate(const plug::LayoutBox &parent_box);
+
+        Scrollbar(const Scrollbar &other) = delete;
+        virtual Scrollbar &operator= (const Scrollbar &other) = delete;
+
 
     protected:
        

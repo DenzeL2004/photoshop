@@ -80,6 +80,31 @@ plug::Texture getPlugTexture(const char *texture_path)
             data[it * width + jt] = getPlugColor(img.getPixel(jt, it));
         }
     }
+
+    plug::Texture plug_texture(width, height, data);
+    delete[] data;
+
+    return plug_texture;
+}
+
+plug::Texture getPlugTexture(const sf::Texture &texture)
+{
+    sf::Image img = texture.copyToImage();
+
+    size_t width  = img.getSize().x;
+    size_t height = img.getSize().y;
+
+    plug::Color *data = new plug::Color[width * height];
+
+    for (size_t it = 0; it < height; it++)
+    {
+        for (size_t jt = 0; jt < width; jt++)
+        {
+            data[it * width + jt] = getPlugColor(img.getPixel(jt, it));
+        }
+    }
+    plug::Texture plug_texture(width, height, data);
+    delete[] data;
     
-    return plug::Texture(width, height, data);
+    return plug_texture;
 }

@@ -6,7 +6,7 @@ FLAGS = \
  -Winline -Wunreachable-code -Wmissing-declarations -Wmissing-include-dirs -Wswitch-default -Weffc++ -Wmain 			\
  -Wextra -Wall -g -pipe -fexceptions -Wcast-qual -Wctor-dtor-privacy -Wempty-body -Wformat-security 					\
  -Wformat=2 -Wignored-qualifiers -Wlogical-op -Wmissing-field-initializers -Wnon-virtual-dtor -Woverloaded-virtual 		\
- -Wpointer-arith -Wsign-promo -Wstack-usage=8192 -Wstrict-aliasing -Wstrict-null-sentinel -Wtype-limits -Wwrite-strings \
+ -Wpointer-arith -Wsign-promo -Wstack-usage=8192 -Wstrict-aliasing -Wstrict-null-sentinel -ggdb3 -Wtype-limits -Wwrite-strings \
 
 OBJ_DIR = ./obj
 SRC_DIR = ./src
@@ -52,10 +52,9 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
 	@$(COMPILER) $(FLAGS) $(INC_FLAGS) -MMD -fPIC -c $< -o $@
 
-$(PLUGIN_DIR)/%.so : $(OBJ_DIR)/$(PLUGIN_DIR)/%.o $(OBJ)
+$(PLUGIN_DIR)/%.so : $(OBJ_DIR)/$(PLUGIN_DIR)/%.o obj/Impl/LayoutBox/BaseLayoutBox/BaseLayoutBox.o obj/Impl/Widget/Widget.o
 	@mkdir -p $(@D)
-	@$(COMPILER) -shared -z defs -o $@ $^ -lsfml-graphics -lsfml-window -lsfml-system
-
+	@$(COMPILER) -shared -z defs -o $@ $^
 
 .PHONY : cleanup
 cleanup :
