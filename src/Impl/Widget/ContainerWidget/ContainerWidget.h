@@ -56,7 +56,7 @@ class EraseLastWidget : public Action
         }        
 
         EraseLastWidget(const EraseLastWidget &other) = delete;
-        virtual EraseLastWidget &operator= (const EraseLastWidget &other) = delete;
+        EraseLastWidget &operator= (const EraseLastWidget &other) = delete;
 
     private:
         ContainerWidget &m_container; 

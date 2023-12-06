@@ -13,6 +13,7 @@
 
 #include "Impl/Tool/PluginUtil.h"
 #include "Impl/Tool/FilterPalette/FilterPalette.h"
+#include "Impl/Tool/ToolPalette/ToolPalette.h"
 
 #include "App/AppConfig.h"
 
@@ -49,6 +50,16 @@ struct FilterApplyEvent : public plug::Event
     size_t filter_type;
 };
 
+const size_t ToolChoose = 28;
+
+struct ToolChooseEvent : public plug::Event 
+{
+    ToolChooseEvent(size_t type)
+      : Event(ToolChoose), tool_type(type){}
+      
+    size_t tool_type;
+};
+
 }
 
 class CanvasView: public Widget
@@ -56,6 +67,7 @@ class CanvasView: public Widget
     public:
 
         CanvasView( plug::Canvas &canvas,
+                    ToolPalette &tool_palette,
                     FilterPalette &filter_palette,
                     plug::ColorPalette &m_color_palette,
                     const plug::LayoutBox& box):
@@ -67,14 +79,8 @@ class CanvasView: public Widget
                     m_canvas_pos(0.0, 0.0),
                     m_color_palette(m_color_palette),
                     m_filter_palette(filter_palette),
-                    brush(nullptr)
-        {
-            brush = static_cast<plug::Tool*>(loadPlugin("Plugins/LineTool/LineTool.so")->tryGetInterface(static_cast<size_t>(plug::PluginGuid::Tool)));
-            assert(brush != nullptr);
-
-            brush->setActiveCanvas(m_canvas);
-            brush->setColorPalette(m_color_palette);
-        }
+                    m_tool_palette(tool_palette), 
+                    m_tool(nullptr){}
 
         CanvasView(const CanvasView &other) = delete;
         virtual CanvasView &operator= (const CanvasView &other) = delete;
@@ -82,6 +88,8 @@ class CanvasView: public Widget
         virtual ~CanvasView()
         {
             delete m_texture;
+
+            if (m_tool) m_tool->release();
         }
 
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
@@ -113,6 +121,7 @@ class CanvasView: public Widget
         virtual void onFocuse           (const plug::FocuseEvent &event, plug::EHC &context);
         virtual void onSave             (const plug::SaveEvent &event, plug::EHC &context);
         virtual void onFilterApply      (const plug::FilterApplyEvent &event, plug::EHC &context);
+        virtual void onToolChoose       (const plug::ToolChooseEvent &event, plug::EHC &context);
     
     private:
 
@@ -131,8 +140,9 @@ class CanvasView: public Widget
 
         plug::ColorPalette &m_color_palette;
         FilterPalette &m_filter_palette;
+        ToolPalette &m_tool_palette;
 
-        plug::Tool* brush;
+        plug::Tool* m_tool;
 };
 
 #endif

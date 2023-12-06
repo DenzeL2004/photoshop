@@ -10,7 +10,7 @@
 #include <SFML/Graphics.hpp>
 
 static size_t Color_field_size = 256;
-static uint16_t Hue_limit = 360;
+static size_t Hue_limit = 360;
 
 
 class SelectionHue: public Widget
@@ -22,7 +22,7 @@ class SelectionHue: public Widget
                     m_texture(Hue_limit, 1),
                     m_scale(scale)
         {
-            for (uint16_t it = 0; it < Hue_limit; it++)
+            for (size_t it = 0; it < Hue_limit; it++)
             {
                 m_texture.setPixel(it, 0, HSV2RGB(it, Color_field_size - 1, Color_field_size - 1));
             }

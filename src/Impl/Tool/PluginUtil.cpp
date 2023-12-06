@@ -30,7 +30,7 @@ plug::Plugin* loadPlugin(const char *dll_path)
     if (!plugin)
     {
         PROCESS_ERROR(ERR_FILE_OPEN, "plugin is nullptr by %s", dll_path);
-        assert(0 && "plugin is nullptr by");
+        assert(0 && "plugin is nullptr");
     }
 
     if (dlclose(library) < 0)

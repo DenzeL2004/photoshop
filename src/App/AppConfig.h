@@ -113,7 +113,7 @@ static const char Menu_file_pressed [] = "src/img/ButtonFilePressed.png";
 static const plug::Vec2d File_button_size = Menu_button_size;
 static const plug::Vec2d File_button_pos  = Background_window_pos;
 
-static const plug::Vec2d Menu_list_size = plug::Vec2d(200, 50);
+static const plug::Vec2d Menu_list_size = plug::Vec2d(250, 50);
 
 static const char Menu_button_released[] = "src/img/MenuButtonsBackgroundReleased.png";
 static const char Menu_button_pressed [] = "src/img/MenuButtonsBackgroundPressed.png";

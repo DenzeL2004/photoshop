@@ -183,11 +183,12 @@ void CanvasManager::onEvent(const plug::Event &event, plug::EHC &context)
 
     switch (event_type)
     {
-        case plug::SaveCanvas: case plug::FilterApply:
-            {
-                m_widgets[size - 1]->onEvent(event, context);
-            }
-            break;
+        case plug::SaveCanvas:  case plug::FilterApply:
+        case plug::ToolChoose: 
+        {
+            m_widgets[size - 1]->onEvent(event, context);
+        }
+        break;
         
         default:
             Widget::onEvent(event, context);
@@ -195,7 +196,7 @@ void CanvasManager::onEvent(const plug::Event &event, plug::EHC &context)
     }
 }
 
-void CanvasManager::createCanvas(FilterPalette &filter_palette,
+void CanvasManager::createCanvas(ToolPalette &tool_palette, FilterPalette &filter_palette,
                                  plug::ColorPalette &color_palette, const char *file_path)
 {
     char *buf = new char[BUFSIZ];
@@ -233,7 +234,7 @@ void CanvasManager::createCanvas(FilterPalette &filter_palette,
     m_canvases.pushBack(canvas);
 
     
-    CanvasView *canvas_view = new CanvasView(  *canvas, filter_palette, color_palette,
+    CanvasView *canvas_view = new CanvasView(  *canvas, tool_palette, filter_palette, color_palette,
                                                 BaseLayoutBox(Canvas_view_pos, Canvas_view_size, Canvas_frame_size, true, true));
 
     Scrollbar *scroll_ver = new Scrollbar(  *canvas_view, Scrollbar::Type::VERTICAL, 
@@ -310,9 +311,9 @@ void CloseCanvasWithSave::operator()()
                                     new EraseLastWidget(*m_canvas_manager.m_dialog_window));
 
     Button *confirm_btn = new Button(getPlugTexture(Dialog_button_confirm_released), getPlugTexture(Dialog_button_confirm_pressed), 
-                                    getPlugTexture(Dialog_button_confirm_released), getPlugTexture(Dialog_button_confirm_pressed), 
-                                    BaseLayoutBox(Entry_button_confirm_pos, Dialog_button_size, Dialog_window_size, false, true),
-                                    new CloseCanvasWithSave::SaveCanvas(m_canvas_manager));
+                                     getPlugTexture(Dialog_button_confirm_released), getPlugTexture(Dialog_button_confirm_pressed), 
+                                     BaseLayoutBox(Entry_button_confirm_pos, Dialog_button_size, Dialog_window_size, false, true),
+                                     new CloseCanvasWithSave::SaveCanvas(m_canvas_manager));
 
     TextBox *text_box = new TextBox(30, Entry_title_scale, BaseLayoutBox(Entry_field_pos + plug::Vec2d(40, 25), Entry_field_size, entry_window->getLayoutBox().getSize(), false, false));
     text_box->setColor(plug::White);

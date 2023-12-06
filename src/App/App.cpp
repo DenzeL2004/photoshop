@@ -8,13 +8,20 @@ static void defineModifierKey(sf::Event &event, bool &shift, bool &ctrl, bool &a
 
 AppWidget::AppWidget():
                     ContainerWidget(BaseLayoutBox(Background_window_pos, Background_window_size, plug::Vec2d(Window_width, Window_height), false, false)), 
+                    m_plugin_list(),
                     m_filter_palette(),
                     m_color_palette(),
+                    m_tool_palette(),
                     m_canvas_manager_id(0)
 {
     plug::LayoutBox &box = getLayoutBox();
     m_color_palette.setBGColor(plug::White);
     m_color_palette.setFGColor(plug::Black);
+
+    loadePlugins(m_plugin_list);
+
+    m_filter_palette.loadPlugins(m_plugin_list);
+    m_tool_palette.loadPlugins(m_plugin_list);
 
     m_widgets.pushBack( new Window( getPlugTexture(Background_window_texture), 
                                     Title(),
@@ -129,7 +136,7 @@ void AppWidget::onEvent(const plug::Event &event, plug::EHC &context)
 void AppWidget::createNewCanvas(const char *file_path)
 {
     CanvasManager *manager = static_cast<CanvasManager*>(m_widgets[m_canvas_manager_id]);
-    manager->createCanvas(m_filter_palette, m_color_palette, file_path);
+    manager->createCanvas(m_tool_palette, m_filter_palette, m_color_palette, file_path);
 }
 
 
@@ -140,6 +147,12 @@ void AppWidget::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug:
         if (event.key_id == plug::KeyCode::F)
         {
             onEvent(plug::FilterApplyEvent(FilterPalette::FilterType::LAST), context);
+        }
+    
+        if (event.key_id >= plug::KeyCode::Num0 && event.key_id <= plug::KeyCode::Num9)
+        {
+            size_t tool_id = static_cast<size_t>(event.key_id) - static_cast<size_t>(plug::KeyCode::Num0);
+            onEvent(plug::ToolChooseEvent(tool_id), context);
         }
     }
 }

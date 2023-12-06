@@ -19,7 +19,7 @@ class EntryField: public ContainerWidget
         const char* const getString(void);
 
         EntryField(const EntryField &other) = delete;
-        virtual EntryField &operator= (const EntryField &other) = delete;
+        EntryField &operator= (const EntryField &other) = delete;
 
     private:
         size_t m_text_box_id;

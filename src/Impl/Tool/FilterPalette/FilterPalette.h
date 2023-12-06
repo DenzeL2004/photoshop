@@ -17,31 +17,19 @@ class FilterPalette
             LAST = 10001,
         };
 
-        FilterPalette():m_filters(), m_last_filter(2)
-        {
-            Container<plug::Plugin*> plugin_list;
-            loadePlugins(plugin_list);
-
-            size_t cnt_plugins = plugin_list.getSize();
-            for (size_t it = 0; it < cnt_plugins; it++)
-            {
-                plug::Filter *filter = static_cast<plug::Filter*>(plugin_list[it]->tryGetInterface(static_cast<size_t>(plug::PluginGuid::Filter)));
-                if (filter)
-                {
-                    m_filters.pushBack(filter);
-                    filter->release();
-                }
-            }
-        }
+        FilterPalette():m_filters(), m_last_filter(UNKNOWN){}
         
         ~FilterPalette()
         {
-            size_t size = m_filters.getSize();
-            for (size_t it = 0; it < size; it++)
+            size_t cnt = m_filters.getSize();
+
+            for (size_t it = 0; it < cnt; it++)
             {
                 if (m_filters[it]) m_filters[it]->release();
             }
         }
+
+        void loadPlugins(Container<plug::Plugin*> &plugins);
 
         plug::Filter* getLastFilter();
         void setLastFilter(const size_t filter_id);

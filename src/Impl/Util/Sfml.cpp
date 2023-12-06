@@ -110,16 +110,15 @@ plug::Texture getPlugTexture(const sf::Texture &texture)
     return plug_texture;
 }
 
-plug::Color HSV2RGB(uint16_t i_hue, uint8_t sat, uint8_t val)
+plug::Color HSV2RGB(size_t i_hue, size_t sat, size_t val)
 {
-    
     if (!sat) return plug::Color(val, val, val);
 
     i_hue %= 360;
 
-    int indicator = (int)(i_hue /= 60.0);
-    
     double hue = (double)i_hue;
+    int indicator = (int)(hue /= 60.0);
+    
     double fr = hue - (double)indicator;
 
     uint8_t c1 = (val * (255 - sat)) / 255;

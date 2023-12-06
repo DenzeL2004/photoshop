@@ -53,13 +53,13 @@ class Button : public Widget
                 const plug::LayoutBox& box,
                 Action *action):
                 Widget(box),
+                m_state(RELEASED), m_prev_state(RELEASED),   
                 m_texture_released(texture_released.width, texture_released.height, texture_released.data),
                 m_texture_covered(texture_covered.width, texture_covered.height, texture_covered.data),
                 m_texture_pressed(texture_pressed.width, texture_pressed.height, texture_pressed.data),
-                m_texture_disabled(texture_disabled.width, texture_disabled.height, texture_disabled.data),
-                m_action(action),
-                m_state(RELEASED), m_prev_state(RELEASED),         
-                m_covering_time(0){}    
+                m_texture_disabled(texture_disabled.width, texture_disabled.height, texture_disabled.data),      
+                m_covering_time(0),
+                m_action(action){}    
 
         virtual ~Button()
         {
@@ -150,7 +150,8 @@ class ButtonList : public Button
                     const plug::LayoutBox& box):
                     Button( texture_released, texture_covered, 
                             texture_pressed, texture_disabled, 
-                            box, nullptr){}
+                            box, nullptr),
+                    m_buttons(){}
 
         virtual ~ButtonList()
         {
@@ -160,7 +161,7 @@ class ButtonList : public Button
         }
 
         ButtonList(const ButtonList &other) = delete;
-        virtual ButtonList &operator= (const ButtonList &other) = delete;
+        ButtonList &operator= (const ButtonList &other) = delete;
 
     public:
 

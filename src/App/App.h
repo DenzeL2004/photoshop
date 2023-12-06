@@ -24,6 +24,7 @@
 
 #include "Impl/Tool/ColorPalette/ColorPalette.h"
 #include "Impl/Tool/FilterPalette/FilterPalette.h"
+#include "Impl/Tool/ToolPalette/ToolPalette.h"
 #include "Impl/Widget/ColorField/ColorField.h"
 
 #include "AppConfig.h"
@@ -34,7 +35,17 @@ class AppWidget : public ContainerWidget
 
         AppWidget();
 
-        virtual ~AppWidget(){}
+        virtual ~AppWidget()
+        {
+            size_t cnt = m_plugin_list.getSize();
+            for (size_t it = 0; it < cnt; it++)
+            {
+                if (m_plugin_list[it])
+                {
+                    m_plugin_list[it]->release();
+                }
+            }
+        }
 
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
 
@@ -61,8 +72,11 @@ class AppWidget : public ContainerWidget
         void AddFiltersButtons(void);
         void AddFileButtons(void);
         
+        Container <plug::Plugin*> m_plugin_list;
+
         FilterPalette m_filter_palette;
         ColorPalette  m_color_palette;
+        ToolPalette  m_tool_palette;
 
         size_t m_canvas_manager_id;
 };

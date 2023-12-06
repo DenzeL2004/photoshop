@@ -123,7 +123,7 @@ class CanvasManager : public Widget
 
         virtual void onParentUpdate(const plug::LayoutBox &parent_box);
 
-        void createCanvas(  FilterPalette &filter_palette,
+        void createCanvas(  ToolPalette &tool_palette, FilterPalette &filter_palette,
                             plug::ColorPalette &color_palette, const char *file_path = nullptr);
 
         plug::Widget* getActiveCanvas(void);

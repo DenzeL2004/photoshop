@@ -32,9 +32,9 @@ void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
     
     target.draw(vertex_array, *m_texture);
 
-    if (brush)
+    if (m_focuse && m_tool)
     {
-        plug::Widget* preview = brush->getWidget();
+        plug::Widget* preview = m_tool->getWidget();
         if (preview)
         {
             stack.enter(Transform(-m_canvas_pos, Default_scale));
@@ -42,7 +42,6 @@ void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
             preview->draw(stack, target);
 
             stack.leave();
-
         }
     }
 
@@ -60,7 +59,7 @@ void CanvasView::onEvent(const plug::Event &event, plug::EHC &context)
     {
         case plug::Focuse:
             onFocuse((const plug::FocuseEvent&)event, context);
-            break;
+            break;Transform
 
         case plug::SaveCanvas:
             onSave((const plug::SaveEvent&)event, context);
@@ -68,6 +67,10 @@ void CanvasView::onEvent(const plug::Event &event, plug::EHC &context)
 
         case plug::FilterApply:
             onFilterApply((const plug::FilterApplyEvent&)event, context);
+            break;
+
+        case plug::ToolChoose:
+            onToolChoose((const plug::ToolChooseEvent&)event, context);
             break;
 
         default:
@@ -120,9 +123,12 @@ void CanvasView::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &conte
 
     if (context.stopped)
     {
-        plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
+        plug::Vec2d canvas_pos = context.stack.restore(event.pos) + m_canvas_pos;
 
-        brush->onMove(center);
+        if (m_tool)
+        {
+            m_tool->onMove(canvas_pos);
+        }
 
         m_update_texture = true;
     }
@@ -142,11 +148,12 @@ void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC 
 
     if (context.stopped)
     {
-        plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
+        plug::Vec2d canvas_pos = context.stack.restore(event.pos) + m_canvas_pos;
 
-        // brush->setActiveCanvas(m_canvas);
-        // brush->setColorPalette(m_color_palette);
-        brush->onMainButton({plug::State::Pressed}, center);
+        if (event.button_id == plug::MouseButton::Left && m_tool)
+        {
+            m_tool->onMainButton({plug::State::Pressed}, canvas_pos);
+        }
 
         m_update_texture = true;
     }
@@ -160,15 +167,23 @@ void CanvasView::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EH
         return;
     }
 
-    plug::Vec2d center = context.stack.restore(event.pos) + m_canvas_pos;
+    plug::Vec2d canvas_pos = context.stack.restore(event.pos) + m_canvas_pos;
 
-    brush->onMainButton({plug::State::Released}, event.pos);    
+    if (event.button_id == plug::MouseButton::Left && m_tool)
+    {
+        m_tool->onMainButton({plug::State::Released}, canvas_pos);
+    }
 
     m_update_texture = true;   
 }
 
 void CanvasView::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
 {
+    if (event.key_id == plug::KeyCode::Escape && m_tool)
+    {
+        m_tool->onCancel();
+    }
+
     context.stopped = false;
 }
 
@@ -185,6 +200,11 @@ void CanvasView::onTick(const plug::TickEvent &event, plug::EHC &context)
 void CanvasView::onFocuse(const plug::FocuseEvent &event, plug::EHC &context)
 {
     m_focuse = event.focuse_flag;
+    if (m_tool)
+    {
+        m_tool->setActiveCanvas(m_canvas);
+        m_tool->setColorPalette(m_color_palette);
+    }
 }
 
 void CanvasView::onSave(const plug::SaveEvent &event, plug::EHC &context)
@@ -206,6 +226,25 @@ void CanvasView::onSave(const plug::SaveEvent &event, plug::EHC &context)
     {
         PROCESS_ERROR(ERR_FILE_OPEN, "failed save img by path(%s)", event.file_path);
     }
+}
+
+void CanvasView::onToolChoose(const plug::ToolChooseEvent &event, plug::EHC &context)
+{
+    if (!m_focuse) return;
+
+    if (m_tool)
+    {
+        m_tool->release();
+    }
+
+    m_tool = m_tool_palette.getTool(event.tool_type);
+
+    if (m_tool)
+    {
+        m_tool->setColorPalette(m_color_palette);
+        m_tool->setActiveCanvas(m_canvas);
+    }
+
 }
 
 void CanvasView::onFilterApply(const plug::FilterApplyEvent &event, plug::EHC &context)
