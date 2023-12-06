@@ -23,8 +23,17 @@ AppWidget::AppWidget():
     m_widgets.pushBack( new Window( getPlugTexture(Config_bar_texture), 
                                     Title(),
                                     BaseLayoutBox(Config_bar_pos, Config_bar_size, box.getSize(), true, true)));
+
+    m_widgets.pushBack( new Window( getPlugTexture(Tool_bar_texture), 
+                                    Title(),
+                                    BaseLayoutBox(Tool_bar_pos, Tool_bar_size, box.getSize(), true, true)));
+
     AddFileButtons();
     AddFiltersButtons();
+
+    m_widgets.pushBack(new Clock(Menu_button_color, 2.6, BaseLayoutBox(plug::Vec2d(Config_bar_size.x - 150, Config_bar_size.y - 10), Menu_button_size, box.getSize(), false, true)));
+    m_widgets.pushBack(new ColorField(Color_field_pos,Vec2d(0.5, 0.5), m_color_palette));
+
 
     CanvasManager* manager = new CanvasManager(BaseLayoutBox(Canvase_manager_pos, Canvase_manager_size, box.getSize(), false, false));
 

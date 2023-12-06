@@ -109,3 +109,38 @@ plug::Texture getPlugTexture(const sf::Texture &texture)
     
     return plug_texture;
 }
+
+plug::Color HSV2RGB(uint16_t i_hue, uint8_t sat, uint8_t val)
+{
+    
+    if (!sat) return plug::Color(val, val, val);
+
+    i_hue %= 360;
+
+    int indicator = (int)(i_hue /= 60.0);
+    
+    double hue = (double)i_hue;
+    double fr = hue - (double)indicator;
+
+    uint8_t c1 = (val * (255 - sat)) / 255;
+    uint8_t c2 = (val * (255 - sat * fr)) / 255;
+    uint8_t c3 = (val * (255 - sat * (1.0 - fr))) / 255;
+
+    uint8_t r = 0, g = 0, b = 0;
+    switch (indicator)
+    {
+        case 0: r = val; g = c3; b = c1; break;
+        case 1: r = c2; g = val; b = c1; break;
+        case 2: r = c1; g = val; b = c3; break;
+        case 3: r = c1; g = c2; b = val; break;
+        case 4: r = c3; g = c1; b = val; break;
+        case 5: r = val; g = c1; b = c2; break;
+    }
+
+    return plug::Color(r, g, b);          
+}
+
+bool checkColors(plug::Color rhs, plug::Color lhs)
+{
+    return (rhs.r == lhs.r && rhs.g == lhs.g && rhs.b == lhs.b);
+}

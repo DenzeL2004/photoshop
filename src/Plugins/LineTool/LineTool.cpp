@@ -39,7 +39,7 @@ class LineToolPreview : public Widget
 };
 
 LineTool::LineTool():
-                DefTool("Line", "Plugins/LineTool/LinePressed.png"),
+                DefTool("Line", "Plugins/LineTool/LineReleased.png"),
                 m_color_palette(nullptr),
                 m_canvas(nullptr), 
                 m_active(false),

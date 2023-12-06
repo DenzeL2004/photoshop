@@ -35,13 +35,6 @@ class Window : public Widget
         Title m_title;
         
         const plug::Widget *m_parent;
-        
-
-        
-        
-    private:
-
-        
 };
 
 #endif

@@ -99,7 +99,7 @@ bool Widget::covers(plug::TransformStack& stack,
 {
   Vec2d local_pos = stack.restore(position);
 
-  Vec2d size = getLayoutBox().getSize() * stack.top().getScale();;
+  Vec2d size = getLayoutBox().getSize();
 
   bool horizontal = (Eps < local_pos.x && size.x - Eps > local_pos.x);
   bool vertical   = (Eps < local_pos.y && size.y - Eps > local_pos.y);

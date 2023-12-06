@@ -20,8 +20,11 @@
 #include "Impl/Canvas/Canvas.h"
 #include "Impl/Widget/CanvasManager/CanvasManager.h"
 
+#include "Impl/Widget/Clock/Clock.h"
+
 #include "Impl/Tool/ColorPalette/ColorPalette.h"
 #include "Impl/Tool/FilterPalette/FilterPalette.h"
+#include "Impl/Widget/ColorField/ColorField.h"
 
 #include "AppConfig.h"
 

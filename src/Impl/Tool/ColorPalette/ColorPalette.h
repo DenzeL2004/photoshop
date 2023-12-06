@@ -16,7 +16,6 @@ class ColorPalette : public plug::ColorPalette
         plug::Color getFGColor(void) const;
         plug::Color getBGColor(void) const;
 
-
         void setFGColor(plug::Color new_fg_color);
         void setBGColor(plug::Color new_bg_color);
 
