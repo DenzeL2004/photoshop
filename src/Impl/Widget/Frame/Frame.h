@@ -37,19 +37,21 @@ class Frame: public Window
         {
             size_t size = m_widgets.getSize();
             for (size_t it = 0; it < size; it++)
+            {
                 delete m_widgets[it];
+            }
         }
 
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
 
         virtual void onParentUpdate(const plug::LayoutBox &parent_box);
 
-        void addWidget(plug::Widget* widget);
-
         virtual void onEvent(const plug::Event &event, plug::EHC &context);
 
+        void addWidget(plug::Widget* widget);
+
         Frame(const Frame &other) = delete;
-        virtual Frame &operator= (const Frame &other) = delete;
+        Frame &operator= (const Frame &other) = delete;
 
     protected:
 

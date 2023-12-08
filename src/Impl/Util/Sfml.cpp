@@ -62,10 +62,14 @@ void copyToSFMLTexture(sf::Texture &sf_texture,
 plug::Texture getPlugTexture(const char *texture_path)
 {
     sf::Image img;
-    if (!img.loadFromFile(texture_path))
+    if (texture_path == nullptr)
     {
-        fprintf(stderr, "open file(\'%s\') to coppy sf::Image is failed!\n");
-        return plug::Texture(0, 0);
+      img.loadFromFile(Error_texture);
+    }
+    else if (!img.loadFromFile(texture_path))
+    {
+        fprintf(stderr, "open file(\'%s\') to coppy sf::Image is failed!\n", texture_path);
+        img.loadFromFile(Error_texture);
     }
 
     size_t width  = img.getSize().x;

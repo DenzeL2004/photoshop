@@ -1,7 +1,5 @@
 #include "App.h"
 
-
-
 static void runEvent(sf::Event &event, plug::EHC &context, Vec2d mouse_pos, plug::Widget &widget);
 
 static void defineModifierKey(sf::Event &event, bool &shift, bool &ctrl, bool &alt);
@@ -35,9 +33,10 @@ AppWidget::AppWidget():
                                     Title(),
                                     BaseLayoutBox(Tool_bar_pos, Tool_bar_size, box.getSize(), true, true)));
 
+    AddToolsButtons();
     AddFileButtons();
     AddFiltersButtons();
-
+    
     m_widgets.pushBack(new Clock(Menu_button_color, 2.6, BaseLayoutBox(plug::Vec2d(Config_bar_size.x - 150, Config_bar_size.y - 10), Menu_button_size, box.getSize(), false, true)));
     m_widgets.pushBack(new ColorField(Color_field_pos,Vec2d(0.5, 0.5), m_color_palette));
 
@@ -73,6 +72,31 @@ void AppWidget::AddFiltersButtons(void)
     }
 
     m_widgets.pushBack(filters_button);
+}
+
+void AppWidget::AddToolsButtons(void)
+{
+    ContainerWidget *tool_buttons = new ContainerWidget(BaseLayoutBox(Tool_bar_pos, Tool_bar_pos, getLayoutBox().getSize(), false, false));
+
+    size_t cnt_tools = m_tool_palette.getSize();
+    for (size_t it = 0; it < cnt_tools; it++)
+    {
+        plug::Tool *tool = m_tool_palette.getTool(it);
+
+        const char* tool_name = tool->getPluginData()->getName();
+        const char* tool_texture = tool->getPluginData()->getTexturePath();
+
+        plug::Vec2d button_pos = Vec2d(5, 50) + plug::Vec2d(Tool_button_size.x * (it / 2), Tool_button_size.y * (it % 2));
+
+        tool_buttons->insertWidget(new Button(getPlugTexture(tool_texture), getPlugTexture(Debug_texture), 
+                                              getPlugTexture(tool_texture), getPlugTexture(Empty_texture),
+                                              BaseLayoutBox(button_pos, Tool_button_size, tool_buttons->getLayoutBox().getSize(), false, false), 
+                                              new ChooseToolAction(*this, it)));       
+
+        tool->release();
+    }
+
+    m_widgets.pushBack(tool_buttons);    
 }
 
 void AppWidget::AddFileButtons(void)

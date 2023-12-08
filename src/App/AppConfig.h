@@ -137,9 +137,15 @@ static const char Menu_filter_pressed [] = "src/img/ButtonFilterPressed.png";
 static const plug::Vec2d Filter_button_size = Menu_button_size;
 static const plug::Vec2d Filter_button_pos  = plug::Vec2d(File_button_pos.x + File_button_size.x, File_button_pos.y);
 
+//================================================================
+
 static const char Tool_bar_texture[]   = "src/img/ConfigBarTexture.png";
 static const plug::Vec2d Tool_bar_pos  = plug::Vec2d(2, Config_bar_size.y); 
 static const plug::Vec2d Tool_bar_size = plug::Vec2d(200, Background_window_size.y - Config_bar_size.y + 20);
+
+static const plug::Vec2d Tool_button_size = plug::Vec2d(50, 50);
+static const plug::Vec2d Tool_offset      = plug::Vec2d(File_button_pos.x + File_button_size.x, File_button_pos.y);
+
 
 static const plug::Vec2d Color_field_pos  = plug::Vec2d(35, 500);
 
@@ -150,6 +156,6 @@ static const plug::Vec2d Canvase_manager_size = Background_window_size - Canvase
 //================================================================
 
 
-static const char *Empty_texture = "src/img/empty.png";
+static const char Empty_texture[] = "src/img/empty.png";
 
 #endif

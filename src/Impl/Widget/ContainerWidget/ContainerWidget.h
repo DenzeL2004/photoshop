@@ -23,7 +23,7 @@ class ContainerWidget: public Widget
         }
 
         ContainerWidget(const ContainerWidget &other) = delete;
-        virtual ContainerWidget &operator= (const ContainerWidget &other) = delete;
+        ContainerWidget &operator= (const ContainerWidget &other) = delete;
 
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
 

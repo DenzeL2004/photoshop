@@ -27,7 +27,7 @@ class CloseCanvasWithSave : public Action
         void operator() ();
 
         CloseCanvasWithSave(const CloseCanvasWithSave &other) = delete;
-        virtual CloseCanvasWithSave &operator= (const CloseCanvasWithSave &other) = delete;        
+        CloseCanvasWithSave &operator= (const CloseCanvasWithSave &other) = delete;        
 
     private:
 
@@ -43,8 +43,7 @@ class CloseCanvasWithSave : public Action
             private:
                 CanvasManager &m_canvas_manager;
         };
-    
-
+        
         CanvasManager &m_canvas_manager;
 };
 
@@ -57,7 +56,7 @@ class CloseCanvasWithoutSave : public Action
         void operator() ();        
 
         CloseCanvasWithoutSave(const CloseCanvasWithoutSave &other) = delete;
-        virtual CloseCanvasWithoutSave &operator= (const CloseCanvasWithoutSave &other) = delete;
+        CloseCanvasWithoutSave &operator= (const CloseCanvasWithoutSave &other) = delete;
 
     private:
         CanvasManager &m_canvas_manager; 
@@ -129,7 +128,7 @@ class CanvasManager : public Widget
         plug::Widget* getActiveCanvas(void);
 
         CanvasManager(const CanvasManager &other) = delete;
-        virtual CanvasManager &operator= (const CanvasManager &other) = delete;
+        CanvasManager &operator= (const CanvasManager &other) = delete;
 
     protected:    
 

@@ -31,21 +31,14 @@ void ContainerWidget::onEvent(const plug::Event &event, plug::EHC &context)
 {
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
     context.stack.enter(trf);
-
-    bool flag = true;
-    if (event.getType() == plug::EventType::MousePressed)
+   
+    int size = static_cast<int>(m_widgets.getSize());
+    for (int it = size - 1; it >= 0; it--)
     {
-        flag = covers(context.stack, static_cast<const plug::MousePressedEvent&>(event).pos);
-    }
 
-    if (flag)
-    {
-        int size = static_cast<int>(m_widgets.getSize());
-        for (int it = size - 1; it >= 0; it--)
-        {
-            m_widgets[it]->onEvent(event, context);   
-        }
+        m_widgets[it]->onEvent(event, context);   
     }
+    
 
     context.stack.leave();
 }

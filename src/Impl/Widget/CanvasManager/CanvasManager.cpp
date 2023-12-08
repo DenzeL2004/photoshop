@@ -285,8 +285,14 @@ void CloseCanvasWithoutSave::operator()()
 {
     if (m_canvas_manager.m_delete_canvas)
     {
+        size_t it = m_canvas_manager.m_widgets.getSize();
+        
+        delete m_canvas_manager.m_widgets[it - 1];
+        delete m_canvas_manager.m_canvases[it - 1];
+        
         m_canvas_manager.m_widgets.popBack();
         m_canvas_manager.m_canvases.popBack();
+
         m_canvas_manager.m_delete_canvas = false;
     }
 }

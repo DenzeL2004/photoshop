@@ -7,6 +7,8 @@
 
 #include "Plug/Graphics.h"
 
+static const char Error_texture[] = "src/img/ErrorTexture.png";
+
 sf::Color getSFMLColor(const plug::Color &plug_color);
 sf::Vector2f getSFMLVector2f(const plug::Vec2d &plug_vector);
 

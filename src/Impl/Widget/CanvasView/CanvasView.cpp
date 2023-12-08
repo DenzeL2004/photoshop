@@ -5,9 +5,10 @@
 
 void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 {
-    updateTexture();
+    
     if (m_update_texture)
     {
+        updateTexture();
         m_update_texture = false;
     }
 
@@ -59,7 +60,7 @@ void CanvasView::onEvent(const plug::Event &event, plug::EHC &context)
     {
         case plug::Focuse:
             onFocuse((const plug::FocuseEvent&)event, context);
-            break;Transform
+            break;
 
         case plug::SaveCanvas:
             onSave((const plug::SaveEvent&)event, context);
@@ -90,7 +91,7 @@ void CanvasView::updateTexture(void)
     m_canvas_pos.x = std::max(Eps, std::min(m_canvas.getSize().x - width  + Eps, m_canvas_pos.x));
     m_canvas_pos.y = std::max(Eps, std::min(m_canvas.getSize().y - height + Eps, m_canvas_pos.y));
 
-    plug::Texture canvas_texture = m_canvas.getTexture(); 
+    const plug::Texture &canvas_texture = m_canvas.getTexture(); 
 
     size_t offset_x = static_cast<size_t>(m_canvas_pos.x);
     size_t offset_y = static_cast<size_t>(m_canvas_pos.y);
@@ -184,11 +185,21 @@ void CanvasView::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug
         m_tool->onCancel();
     }
 
+    if (event.shift && m_tool)
+    {
+        m_tool->onModifier1({plug::State::Pressed});
+    }
+
     context.stopped = false;
 }
 
 void CanvasView::onKeyboardReleased(const plug::KeyboardReleasedEvent &event, plug::EHC &context)
 {
+    if (!event.shift && m_tool)
+    {
+        m_tool->onModifier1({plug::State::Released});
+    }
+
     context.stopped = false;
 }
 
@@ -209,7 +220,7 @@ void CanvasView::onFocuse(const plug::FocuseEvent &event, plug::EHC &context)
 
 void CanvasView::onSave(const plug::SaveEvent &event, plug::EHC &context)
 {
-    plug::Texture canvas_texture = m_canvas.getTexture(); 
+    const plug::Texture &canvas_texture = m_canvas.getTexture(); 
 
     sf::Image img;
     img.create(canvas_texture.width, canvas_texture.height);
@@ -244,7 +255,6 @@ void CanvasView::onToolChoose(const plug::ToolChooseEvent &event, plug::EHC &con
         m_tool->setColorPalette(m_color_palette);
         m_tool->setActiveCanvas(m_canvas);
     }
-
 }
 
 void CanvasView::onFilterApply(const plug::FilterApplyEvent &event, plug::EHC &context)
@@ -262,6 +272,8 @@ void CanvasView::onFilterApply(const plug::FilterApplyEvent &event, plug::EHC &c
     {
         filter->applyFilter(m_canvas);
         filter->release();
+
+        m_update_texture = true;
 
         context.stopped = true;
     }

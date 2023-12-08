@@ -71,6 +71,7 @@ class AppWidget : public ContainerWidget
 
         void AddFiltersButtons(void);
         void AddFileButtons(void);
+        void AddToolsButtons(void);
         
         Container <plug::Plugin*> m_plugin_list;
 
@@ -182,6 +183,31 @@ class ApplyFilter : public Action
 
         ApplyFilter(const ApplyFilter &other) = delete;
         ApplyFilter &operator= (const ApplyFilter &other) = delete;
+
+    private:
+
+        plug::Widget &m_widget;
+        size_t m_type;
+};
+
+class ChooseToolAction : public Action
+{
+    public:
+
+        ChooseToolAction(plug::Widget &widget, size_t type):
+                    m_widget(widget),
+                    m_type(type){}
+        ~ChooseToolAction(){}
+
+        void operator()()
+        {
+            TransformStack stack;
+            plug::EHC context = {(plug::TransformStack&)stack, false, false};
+            m_widget.onEvent(plug::ToolChooseEvent(m_type), context);
+        }
+
+        ChooseToolAction(const ChooseToolAction &other) = delete;
+        ChooseToolAction &operator= (const ChooseToolAction &other) = delete;
 
     private:
 

@@ -129,7 +129,9 @@ void Button::onTick(const plug::TickEvent &event, plug::EHC &context)
 void Button::doAction(void)
 {
     if (m_action) 
+    {
         (*m_action)();
+    }
 }
 
 //================================================================================
@@ -178,7 +180,7 @@ void ButtonList::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 
 void ButtonList::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
 {
-    if (m_state ==  Button::ButtonState::DISABLED || context.stopped) return;
+    if (m_state ==  Button::ButtonState::DISABLED) return;
 
     plug::Transform trf(getLayoutBox().getPosition(), Default_scale);    
     context.stack.enter(trf);

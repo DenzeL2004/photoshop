@@ -69,7 +69,7 @@ class CanvasView: public Widget
         CanvasView( plug::Canvas &canvas,
                     ToolPalette &tool_palette,
                     FilterPalette &filter_palette,
-                    plug::ColorPalette &m_color_palette,
+                    plug::ColorPalette &color_palette,
                     const plug::LayoutBox& box):
                     Widget(box), 
                     m_canvas(canvas),
@@ -77,7 +77,7 @@ class CanvasView: public Widget
                     m_update_texture(true),
                     m_focuse(false),
                     m_canvas_pos(0.0, 0.0),
-                    m_color_palette(m_color_palette),
+                    m_color_palette(color_palette),
                     m_filter_palette(filter_palette),
                     m_tool_palette(tool_palette), 
                     m_tool(nullptr){}
