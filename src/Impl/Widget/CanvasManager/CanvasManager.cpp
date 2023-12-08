@@ -248,7 +248,6 @@ void CanvasManager::createCanvas(ToolPalette &tool_palette, FilterPalette &filte
                                             Scrollbar_left_released, Scrollbar_left_pressed,
                                             Scrollbar_right_released, Scrollbar_right_pressed,
                                             Scrollbar_released, Scrollbar_pressed);
-
     
     frame->addWidget(canvas_view);
     frame->addWidget(scroll_hor);
@@ -287,11 +286,7 @@ void CloseCanvasWithoutSave::operator()()
     {
         size_t it = m_canvas_manager.m_widgets.getSize();
         
-        delete m_canvas_manager.m_widgets[it - 1];
-        delete m_canvas_manager.m_canvases[it - 1];
-        
         m_canvas_manager.m_widgets.popBack();
-        m_canvas_manager.m_canvases.popBack();
 
         m_canvas_manager.m_delete_canvas = false;
     }
@@ -345,5 +340,6 @@ void CloseCanvasWithSave::SaveCanvas::operator()()
     m_canvas_manager.onEvent(plug::SaveEvent(text_box->getString()), context);
 
     m_canvas_manager.m_dialog_window->eraseWidget();
+
     m_canvas_manager.m_widgets.popBack();
 }
