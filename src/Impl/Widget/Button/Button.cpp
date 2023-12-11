@@ -60,7 +60,7 @@ const plug::Texture* Button::defineTexture() const
 
 void Button::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &context)
 {
-    if (m_state ==  Button::ButtonState::DISABLED || context.stopped)
+    if (m_state ==  Button::ButtonState::DISABLED)
         return;
 
     Transform trf(getLayoutBox().getPosition(), Default_scale);    
@@ -142,7 +142,6 @@ void TextButton::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 
     Transform trf(getLayoutBox().getPosition(), Default_scale);
     stack.enter(trf);
-
 
     if (m_state != Button::ButtonState::DISABLED)
     {

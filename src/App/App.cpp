@@ -38,7 +38,9 @@ AppWidget::AppWidget():
     AddFiltersButtons();
     
     m_widgets.pushBack(new Clock(Menu_button_color, 2.6, BaseLayoutBox(plug::Vec2d(Config_bar_size.x - 150, Config_bar_size.y - 10), Menu_button_size, box.getSize(), false, true)));
-    m_widgets.pushBack(new ColorField(Color_field_pos,Vec2d(0.5, 0.5), m_color_palette));
+    m_widgets.pushBack(new ColorField(Color_field_pos, Vec2d(0.5, 0.5), m_color_palette));
+
+    m_widgets.pushBack(new ColorView(m_color_palette, BaseLayoutBox(Color_field_pos + plug::Vec2d(0, 300), plug::Vec2d(75, 75), box.getSize(), false, false)));
 
 
     CanvasManager* manager = new CanvasManager(BaseLayoutBox(Canvase_manager_pos, Canvase_manager_size, box.getSize(), false, false));

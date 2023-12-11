@@ -68,7 +68,7 @@ class ColorField: public Widget
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
 
         ColorField(const ColorField &other) = delete;
-        virtual ColorField &operator= (const ColorField &other) = delete;
+        ColorField &operator= (const ColorField &other) = delete;
 
     protected:
 

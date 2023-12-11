@@ -24,10 +24,13 @@
 
 #include "Impl/Tool/ColorPalette/ColorPalette.h"
 #include "Impl/Tool/FilterPalette/FilterPalette.h"
+
 #include "Impl/Tool/ToolPalette/ToolPalette.h"
 #include "Impl/Widget/ColorField/ColorField.h"
+#include "Impl/Widget/ColorView/ColorView.h"
 
 #include "AppConfig.h"
+
 
 class AppWidget : public ContainerWidget
 {

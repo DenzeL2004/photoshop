@@ -3,7 +3,6 @@
 
 typedef plug::Plugin* (*LoadPlugin)(void);
 
-
 static void findDLLinDir    (const char *path, Container<plug::Plugin*> &plugins);
 static void findDLL         (const char *path, Container<plug::Plugin*> &plugins);
 static void checkIsDLL      (const char *path, Container<plug::Plugin*> &plugins);
@@ -46,6 +45,9 @@ void loadePlugins(Container<plug::Plugin*> &plugins)
 {
     findDLL(Plugin_dir_name, plugins);    
 }
+
+//TODO deepth search
+//File with name file more safty
 
 static void findDLLinDir(const char *path, Container<plug::Plugin*> &plugins)
 {

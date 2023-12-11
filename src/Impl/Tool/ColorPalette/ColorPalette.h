@@ -5,7 +5,6 @@
 #include "Plug/Tool/ColorPalette.h"
 #include "Impl/Graphic/GraphicConfig.h"
 
-
 class ColorPalette : public plug::ColorPalette
 {
     public:

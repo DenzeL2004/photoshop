@@ -38,7 +38,7 @@ void drawLine(plug::RenderTarget &target,
 void drawRectangle(plug::RenderTarget &target, 
                    const plug::Vec2d &left_up, const plug::Vec2d &right_down, const plug::Color color)
 {
-    plug::VertexArray rectangle(plug::PrimitiveType::LineStrip, 5);
+    plug::VertexArray rectangle(plug::PrimitiveType::Quads, 5);
 
     rectangle[0] = rectangle[4] = {left_up, Vec2d(0, 0), color};
     rectangle[1] = {plug::Vec2d(right_down.x, left_up.y), Vec2d(0, 0), color};

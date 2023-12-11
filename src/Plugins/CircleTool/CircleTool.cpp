@@ -3,9 +3,9 @@
 #include "Impl/Widget/Widget.h"
 #include "Impl/LayoutBox/BaseLayoutBox/BaseLayoutBox.h"
 
-
-static void drawCircle( plug::VertexArray &form, const plug::Vec2d &begin,  
-                        const double radius_a, const double radius_b,
+static void drawCircle( plug::VertexArray &form, 
+                        const plug::Vec2d &begin,  const plug::Vec2d &end,  
+                        const bool type,
                         const plug::Color color);
 
 class CircleToolPreview : public Widget
@@ -13,35 +13,22 @@ class CircleToolPreview : public Widget
     public:
         CircleToolPreview(  const plug::Vec2d &begin_pos, const plug::Vec2d &end_pos, const plug::Color &color, 
                             bool &m_modifier1):
-                        Widget(BaseLayoutBox(plug::Vec2d(0, 0), plug::Vec2d(1, 1), plug::Vec2d(1, 1), false, false)),
-                        m_begin_pos(begin_pos), 
-                        m_end_pos(end_pos),
-                        m_color(color),
-                        m_modifier1(m_modifier1){}
+                            Widget(BaseLayoutBox(plug::Vec2d(0, 0), plug::Vec2d(1, 1), plug::Vec2d(1, 1), false, false)),
+                            m_begin_pos(begin_pos), 
+                            m_end_pos(end_pos),
+                            m_color(color),
+                            m_modifier1(m_modifier1){}
         
         virtual ~CircleToolPreview(){}
 
         virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target)
-        {
-        
+        {        
             plug::VertexArray circle(plug::PrimitiveType::LineStrip, 0);
-            double radius_a = 0;
-            double radius_b = 0;
 
             plug::Vec2d new_begin_pos = stack.apply(m_begin_pos);
             plug::Vec2d new_end_pos   = stack.apply(m_end_pos);
 
-            if (!m_modifier1)
-            {
-                radius_a = fabs(new_begin_pos.x - new_end_pos.x);
-                radius_b = fabs(new_begin_pos.y - new_end_pos.y);
-            }
-            else
-            {
-                radius_a = radius_b = (new_begin_pos - new_end_pos).length();
-            }
-
-            drawCircle(circle, new_begin_pos, radius_a, radius_b, m_color);
+            drawCircle(circle, new_begin_pos, new_end_pos, m_modifier1, m_color);
 
             target.draw(circle);
         }
@@ -117,16 +104,6 @@ void CircleTool::onMove(const plug::Vec2d &pos)
     if (!m_active) return;
 
     m_end_pos = pos;
-
-    if (!m_modifier1)
-    {
-        m_radius_a = fabs(m_begin_pos.x - m_end_pos.x);
-        m_radius_b = fabs(m_begin_pos.y - m_end_pos.y);
-    }
-    else
-    {
-        m_radius_a = m_radius_b = (m_begin_pos - m_end_pos).length();
-    }
 }
 
 void CircleTool::onCancel(void)
@@ -151,7 +128,7 @@ void CircleTool::onConfirm(void)
     m_color = m_color_palette->getFGColor();
 
     plug::VertexArray circle(plug::PrimitiveType::LineStrip, 0);
-    drawCircle(circle, m_begin_pos, m_radius_a, m_radius_b, m_color);
+    drawCircle(circle, m_begin_pos, m_end_pos, m_modifier1, m_color);
 
     m_canvas->draw(circle);
 
@@ -184,13 +161,22 @@ plug::Plugin* loadPlugin(void)
     return new CircleTool();
 }
 
-static void drawCircle( plug::VertexArray &form, const plug::Vec2d &begin,  
-                        const double radius_a, const double radius_b,
+static void drawCircle( plug::VertexArray &form, 
+                        const plug::Vec2d &begin,  const plug::Vec2d &end,  
+                        const bool type,
                         const plug::Color color)
 {
     const size_t cnt = 360;
 
     form.resize(0);
+
+    double radius_a = fabs(begin.x - end.x);
+    double radius_b = fabs(begin.y - end.y);   
+
+    if (type)
+    {
+        radius_a = radius_b = (begin - end).length();
+    } 
 
     double step = 2.0 * M_PI / static_cast<double>(cnt);
 

@@ -3,7 +3,7 @@
 #include "Impl/Widget/Widget.h"
 #include "Impl/LayoutBox/BaseLayoutBox/BaseLayoutBox.h"
 
-
+//todo filter with sply
 static void drawRect(   plug::VertexArray &form, 
                         const plug::Vec2d &begin, const plug::Vec2d &end,  
                         const bool type,

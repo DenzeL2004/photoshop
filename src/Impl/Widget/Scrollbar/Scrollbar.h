@@ -101,7 +101,7 @@ class Scrollbar: public Widget
         virtual void onParentUpdate(const plug::LayoutBox &parent_box);
 
         Scrollbar(const Scrollbar &other) = delete;
-        virtual Scrollbar &operator= (const Scrollbar &other) = delete;
+        Scrollbar &operator= (const Scrollbar &other) = delete;
 
 
     protected:
