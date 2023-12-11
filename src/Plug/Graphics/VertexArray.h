@@ -129,7 +129,7 @@ inline VertexArray &VertexArray::operator=(const VertexArray &other) {
     return *this;
   }
 
-  delete[] m_data;
+  delete m_data;
 
   m_type = other.m_type;
   m_size = other.m_size;

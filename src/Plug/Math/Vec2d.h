@@ -140,14 +140,6 @@ inline Vec2d operator/(const Vec2d &vec, const double scale) {
 
   return res;
 }
-
-inline Vec2d operator-(const Vec2d &vec)
-{
-    plug::Vec2d res(0, 0);
-    res -= vec;
-
-    return res;
-}
 } // namespace plug
 
 #endif

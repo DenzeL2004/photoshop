@@ -68,6 +68,7 @@ void CircleTool::setColorPalette(plug::ColorPalette &palette)
 
 void CircleTool::setActiveCanvas(plug::Canvas &canvas)
 {
+    onCancel();
     m_canvas = &canvas;
 }
 

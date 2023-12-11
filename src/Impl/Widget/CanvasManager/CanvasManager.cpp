@@ -70,7 +70,6 @@ void CanvasManager::onMousePressed(const plug::MousePressedEvent &event, plug::E
         if (context.stopped)
         {
             m_widgets[size - 1]->onEvent(plug::FocuseEvent(false), context); 
-
             m_widgets.drown(it);
 
             m_widgets[size - 1]->onEvent(plug::FocuseEvent(true), context);            

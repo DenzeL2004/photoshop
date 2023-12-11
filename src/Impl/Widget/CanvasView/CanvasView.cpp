@@ -38,7 +38,7 @@ void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
         plug::Widget* preview = m_tool->getWidget();
         if (preview)
         {
-            stack.enter(Transform(-m_canvas_pos, Default_scale));
+            stack.enter(Transform(-1 * m_canvas_pos, Default_scale));
             
             preview->draw(stack, target);
 
@@ -129,9 +129,8 @@ void CanvasView::onMouseMove(const plug::MouseMoveEvent &event, plug::EHC &conte
         if (m_tool)
         {
             m_tool->onMove(canvas_pos);
+            m_update_texture = true; 
         }
-
-        m_update_texture = true;
     }
 
     context.stopped = false;
@@ -149,10 +148,11 @@ void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC 
 
     if (context.stopped)
     {
-        plug::Vec2d canvas_pos = context.stack.restore(event.pos) + m_canvas_pos;
-
         if (event.button_id == plug::MouseButton::Left && m_tool)
         {
+            plug::Vec2d canvas_pos = context.stack.restore(event.pos) + m_canvas_pos;
+            m_tool->setActiveCanvas(m_canvas);
+            m_tool->setColorPalette(m_color_palette);
             m_tool->onMainButton({plug::State::Pressed}, canvas_pos);
         }
 
@@ -168,14 +168,19 @@ void CanvasView::onMouseReleased(const plug::MouseReleasedEvent &event, plug::EH
         return;
     }
 
-    plug::Vec2d canvas_pos = context.stack.restore(event.pos) + m_canvas_pos;
+    context.stopped = covers(context.stack, event.pos);
 
     if (event.button_id == plug::MouseButton::Left && m_tool)
     {
-        m_tool->onMainButton({plug::State::Released}, canvas_pos);
+        if (context.stopped)
+        {
+            plug::Vec2d canvas_pos = context.stack.restore(event.pos) + m_canvas_pos;
+            m_tool->onMainButton({plug::State::Released}, canvas_pos);
+        
+            m_update_texture = true;
+        }
     }
 
-    m_update_texture = true;   
 }
 
 void CanvasView::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug::EHC &context)
@@ -211,11 +216,6 @@ void CanvasView::onTick(const plug::TickEvent &event, plug::EHC &context)
 void CanvasView::onFocuse(const plug::FocuseEvent &event, plug::EHC &context)
 {
     m_focuse = event.focuse_flag;
-    if (m_tool)
-    {
-        m_tool->setActiveCanvas(m_canvas);
-        m_tool->setColorPalette(m_color_palette);
-    }
 }
 
 void CanvasView::onSave(const plug::SaveEvent &event, plug::EHC &context)

@@ -67,6 +67,7 @@ void RectTool::setColorPalette(plug::ColorPalette &palette)
 
 void RectTool::setActiveCanvas(plug::Canvas &canvas)
 {
+    onCancel();
     m_canvas = &canvas;
 }
 

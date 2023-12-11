@@ -58,6 +58,7 @@ void LineTool::setColorPalette(plug::ColorPalette &palette)
 
 void LineTool::setActiveCanvas(plug::Canvas &canvas)
 {
+    onCancel();
     m_canvas = &canvas;
 }
 

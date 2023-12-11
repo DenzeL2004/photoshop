@@ -11,7 +11,7 @@ class Canvas {
 public:
   Canvas() {}
 
-  virtual ~Canvas() {};
+  virtual ~Canvas(){};
 
   /**
    * \brief Draw on canvas using vertex array mapping
@@ -25,7 +25,7 @@ public:
                     const Texture &texture) = 0;
 
   /**
-   * \brief Return size of canvas
+   * \brief Return sise of canvas
    */
   virtual Vec2d getSize(void) const = 0;
 
