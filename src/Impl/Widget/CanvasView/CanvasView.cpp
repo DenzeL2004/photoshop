@@ -79,7 +79,6 @@ void CanvasView::onEvent(const plug::Event &event, plug::EHC &context)
             break;
     } 
 
-   
     context.stack.leave();
 }
 
