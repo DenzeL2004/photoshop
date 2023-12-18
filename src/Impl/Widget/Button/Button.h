@@ -51,7 +51,7 @@ class Button : public Widget
         Button( const plug::Texture &texture_released, const plug::Texture &texture_covered,
                 const plug::Texture &texture_pressed,  const plug::Texture &texture_disabled,
                 const plug::LayoutBox& box,
-                Action *action):
+                Action *action = nullptr):
                 Widget(box),
                 m_state(RELEASED), m_prev_state(RELEASED),   
                 m_texture_released(texture_released.width, texture_released.height, texture_released.data),
@@ -60,6 +60,11 @@ class Button : public Widget
                 m_texture_disabled(texture_disabled.width, texture_disabled.height, texture_disabled.data),      
                 m_covering_time(0),
                 m_action(action){}    
+
+        Button( const plug::Texture &texture,
+                const plug::LayoutBox& box,
+                Action *action):
+                Button(texture, texture, texture, texture, box, action){} 
 
         virtual ~Button()
         {
@@ -94,6 +99,33 @@ class Button : public Widget
         Action *m_action;
 };
 
+class ColorButton : public Button
+{
+    public:
+
+        ColorButton(const plug::Texture &texture, plug::Color texture_color,
+                    const plug::Color released_color, const plug::Color pressed_color, 
+                    const plug::LayoutBox &box,
+                    Action *action):
+                    Button(texture, texture, texture, texture, box, action),
+                    m_released_color(released_color), m_pressed_color(pressed_color), 
+                    m_texture_color(texture_color){}
+
+        ColorButton(const ColorButton &other) = delete;
+        ColorButton& operator= (const ColorButton &other) = delete;
+
+        virtual ~ColorButton(){}
+
+        virtual void draw(plug::TransformStack &stack, plug::RenderTarget &target);
+
+    protected:
+
+        plug::Color m_released_color;
+        plug::Color m_pressed_color;
+
+        plug::Color m_texture_color;
+};
+
 class TextButton : public Button
 {
     public:
@@ -108,7 +140,7 @@ class TextButton : public Button
                     m_title_released(title_released), m_title_pressed(title_pressed){}    
 
         TextButton(const TextButton &other) = delete;
-        TextButton& operator= (const Button &other) = delete;
+        TextButton& operator= (const TextButton &other) = delete;
 
         virtual ~TextButton(){}
 

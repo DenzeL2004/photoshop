@@ -52,10 +52,10 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
 	@$(COMPILER) $(FLAGS) $(INC_FLAGS) -MMD -fPIC -c $< -o $@
 
-$(PLUGIN_DIR)/%.so : $(OBJ_DIR)/$(PLUGIN_DIR)/%.o obj/Impl/LayoutBox/BaseLayoutBox/BaseLayoutBox.o obj/Impl/Widget/Widget.o
+$(PLUGIN_DIR)/%.so : $(OBJ_DIR)/$(PLUGIN_DIR)/%.o obj/Impl/LayoutBox/BaseLayoutBox/BaseLayoutBox.o obj/Impl/Widget/Widget.o obj/Impl/Graphic/Graphic.o
 	@mkdir -p $(@D)
 	@$(COMPILER) -shared -z defs -o $@ $^
 
 .PHONY : cleanup
 cleanup :
-	@rm -rf $(BIN) $(OBJ_DIR) $(PLUGIN_DIR)
+	@rm -rf $(BIN) $(OBJ_DIR)

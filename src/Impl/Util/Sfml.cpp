@@ -142,8 +142,3 @@ plug::Color HSV2RGB(size_t i_hue, size_t sat, size_t val)
 
     return plug::Color(r, g, b);          
 }
-
-bool checkColors(plug::Color rhs, plug::Color lhs)
-{
-    return (rhs.r == lhs.r && rhs.g == lhs.g && rhs.b == lhs.b);
-}

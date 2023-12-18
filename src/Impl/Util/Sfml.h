@@ -29,6 +29,5 @@ plug::Texture getPlugTexture(const sf::Texture &texture);
 
 plug::Color HSV2RGB(size_t i_hue, size_t sat, size_t val);
 
-bool checkColors(plug::Color rhs, plug::Color lhs);
 
 #endif

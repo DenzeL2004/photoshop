@@ -155,6 +155,8 @@ static const plug::Vec2d Canvase_manager_size = Background_window_size - Canvase
 
 //================================================================
 
+static const plug::Color Released_tool_color = plug::Color(71, 71, 71);
+static const plug::Color Pressed_tool_color  = plug::Color(83, 114, 142);
 
 static const char Empty_texture[] = "src/img/empty.png";
 

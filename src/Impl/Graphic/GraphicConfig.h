@@ -165,6 +165,17 @@ namespace plug
                                     0, 0, 0, 1, 0, 0, 0  
                                 };
 
+    static const bool Plus[Symbol_width * Symbol_height] = 
+                                {
+                                    0, 0, 0, 0, 0, 0, 0,                                     
+                                    0, 0, 0, 1, 0, 0, 0,                                     
+                                    0, 0, 0, 1, 0, 0, 0,                                     
+                                    0, 1, 1, 1, 1, 1, 0,                                     
+                                    0, 0, 0, 1, 0, 0, 0,                                     
+                                    0, 0, 0, 1, 0, 0, 0,                                     
+                                    0, 0, 0, 0, 0, 0, 0  
+                                };
+
     static const bool Slash[Symbol_width * Symbol_height] = 
                                 {
                                     0, 0, 0, 0, 1, 0, 0,                                     

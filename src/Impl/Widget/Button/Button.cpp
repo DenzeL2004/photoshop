@@ -13,23 +13,23 @@ void Button::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 
     if (texture)
     {
-        plug::VertexArray vertex_array(plug::Quads, 4);
+        plug::VertexArray vertexs(plug::Quads, 4);
 
-        vertex_array[0].tex_coords = Vec2d(0, 0);
-        vertex_array[1].tex_coords = Vec2d(texture->width, 0);
-        vertex_array[2].tex_coords = Vec2d(texture->width, texture->height);
-        vertex_array[3].tex_coords = Vec2d(0, texture->height);
+        vertexs[0].tex_coords = Vec2d(0, 0);
+        vertexs[1].tex_coords = Vec2d(texture->width, 0);
+        vertexs[2].tex_coords = Vec2d(texture->width, texture->height);
+        vertexs[3].tex_coords = Vec2d(0, texture->height);
         
         Dot pos = top_trf.apply(Vec2d(0, 0));
 
         Vec2d size = top_trf.getScale() * getLayoutBox().getSize();
 
-        vertex_array[0].position = Vec2d(pos.x, pos.y);
-        vertex_array[1].position = Vec2d(pos.x + size.x, pos.y);
-        vertex_array[2].position = Vec2d(pos.x + size.x, pos.y + size.y);
-        vertex_array[3].position = Vec2d(pos.x, pos.y + size.y);
+        vertexs[0].position = Vec2d(pos.x, pos.y);
+        vertexs[1].position = Vec2d(pos.x + size.x, pos.y);
+        vertexs[2].position = Vec2d(pos.x + size.x, pos.y + size.y);
+        vertexs[3].position = Vec2d(pos.x, pos.y + size.y);
 
-        target.draw(vertex_array, *texture);
+        target.draw(vertexs, *texture);
     }
 
     stack.leave();
@@ -154,6 +154,51 @@ void TextButton::draw(plug::TransformStack &stack, plug::RenderTarget &target)
         plug::Vec2d abs_pos = stack.apply(plug::Vec2d(0.0, 0.0)) + title.pos;
         writeText(target, abs_pos, title.msg, title.width, title.color);   
 
+    }
+
+    stack.leave();
+}
+
+//================================================================================
+
+void ColorButton::draw(plug::TransformStack &stack, plug::RenderTarget &target)
+{
+    Transform trf(getLayoutBox().getPosition(), Default_scale);
+    stack.enter(trf);
+
+    Transform top_trf = stack.top();    
+
+    plug::VertexArray vertexs(plug::Quads, 4);
+
+    Dot pos = top_trf.apply(Vec2d(0, 0));
+
+    Vec2d size = top_trf.getScale() * getLayoutBox().getSize();
+
+    vertexs[0].position = Vec2d(pos.x, pos.y);
+    vertexs[1].position = Vec2d(pos.x + size.x, pos.y);
+    vertexs[2].position = Vec2d(pos.x + size.x, pos.y + size.y);
+    vertexs[3].position = Vec2d(pos.x, pos.y + size.y);
+
+    plug::Color color = m_pressed_color;
+    if (m_state == Button::ButtonState::RELEASED)
+    {
+        color = m_released_color;
+    }
+
+    vertexs[0].color = vertexs[1].color = vertexs[2].color = vertexs[3].color = color;
+    target.draw(vertexs);
+
+    const plug::Texture *texture = defineTexture();
+
+    if (texture)
+    {
+        vertexs[0].tex_coords = Vec2d(0, 0);
+        vertexs[1].tex_coords = Vec2d(texture->width, 0);
+        vertexs[2].tex_coords = Vec2d(texture->width, texture->height);
+        vertexs[3].tex_coords = Vec2d(0, texture->height);
+
+        vertexs[0].color = vertexs[1].color = vertexs[2].color = vertexs[3].color = m_texture_color;
+        target.draw(vertexs, *texture);
     }
 
     stack.leave();

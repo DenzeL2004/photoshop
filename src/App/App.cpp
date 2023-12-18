@@ -90,10 +90,10 @@ void AppWidget::AddToolsButtons(void)
 
         plug::Vec2d button_pos = Vec2d(5, 50) + plug::Vec2d(Tool_button_size.x * (it % 2), Tool_button_size.y * (it / 2));
 
-        tool_buttons->insertWidget(new Button(getPlugTexture(tool_texture), getPlugTexture(Debug_texture), 
-                                              getPlugTexture(tool_texture), getPlugTexture(Empty_texture),
-                                              BaseLayoutBox(button_pos, Tool_button_size, tool_buttons->getLayoutBox().getSize(), false, false), 
-                                              new ChooseToolAction(*this, it)));       
+        tool_buttons->insertWidget(new ColorButton( getPlugTexture(tool_texture), plug::White,
+                                                    Released_tool_color, Pressed_tool_color,
+                                                    BaseLayoutBox(button_pos, Tool_button_size, tool_buttons->getLayoutBox().getSize(), false, false), 
+                                                    new ChooseToolAction(*this, it)));       
 
         tool->release();
     }

@@ -5,7 +5,8 @@
 #include "Impl/Tool/ColorPalette/ColorPalette.h"
 #include "Impl/LayoutBox/BaseLayoutBox/BaseLayoutBox.h"
 #include "Impl/RenderTarget/SfmlRenderTarget/RenderTarget.h"
-#include "Impl/Util/Sfml.h"
+
+#include "Impl/Graphic/Graphic.h"
 
 #include <SFML/Graphics.hpp>
 

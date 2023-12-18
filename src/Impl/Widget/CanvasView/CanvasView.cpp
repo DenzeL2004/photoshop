@@ -150,8 +150,6 @@ void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC 
         if (event.button_id == plug::MouseButton::Left && m_tool)
         {
             plug::Vec2d canvas_pos = context.stack.restore(event.pos) + m_canvas_pos;
-            m_tool->setActiveCanvas(m_canvas);
-            m_tool->setColorPalette(m_color_palette);
             m_tool->onMainButton({plug::State::Pressed}, canvas_pos);
         }
 
@@ -189,6 +187,12 @@ void CanvasView::onKeyboardPressed(const plug::KeyboardPressedEvent &event, plug
         m_tool->onCancel();
     }
 
+    if (event.key_id == plug::KeyCode::Enter && m_tool)
+    {
+        m_tool->onConfirm();
+        m_update_texture = true;
+    }
+
     if (event.shift && m_tool)
     {
         m_tool->onModifier1({plug::State::Pressed});
@@ -214,7 +218,15 @@ void CanvasView::onTick(const plug::TickEvent &event, plug::EHC &context)
 
 void CanvasView::onFocuse(const plug::FocuseEvent &event, plug::EHC &context)
 {
+    if (m_focuse && event.focuse_flag) return;
+
     m_focuse = event.focuse_flag;
+
+    if (m_focuse && m_tool)
+    {
+        m_tool->setColorPalette(m_color_palette);
+        m_tool->setActiveCanvas(m_canvas);
+    }
 }
 
 void CanvasView::onSave(const plug::SaveEvent &event, plug::EHC &context)

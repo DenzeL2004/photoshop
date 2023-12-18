@@ -57,11 +57,6 @@ void CanvasManager::onMousePressed(const plug::MousePressedEvent &event, plug::E
         return;
     }
 
-    for (int it = size - 2; it >= 0; it--)
-    {
-        m_widgets[it]->onEvent(plug::FocuseEvent(false), context);
-    }
-
     context.stopped = false;
     for (int it = size - 1; it >= 0; it--)
     {
@@ -69,12 +64,12 @@ void CanvasManager::onMousePressed(const plug::MousePressedEvent &event, plug::E
         
         if (context.stopped)
         {
-            m_widgets[size - 1]->onEvent(plug::FocuseEvent(false), context); 
-            m_widgets.drown(it);
-
-            m_widgets[size - 1]->onEvent(plug::FocuseEvent(true), context);            
-
-            context.stopped = true;
+            if (it != size - 1)
+            {
+                m_widgets[size - 1]->onEvent(plug::FocuseEvent(false), context); 
+                m_widgets.drown(it);
+                m_widgets[size - 1]->onEvent(plug::FocuseEvent(true), context);           
+            }
 
             break;
         }
@@ -255,7 +250,18 @@ void CanvasManager::createCanvas(ToolPalette &tool_palette, FilterPalette &filte
 
     frame->onParentUpdate(getLayoutBox());
 
+    TransformStack stack;
+    plug::EHC context = {(plug::TransformStack&)stack, false, false};
+
+    size_t size = m_widgets.getSize();
+
+    if (size != 0)
+    {
+        m_widgets[size - 1]->onEvent(plug::FocuseEvent(false), context); 
+    }
+
     m_widgets.pushBack(frame);
+    m_widgets[size]->onEvent(plug::FocuseEvent(true), context);
 }
 
 void CanvasManager::onParentUpdate(const plug::LayoutBox &parent_box)

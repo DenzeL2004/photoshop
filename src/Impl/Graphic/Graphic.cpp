@@ -16,25 +16,6 @@ void drawLine(plug::RenderTarget &target,
     target.draw(line);
 }
 
-// void drawCircle(plug::RenderTarget &target, const plug::Vec2d &pos, 
-//                 const float radius, const plug::Color color)
-// {
-//     plug::VertexArray circle(plug::PrimitiveType::LineStrip, 0);
-    
-//     const size_t cnt = 360;
-//     double step = 2.0 * M_PI / static_cast<double>(cnt);
-
-//     double alpha = 0;
-//     for (size_t it = 0; it <= cnt; it++)
-//     {
-//         circle.appendVertex({plug::Vec2d(cos(alpha) * radius + pos.x, sin(alpha) * radius + pos.y), Vec2d(0, 0), color});
-//         alpha += step;
-//     }
-
-//     target.draw(circle);  
-// }
-
-
 void drawRectangle(plug::RenderTarget &target, 
                    const plug::Vec2d &left_up, const plug::Vec2d &right_down, const plug::Color color)
 {
@@ -95,6 +76,10 @@ static void getSymbolTexture(plug::Color *data, const char symbol, const plug::C
             mask = plug::Dot;
             break;
 
+        case '+':
+            mask = plug::Plus;
+            break;
+
         case '!':
             mask = plug::Exclamation_mark;
             break;
@@ -142,4 +127,9 @@ static void getSymbolTexture(plug::Color *data, const char symbol, const plug::C
             data[it] = plug::Transparent;
         }
     }
+}
+
+bool checkColors(plug::Color rhs, plug::Color lhs)
+{
+    return (rhs.r == lhs.r && rhs.g == lhs.g && rhs.b == lhs.b);
 }

@@ -1,6 +1,4 @@
 #include "ColorField.h"
-#include "Impl/Graphic/Graphic.h"
-
 
 void ColorField::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 {   
