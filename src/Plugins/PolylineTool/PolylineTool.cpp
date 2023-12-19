@@ -5,6 +5,10 @@
 #include "Impl/Util/Sfml.h"
 #include "Impl/Graphic/Graphic.h"
 
+// #include "Impl/Widget/ContainerWidget/ContainerWidget.h"
+// #include "Impl/Widget/Window/Window.h"
+// #include "Impl/Widget/Button/Button.h"
+
 class PolylineToolPreview : public Widget
 {
     public:
@@ -59,11 +63,20 @@ PolylineTool::PolylineTool():
                 m_radius(5.),
                 m_preview(new PolylineToolPreview(m_vertexs, m_mouse_pos, m_radius)), 
                 m_setting_flags(false), 
-                m_setting_radius(m_radius){}
+                m_setting_radius(m_radius), 
+                m_setting(nullptr)
+{
+    // BaseLayoutBox box(plug::Vec2d(0, 0), plug::Vec2d(1, 1), plug::Vec2d(1, 1), false, false);
+    // ContainerWidget *setting_menu = new ContainerWidget(box);
+    // setting_menu->insertWidget(new Window(getPlugTexture("src/img/DialogFrame.png"), Title(), box));
+
+    // m_setting = setting_menu;
+}
 
 PolylineTool::~PolylineTool()
 {
     delete m_preview;
+    delete m_setting;
 }
 
 void PolylineTool::setColorPalette(plug::ColorPalette &palette)
@@ -197,18 +210,23 @@ void PolylineTool::drawLine(void)
 
 void PolylineTool::onSecondaryButton(const plug::ControlState &state, const plug::Vec2d &position)
 {
-    if (!m_active) return;
+    // if (!m_active) return;
     
-    if (state.state == plug::State::Pressed)
-    {
-        m_setting_flags = true;
-        m_setting_radius = m_radius;
-    }
+    // if (state.state == plug::State::Pressed)
+    // {
+    //     m_setting_flags = true;
+    //     m_setting_radius = m_radius;
+    // }
 }
 
 plug::Widget* PolylineTool::getWidget(void) 
 {
-    return m_preview;
+    // if (m_setting_flags)
+    // {
+    //     return m_setting;
+    // }
+    printf("%p\n", m_preview);
+    return m_preview;    
 };
 
 plug::Plugin* loadPlugin(void)

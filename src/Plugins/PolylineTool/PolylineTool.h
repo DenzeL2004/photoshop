@@ -58,7 +58,7 @@ class PolylineTool : public DefTool
         bool m_setting_flags;
         double m_setting_radius;
 
-        plug::Widget *m_config;
+        plug::Widget *m_setting;
 };
 
 extern "C" plug::Plugin* loadPlugin(void);

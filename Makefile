@@ -52,7 +52,7 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
 	@$(COMPILER) $(FLAGS) $(INC_FLAGS) -MMD -fPIC -c $< -o $@
 
-$(PLUGIN_DIR)/%.so : $(OBJ_DIR)/$(PLUGIN_DIR)/%.o obj/Impl/LayoutBox/BaseLayoutBox/BaseLayoutBox.o obj/Impl/Widget/Widget.o obj/Impl/Graphic/Graphic.o
+$(PLUGIN_DIR)/%.so : $(OBJ_DIR)/$(PLUGIN_DIR)/%.o obj/Impl/LayoutBox/BaseLayoutBox/BaseLayoutBox.o obj/Impl/Widget/Widget.o obj/Impl/Graphic/Graphic.o obj/Impl/Widget/Window/Window.o obj/Impl/Widget/ContainerWidget/ContainerWidget.o obj/Impl/Widget/Button/Button.o 	\
 	@mkdir -p $(@D)
 	@$(COMPILER) -shared -z defs -o $@ $^
 

@@ -1,7 +1,6 @@
 #include "PluginUtil.h"
 #include "LogInfo/LogErrors.h"
 
-const size_t Max_search_depth = 3;
 
 typedef plug::Plugin* (*LoadPlugin)(void);
 
@@ -54,7 +53,7 @@ static void findDLLinDir(const char *path, Container<plug::Plugin*> &plugins, co
 
     size_t path_len = strlen(path);
     
-    char *full_path = static_cast<char*>(calloc(Max_path_len, sizeof(char)));
+    char full_path[BUFSIZ] = {0};
     if (full_path == nullptr) 
     {
         PROCESS_ERROR(ERR_MEMORY_ALLOC, "Allocate memmory failed\n");
@@ -79,8 +78,6 @@ static void findDLLinDir(const char *path, Container<plug::Plugin*> &plugins, co
         sprintf(full_path + path_len, "/%s%c", file->d_name, '\0');
         findDLL(full_path, plugins, depth_search);
     }
-
-    free(full_path);
 
     if (closedir(dir))
     {

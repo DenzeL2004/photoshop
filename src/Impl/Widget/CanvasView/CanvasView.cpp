@@ -35,12 +35,12 @@ void CanvasView::draw(plug::TransformStack &stack, plug::RenderTarget &target)
 
     if (m_focuse && m_tool)
     {
-        plug::Widget* preview = m_tool->getWidget();
-        if (preview)
+        plug::Widget* tool_widget = m_tool->getWidget();
+        if (tool_widget)
         {
             stack.enter(Transform(-1 * m_canvas_pos, Default_scale));
             
-            preview->draw(stack, target);
+            tool_widget->draw(stack, target);
 
             stack.leave();
         }
@@ -75,7 +75,22 @@ void CanvasView::onEvent(const plug::Event &event, plug::EHC &context)
             break;
 
         default:
-            Widget::onEvent(event, context);
+            {
+                if (m_focuse && m_tool)
+                {
+                    plug::Widget* tool_widget = m_tool->getWidget();
+                    if (tool_widget)
+                    {    
+                        tool_widget->onEvent(event, context);
+                    }
+                }    
+
+                if (!context.stopped)
+                {            
+                    Widget::onEvent(event, context);
+                }
+            }
+
             break;
     } 
 
@@ -147,10 +162,16 @@ void CanvasView::onMousePressed(const plug::MousePressedEvent &event, plug::EHC 
 
     if (context.stopped)
     {
+        plug::Vec2d canvas_pos = context.stack.restore(event.pos) + m_canvas_pos;
+
         if (event.button_id == plug::MouseButton::Left && m_tool)
-        {
-            plug::Vec2d canvas_pos = context.stack.restore(event.pos) + m_canvas_pos;
+        {    
             m_tool->onMainButton({plug::State::Pressed}, canvas_pos);
+        }
+
+        if (event.button_id == plug::MouseButton::Right && m_tool)
+        {
+            m_tool->onSecondaryButton({plug::State::Pressed}, canvas_pos);
         }
 
         m_update_texture = true;

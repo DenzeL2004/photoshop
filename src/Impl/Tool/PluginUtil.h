@@ -21,7 +21,7 @@
 
 static const char Load_plug_sym[] = "loadPlugin";
 static const char Plugin_dir_name[] = "Plugins\0";
-static const size_t Max_path_len = 100;
+const size_t Max_search_depth = 3;
 
 plug::Plugin* loadPlugin(const char *dll_path);
 
