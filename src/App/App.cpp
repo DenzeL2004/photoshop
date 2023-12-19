@@ -80,6 +80,8 @@ void AppWidget::AddToolsButtons(void)
 {
     ContainerWidget *tool_buttons = new ContainerWidget(BaseLayoutBox(Tool_bar_pos, Tool_bar_pos, getLayoutBox().getSize(), false, false));
 
+    const size_t cnt_on_line = 3;
+
     size_t cnt_tools = m_tool_palette.getSize();
     for (size_t it = 0; it < cnt_tools; it++)
     {
@@ -88,7 +90,7 @@ void AppWidget::AddToolsButtons(void)
         const char* tool_name = tool->getPluginData()->getName();
         const char* tool_texture = tool->getPluginData()->getTexturePath();
 
-        plug::Vec2d button_pos = Vec2d(5, 50) + plug::Vec2d(Tool_button_size.x * (it % 2), Tool_button_size.y * (it / 2));
+        plug::Vec2d button_pos = Vec2d(5, 50) + plug::Vec2d(Tool_button_size.x * (it % cnt_on_line), Tool_button_size.y * (it / cnt_on_line));
 
         tool_buttons->insertWidget(new ColorButton( getPlugTexture(tool_texture), plug::White,
                                                     Released_tool_color, Pressed_tool_color,

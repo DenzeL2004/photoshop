@@ -1,10 +1,12 @@
 #include "PluginUtil.h"
 #include "LogInfo/LogErrors.h"
 
+const size_t Max_search_depth = 3;
+
 typedef plug::Plugin* (*LoadPlugin)(void);
 
-static void findDLLinDir    (const char *path, Container<plug::Plugin*> &plugins);
-static void findDLL         (const char *path, Container<plug::Plugin*> &plugins);
+static void findDLL         (const char *path, Container<plug::Plugin*> &plugins, const size_t depth_search);
+static void findDLLinDir    (const char *path, Container<plug::Plugin*> &plugins, const size_t depth_search);
 static void checkIsDLL      (const char *path, Container<plug::Plugin*> &plugins);
 
 plug::Plugin* loadPlugin(const char *dll_path)
@@ -43,13 +45,10 @@ plug::Plugin* loadPlugin(const char *dll_path)
 
 void loadePlugins(Container<plug::Plugin*> &plugins)
 {
-    findDLL(Plugin_dir_name, plugins);    
+    findDLL(Plugin_dir_name, plugins, 0);    
 }
 
-//TODO deepth search
-//File with name file more safty
-
-static void findDLLinDir(const char *path, Container<plug::Plugin*> &plugins)
+static void findDLLinDir(const char *path, Container<plug::Plugin*> &plugins, const size_t depth_search)
 {
     assert(path != NULL && "file's path is nullptr");
 
@@ -78,7 +77,7 @@ static void findDLLinDir(const char *path, Container<plug::Plugin*> &plugins)
         if (!strcmp(file->d_name, "..")) continue;
 
         sprintf(full_path + path_len, "/%s%c", file->d_name, '\0');
-        findDLL(full_path, plugins);
+        findDLL(full_path, plugins, depth_search);
     }
 
     free(full_path);
@@ -90,9 +89,11 @@ static void findDLLinDir(const char *path, Container<plug::Plugin*> &plugins)
     }
 }
 
-static void findDLL(const char *path, Container<plug::Plugin*> &plugins)
+static void findDLL(const char *path, Container<plug::Plugin*> &plugins, const size_t depth_search)
 {
     assert (path != nullptr && "path is nullptr");
+
+    if (depth_search > Max_search_depth) return;
 
     struct stat file_info;
     if (lstat(path, &file_info))
@@ -101,7 +102,7 @@ static void findDLL(const char *path, Container<plug::Plugin*> &plugins)
     }
 
     if (S_ISDIR(file_info.st_mode))
-        findDLLinDir(path, plugins);
+        findDLLinDir(path, plugins, depth_search + 1);
     else
         checkIsDLL(path, plugins);
 }

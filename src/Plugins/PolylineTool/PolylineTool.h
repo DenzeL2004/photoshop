@@ -20,7 +20,7 @@ class PolylineTool : public DefTool
         virtual void setActiveCanvas(plug::Canvas &canvas);
 
         virtual void onMainButton(const plug::ControlState &state, const plug::Vec2d &position);
-        virtual void onSecondaryButton(const plug::ControlState &state, const plug::Vec2d &position){}
+        virtual void onSecondaryButton(const plug::ControlState &state, const plug::Vec2d &position);
 
         virtual void onModifier1(const plug::ControlState &state){}
         virtual void onModifier2(const plug::ControlState &state){}
@@ -40,6 +40,8 @@ class PolylineTool : public DefTool
         PolylineTool &operator= (const PolylineTool &other) = delete;
 
     private:
+        void drawLine(void);
+
         plug::ColorPalette *m_color_palette;
         plug::Canvas *m_canvas;
 
@@ -49,7 +51,14 @@ class PolylineTool : public DefTool
         plug::Vec2d m_mouse_pos;
         plug::Color m_color;
 
+        double m_radius;
+
         PolylineToolPreview *m_preview;
+
+        bool m_setting_flags;
+        double m_setting_radius;
+
+        plug::Widget *m_config;
 };
 
 extern "C" plug::Plugin* loadPlugin(void);

@@ -16,6 +16,25 @@ void drawLine(plug::RenderTarget &target,
     target.draw(line);
 }
 
+void drawCircle(plug::RenderTarget &target, 
+                const plug::Vec2d &center, const float radius, 
+                const plug::PrimitiveType type, const plug::Color color)
+{
+    plug::VertexArray circle(type, 0);
+    
+    const size_t cnt = 360;
+    double step = 2.0 * M_PI / static_cast<double>(cnt);
+
+    double alpha = 0;
+    for (size_t it = 0; it <= cnt; it++)
+    {
+        circle.appendVertex({plug::Vec2d(cos(alpha) * radius + center.x, sin(alpha) * radius + center.y), Vec2d(0, 0), color});
+        alpha += step;
+    }
+
+    target.draw(circle);  
+}
+
 void drawRectangle(plug::RenderTarget &target, 
                    const plug::Vec2d &left_up, const plug::Vec2d &right_down, const plug::Color color)
 {

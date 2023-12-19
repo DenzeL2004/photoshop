@@ -88,6 +88,10 @@ void    drawLine        (plug::RenderTarget &target,
 void    drawRectangle   (plug::RenderTarget &target, 
                          const plug::Vec2d &left_up, const plug::Vec2d &right_down, const plug::Color color = plug::White);
 
+void    drawCircle      (plug::RenderTarget &target, 
+                         const plug::Vec2d &center, const float radius, 
+                         const plug::PrimitiveType type, const plug::Color color = plug::White);
+
 void    writeText       (plug::RenderTarget &target, const plug::Vec2d &pos, 
                          const char *text, const double thicknesses,
                          const plug::Color color = plug::White);
